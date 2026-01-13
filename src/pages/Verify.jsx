@@ -508,128 +508,148 @@ export function Verify() {
                 </div>
               )}
               {profiledata?.aadharverified == false && (
-                <div className={`${opacityclass} w-[80%]`}>
-                  <div className="underline underline-offset-2 text-2xl pb-2">
-                    Upload your Aadhar front picture &nbsp;
-                  </div>
-                  <div className="text-red-600 text-lg pb-4">
-                    (QR code should be visibly clear on your aadhar picture)
-                  </div>
-                  <div className="">
-                    <form className="mt-4" onSubmit={verifyNumber}>
-                  <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                    <div className={`${numclass} space-y-2 md:w-[400px]`}>
-                      <Label>Enter Aadhar Number&nbsp;:</Label>
-                      <Input
-                        type="text"
-                        className="border-bottom"
-                        name="aadhar"
-                        placeholder=""
-                        value={formik.values.aadhar}
-                        onChange={e => {
-                          formik.handleChange(e);
-                          setAadharNum(e.target.value);
-                        }}
-                        onBlur={formik.handleBlur}
-                        required
-                      />
-                      {formik.touched.aadhar && formik.errors.aadhar ? (
-                        <p className="text-red-600">{formik.errors.aadhar} </p>
-                      ) : null}
+                <>
+                  <div className="text-center space-y-4">
+                    <div className="flex items-center justify-center mb-4">
+                      <CreditCard className="h-12 w-12 text-orange-500" />
                     </div>
-                    <div className="flex flex-wrap items-center gap-0 md:flex-row">
-                      <Button className={`${numclass}`} variant="secondary" type="submit">
-                        Click here to verify number
-                      </Button>
-                      <Button
-                        className={`${retryclass}`}
-                        size="icon-sm"
-                        data-toggle="tooltip"
-                        title="retry"
-                        onClick={e => {
-                          retryClick(e);
-                        }}
-                      >
-                        <RotateCw />
-                      </Button>
-                    </div>
+                    <h3 className="text-2xl font-semibold">Aadhaar Card Verification</h3>
+                    <p className="text-gray-600 max-w-2xl mx-auto">
+                      Verify your identity using your Aadhaar Card. This helps us ensure the security and authenticity of your account.
+                    </p>
                   </div>
-                </form>
-              </div>
-              <div className={`${imgclass}`}>
-                <form>
-                  <div className="pt-6">
-                    {aadharImg && (
-                      <img
-                        className="w-[300px]"
-                        src={aadharImg['url']}
-                        //src='https://blr1.vultrobjects.com/localm/33361/first'
-                        //src={file1 && URL.createObjectURL(file1)}
-                        alt=""
-                      />
-                    )}
-                    {JSON.stringify(aadharImg) === '{}' && (
-                      <>
-                        <div className="space-y-2 mt-6">
-                          <Label className="mt-4">Click to Upload:</Label>
-                          <Input
-                            className="lg:w-[40%]"
-                            onChange={async e => {
-                              setFile1(e.target.files[0]);
-                              if (isOnline) {
-                                trycount.current = trycount.current + 1;
-                                setProfiledata({
-                                  ...profiledata,
-                                  verifytrycount: trycount.current,
-                                });
-                                if (trycount.current < 25) {
-                                  //max 24 retries
-                                  setAadharImg({
-                                    url:
-                                      e.target.files[0] && URL.createObjectURL(e.target.files[0]),
-                                  });
-                                  setaAdharAdding(true);
-                                  ValidateAadhar(e, e.target.files[0]);
-                                } else {
-                                  await updateVerifytrycount(trycount.current);
-                                  setaAdharAdding(false);
-                                  setImgclass('hidden');
-                                  alert('RETRY LIMIT EXCEEDED, EMAIL US YOUR ID');
-                                }
-                              } else {
-                                alert('You are offline. check your internet connection.');
-                                return;
-                              }
-                            }}
-                            onClick={e => (e.target.value = null)}
-                            type="file"
-                            accept="image/*"
-                          />
+
+                  <Card className="max-w-2xl mx-auto">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Submit Aadhaar Card Details</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className={`${opacityclass}`}>
+                        <div className="underline underline-offset-2 text-2xl pb-2">
+                          Upload your Aadhar front picture &nbsp;
                         </div>
-                      </>
-                    )}
-                  </div>
-                </form>
-                {JSON.stringify(aadharImg) !== '{}' && (
-                  <>
-                    {aadharAdding ? (
-                      <></>
-                    ) : (
-                      <Button
-                        className={`${opacityclass}`}
-                        variant="destructive"
-                        onClick={() => {
-                          setAadharImg({});
-                        }}
-                      >
-                        Remove to Add New
-                      </Button>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          )}
+                        <div className="text-red-600 text-lg pb-4">
+                          (QR code should be visibly clear on your aadhar picture)
+                        </div>
+                        <div className="">
+                          <form className="mt-4" onSubmit={verifyNumber}>
+                            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                              <div className={`${numclass} space-y-2 md:w-[400px]`}>
+                                <Label>Enter Aadhar Number&nbsp;:</Label>
+                                <Input
+                                  type="text"
+                                  className="border-bottom"
+                                  name="aadhar"
+                                  placeholder=""
+                                  value={formik.values.aadhar}
+                                  onChange={e => {
+                                    formik.handleChange(e);
+                                    setAadharNum(e.target.value);
+                                  }}
+                                  onBlur={formik.handleBlur}
+                                  required
+                                />
+                                {formik.touched.aadhar && formik.errors.aadhar ? (
+                                  <p className="text-red-600">{formik.errors.aadhar} </p>
+                                ) : null}
+                              </div>
+                              <div className="flex flex-wrap items-center gap-0 md:flex-row">
+                                <Button className={`${numclass}`} variant="secondary" type="submit">
+                                  Click here to verify number
+                                </Button>
+                                <Button
+                                  className={`${retryclass}`}
+                                  size="icon-sm"
+                                  data-toggle="tooltip"
+                                  title="retry"
+                                  onClick={e => {
+                                    retryClick(e);
+                                  }}
+                                >
+                                  <RotateCw />
+                                </Button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+
+                        <div className={`${imgclass}`}>
+                          <form>
+                            <div className="pt-6">
+                              {aadharImg && (
+                                <img
+                                  className="w-[300px]"
+                                  src={aadharImg['url']}
+                                  //src='https://blr1.vultrobjects.com/localm/33361/first'
+                                  //src={file1 && URL.createObjectURL(file1)}
+                                  alt=""
+                                />
+                              )}
+                              {JSON.stringify(aadharImg) === '{}' && (
+                                <>
+                                  <div className="space-y-2 mt-6">
+                                    <Label className="mt-4">Click to Upload:</Label>
+                                    <Input
+                                      className="lg:w-[40%]"
+                                      onChange={async e => {
+                                        setFile1(e.target.files[0]);
+                                        if (isOnline) {
+                                          trycount.current = trycount.current + 1;
+                                          setProfiledata({
+                                            ...profiledata,
+                                            verifytrycount: trycount.current,
+                                          });
+                                          if (trycount.current < 25) {
+                                            //max 24 retries
+                                            setAadharImg({
+                                              url:
+                                                e.target.files[0] && URL.createObjectURL(e.target.files[0]),
+                                            });
+                                            setaAdharAdding(true);
+                                            ValidateAadhar(e, e.target.files[0]);
+                                          } else {
+                                            await updateVerifytrycount(trycount.current);
+                                            setaAdharAdding(false);
+                                            setImgclass('hidden');
+                                            alert('RETRY LIMIT EXCEEDED, EMAIL US YOUR ID');
+                                          }
+                                        } else {
+                                          alert('You are offline. check your internet connection.');
+                                          return;
+                                        }
+                                      }}
+                                      onClick={e => (e.target.value = null)}
+                                      type="file"
+                                      accept="image/*"
+                                    />
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </form>
+                          {JSON.stringify(aadharImg) !== '{}' && (
+                            <>
+                              {aadharAdding ? (
+                                <></>
+                              ) : (
+                                <Button
+                                  className={`${opacityclass}`}
+                                  variant="destructive"
+                                  onClick={() => {
+                                    setAadharImg({});
+                                  }}
+                                >
+                                  Remove to Add New
+                                </Button>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
             </TabsContent>
 
             <TabsContent value="driver-license" className="space-y-6">
