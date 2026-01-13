@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import { checkIfUserExists,
 import { coords } from '../../../lib/defaultcoords';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { Spinner } from '@/components/ui/spinner';
 
 const BASE_URL = 'http://localhost:5173';
 
@@ -209,6 +210,24 @@ export function Register() {
   let [searchParams] = useSearchParams();
   const refcode = searchParams.get('ref');
 
+  // Form Autosave: Restore data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('registrationForm');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setData(prevData => ({ ...prevData, ...parsedData }));
+      } catch (error) {
+        console.warn('Failed to restore registration form data:', error);
+      }
+    }
+  }, []);
+
+  // Form Autosave: Save data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('registrationForm', JSON.stringify(data));
+  }, [data]);
+
   const doRegister = useMutation({
     mutationFn: async (variables) => {
       const controller = new AbortController();
@@ -217,6 +236,10 @@ export function Register() {
     onSuccess: (resp) => {
       console.log("register onSuccess")
       dispatch(registerSuccess(resp));
+      // Clear autosaved form data
+      localStorage.removeItem('registrationForm');
+      // Navigate to success page
+      navigate('/registration-success', { state: { email: data.email } });
     },
     onError: (error) => {
       console.log("register onError error", error)
@@ -224,6 +247,7 @@ export function Register() {
           position: 'top-center',
         });
       dispatch(registerFailure(error));
+      setLoading(false);
     }
   });
 
@@ -308,7 +332,8 @@ export function Register() {
 
   return (
     <div className="flex justify-center mt-4 mb-8">
-      <Card className="w-[95%] max-w-3xl shadow-lg border-border/50 mx-4 rounded-lg">
+      <Card className="w-[95%] max-w-3xl shadow-lg border-border/50 mx-4 rounded-lg relative">
+        {loading && <Spinner size="xl" className="fixed top-[50%] left-[50%] z-50 cursor-pointer absolute" />}
         <CardHeader className="bg-gradient-to-r from-[#10182C] to-[#1a2340] pt-6 pb-6 rounded-t-lg">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold text-white">Create Account</CardTitle>

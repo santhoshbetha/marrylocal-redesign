@@ -46,6 +46,18 @@ export function Login({ openLogin, setOpenLogin }) {
       }
 
       if (error) {
+        // Check if the error is related to email not being verified
+        if (error.message?.includes('Email not confirmed') ||
+            error.message?.includes('email_not_confirmed') ||
+            error.message?.includes('not confirmed') ||
+            error.message?.includes('verify your email')) {
+          // Redirect to email not verified page with the email
+          navigate('/email-not-verified', {
+            state: { email: values.email.trim() }
+          });
+          return;
+        }
+
         setError(String(error));
         throw error;
       }
@@ -64,7 +76,7 @@ export function Login({ openLogin, setOpenLogin }) {
 
   return (
     <DialogContent className="w-[90%] sm:max-w-[425px]">
-      {loading && <Spinner className="fixed top-[50%] left-[50%] z-50 cursor-pointer size-10" />}
+      {loading && <Spinner size="lg" className="fixed top-[50%] left-[50%] z-50 cursor-pointer" />}
       <DialogTitle></DialogTitle>
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>

@@ -24,6 +24,9 @@ import { Delete } from '@/pages/Delete';
 import { Referrals } from '@/pages/Referrals';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Cancellation } from './pages/Cancellation';
+import { RegistrationSuccess } from '@/pages/auth/RegistrationSuccess';
+import { EmailVerification } from '@/pages/auth/EmailVerification';
+import { EmailNotVerified } from '@/pages/auth/EmailNotVerified';
 
 export default function AppRouter({ openLogin, setOpenLogin }) {
   return (
@@ -34,6 +37,9 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
         <Route path="/contact" element={<Contact />} />
 
         <Route path="/register" element={<Register />} />
+        <Route path="/registration-success" element={<RegistrationSuccess />} />
+        <Route path="/verify-email" element={<EmailVerification />} />
+        <Route path="/email-not-verified" element={<EmailNotVerified />} />
         <Route path="/login" element={<LoginPage setOpenLogin={setOpenLogin} />} />
 
         <Route exact path="user/:shortid" element={<UserProfile />} />

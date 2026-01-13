@@ -212,7 +212,7 @@ export function Settings() {
         </CardHeader>
         <CardContent className="flex flex-col relative">
           {loading && (
-            <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
+            <Spinner size="lg" className="absolute top-[50%] left-[50%] z-50 cursor-pointer" />
           )}
           <form action="" method="post" role="form" className="" onSubmit={formik.handleSubmit}>
             <div>
