@@ -21,8 +21,8 @@ function isObjEmpty(val) {
 export function useGetProfileData(userid) {
   return useQuery({
     queryKey: ['profiledata'],
-    queryFn: async () => {
-      const response = await getProfileData(userid);
+    queryFn: async ({ signal }) => {
+      const response = await getProfileData(userid, signal);
       return response.data || null;
     },
   });
@@ -31,8 +31,8 @@ export function useGetProfileData(userid) {
 export function useGetUserProfile(dataIn) {
   return useQuery({
     queryKey: ['userprofile', dataIn.shortid],
-    queryFn: async () => {
-      const response = await getUserProfile(dataIn.shortid);
+    queryFn: async ({ signal }) => {
+      const response = await getUserProfile(dataIn.shortid, signal);
       return response.data || null;
     },
   });
@@ -42,11 +42,11 @@ export function useShortlistData(dataIn) {
   console.log('useShortlistData...1::');
   return useQuery({
     queryKey: shortlistDataQueryKey(),
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       console.log('useShortlistData...2');
       if (!isObjEmpty(dataIn.userid)) {
         console.log('useShortlistData...3');
-        const response = await getShortlistData(dataIn.userid, dataIn.shortlist);
+        const response = await getShortlistData(dataIn.userid, signal);
         return response.data || null;
       } else {
         return null;

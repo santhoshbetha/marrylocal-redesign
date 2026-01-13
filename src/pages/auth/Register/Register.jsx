@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -8,6 +9,19 @@ import { AccountForm } from './AccountForm';
 import { CommunityForm } from './CommunityForm';
 import { UseMultiStepForm } from './UseMultiStepForm';
 import { UserInfoForm } from './UserInfoForm';
+import { registerSuccess, registerFailure, clearstate } from '../../../store/actions/authActions';
+import supabase from '../../../lib/supabase';
+import ShortUniqueId from 'short-unique-id'
+import { checkIfUserExists, 
+  getCityUsercount, 
+  getUsercountToday, 
+  appendToRefereeEmails 
+} from '../../../services/registerService';
+import { coords } from '../../../lib/defaultcoords';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+const BASE_URL = 'http://localhost:5173';
 
 function isObjEmpty(val) {
   return val == null ||
@@ -43,7 +57,148 @@ const INITIAL_DATA = {
   passwordconfirm: '',
 };
 
+function calcAge(dateString) {
+    var birthday = +new Date(dateString);
+    return ~~((Date.now() - birthday) / (31557600000));
+}
+
+const getcoords = (city) => {
+  for (var i = 0; i < coords.length; i++) {
+    if (coords[i].city == city){
+      return coords[i].coords;
+    }
+  }
+  return { lat: 0, lng: 0 };
+}
+
+const authRegister = async (userdata, signal) => {
+    const res1 = await checkIfUserExists(userdata, signal);
+    let userExists = false;
+    if (res1.success) {
+        userExists = res1.userExists;
+        if (userExists) {
+            console.log("userExists true")
+            throw new Error('User with given email or phone number or aadhar number exists!');
+        }
+    }
+    if (!res1.success) {
+        throw new Error('Registration Error, try again later')
+    }
+    
+    if (!userExists) {
+        const dateofbirth = userdata?.dob == '' ? (new Date('2002-01-01')).toISOString()
+                                               : (new Date(`${userdata.dob}`)).toISOString()
+        const age = calcAge(dateofbirth.toString());
+        const dateofcreation = (new Date()).toISOString();
+        const short_uid = new ShortUniqueId({ length: 9 });
+        const shortid = short_uid.rnd();
+
+        const referrercode_uid = new ShortUniqueId({ length: 10 });
+        const referrer_code = referrercode_uid.rnd();
+        const referrer = isObjEmpty(userdata?.referrer) ? null : userdata?.referrer;
+
+        console.log("referrer_code:;", referrer_code)
+        console.log("referrer:;", referrer)
+    
+        let onetimefeesrequired = false;
+
+        const res2 = await getCityUsercount({
+            city: userdata.city,
+            gender: userdata.gender
+        }, signal);
+
+        if (res2.success) {
+          if (res2.userCount <= 500) {
+              onetimefeesrequired = false; 
+          } else {
+              onetimefeesrequired = true;
+          }
+        } else {
+          onetimefeesrequired = false;
+        }
+
+       let email = userdata.email.trim();
+       let password = userdata.password.trim();
+
+      const {data, error} = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+              data: {
+                  shortid: shortid,
+                  firstname: userdata.firstname.trim(),
+                  lastname: userdata.lastname.trim(),
+                  dateofbirth: dateofbirth,
+                  age: age,
+                  gender: userdata.gender,
+                  educationlevel: userdata.educationlevel,
+                  jobstatus: userdata.jobstatus,
+                  city: userdata.city,
+                  state: userdata.state,
+                  language: userdata.language,
+                  religion: userdata.language,
+                  community: userdata.community,
+                  economicstatus: userdata.economicstatus,
+                  phonenumber: userdata.phonenumber,
+                  email: userdata.email.toLowerCase(),
+                  dateofcreation: dateofcreation,
+                  dateofactivation: dateofcreation, 
+                  dateoflocation: dateofcreation,   
+                  onetimefeesrequired: onetimefeesrequired,
+                  referral_code: referrer_code,
+                  referrer: referrer,
+                  latitude: getcoords(userdata.city).lat,
+                  longitude: getcoords(userdata.city).lng
+              },
+              emailRedirectTo: `${BASE_URL}/login`
+          }
+      });
+
+      console.log("data:", data)
+
+      //data.user.id
+      //data.user.aud = "authenticated"
+      //data.user.role = "authenticated"
+      //data.user.created_at
+      //data.user.updated_at
+      console.log("data.session:", data.session)
+      console.log("error:", error)
+      
+      if (error) {
+          console.log("signUp Error: error", error)
+          throw error
+      }
+
+      if (!error && data) {
+          console.log("not error and data")
+          //
+          // add this email to the user who referred
+          //
+          const res3 = await appendToRefereeEmails({
+              referrer_code: userdata.referrer,
+              emailtoadd: userdata.email.toLowerCase()
+          }, signal);
+
+          //if (res3.success) {
+          //  return session;
+          //} else {
+          //    console.log("signUp Error: error", error)
+          //    throw error;
+          //}
+      }
+
+      if (!isObjEmpty(data?.session)) {
+          return data.session;
+      } else {
+          if (!isObjEmpty(data)) {
+              return null;
+          }
+      }
+    }
+}
+
 export function Register() {
+  const dispatch = useDispatch();
   const [data, setData] = useState(INITIAL_DATA);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -53,6 +208,24 @@ export function Register() {
   const [accountformallValid, setAccountformallValid] = useState(true);
   let [searchParams] = useSearchParams();
   const refcode = searchParams.get('ref');
+
+  const doRegister = useMutation({
+    mutationFn: async (variables) => {
+      const controller = new AbortController();
+      return authRegister(variables, controller.signal);
+    },
+    onSuccess: (resp) => {
+      console.log("register onSuccess")
+      dispatch(registerSuccess(resp));
+    },
+    onError: (error) => {
+      console.log("register onError error", error)
+        toast.error(error.message || 'Registration failed', {
+          position: 'top-center',
+        });
+      dispatch(registerFailure(error));
+    }
+  });
 
   function updateFields(fields) {
     setData(prev => {
@@ -122,8 +295,8 @@ export function Register() {
     RegisterPressCount.current = RegisterPressCount.current + 1;
     
     // TODO: Replace with actual registration mutation (Redux or React Query)
-    // const registerData = refcode != null ? { ...data, referrer: refcode } : data;
-    // doRegister.mutate(registerData);
+    const registerData = refcode != null ? { ...data, referrer: refcode } : data;
+    doRegister.mutate(registerData);
     
     // Temporary placeholder - remove once integration is complete
     console.warn('Registration mutation not configured. Please implement doRegister mutation.');

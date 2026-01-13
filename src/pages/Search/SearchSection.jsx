@@ -143,9 +143,9 @@ export function SearchSection({
     refetch,
   } = useQuery({
     queryKey: usersSearchQueryKey(),
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!isObjEmpty(searchinput)) {
-        const response = await searchUsers(searchinput);
+        const response = await searchUsers(searchinput, signal);
         return response.data || null;
       } else {
         return null;

@@ -3,91 +3,232 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useAuth } from '../context/AuthContext';
 import { Footer } from '../components/Footer';
 import ScrollToTop from 'react-scroll-to-top';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Heart,
+  MapPin,
+  Shield,
+  Users,
+  Mail,
+  Share2,
+  CheckCircle,
+  Star,
+  Globe,
+  Lock
+} from 'lucide-react';
 
 export function About() {
   const { user } = useAuth();
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Scrolls to the top-left corner
+    window.scrollTo(0, 0);
   }, []);
 
   return (
     <>
-      <div className="h-dvh">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <ScrollToTop smooth />
-        <div className="flex justify-center">
-          <Card className="w-[95%] max-w-7xl shadow-md border-border/50 mx-4 rounded-none mt-3">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-2xl">More about MarryLocal</CardTitle>
-            </CardHeader>
-            <CardContent className="px-10">
-              <ul className="list-disc">
-                <li className="text-lg p-2">
-                  <span>
-                    We believe in matching same <span className="text-green-600">locale</span>{' '}
-                    people for better
-                    <span className="text-blue-500 ms-1">long term relationships</span> irrespective
-                    of language/community etc, and believe it should not be so{' '}
-                    <span className="fw-bolder">difficult</span> or{' '}
-                    <span className="fw-bolder">tedious </span>
-                    and <span className="fw-bolder">cost as much</span>.
-                  </span>
-                </li>
-                <li className="text-lg p-2">
-                  <span>
-                    We use your <span className="text-green-600">GEO location</span> (GPS
-                    co-ordinates) and show you matches in the selected radius of{' '}
-                    <span className="fw-bolder">10/25/35/50/..</span>{' '}
-                    <span className="fw-bolder me-2">kms</span>
-                    around you. all matches shown will be from your state, also from your
-                    neighboring cities if they fall within your search distance.
-                  </span>
-                </li>
-                <li className="text-lg p-2">
-                  <span>
-                    We do not <span className="text-blue-500 me-1">control/restrict</span>
-                    access to contact information of any user to anyone. You may set/unset your
-                    contact information visibility on your{' '}
-                    <span className="text-blue-500 fs-5 fw-bold">Settings</span> page. Only caveat
-                    is you cannot restrict your <span className="text-blue-500 ms-1">email id</span>{' '}
-                    visibility. It will be visible to all.
-                  </span>
-                </li>
-                <li className="text-lg p-2">
-                  <span>
-                    We verify every user.
-                    <span className="fw-bold"> scammers</span> or{' '}
-                    <span className="fw-bold">fake profiles</span> or
-                    <span className="ms-1 fw-bold">duplicates</span> or{' '}
-                    <span className="ms-1 fw-bold">match making agents</span> are
-                    <span className="ms-1 fw-bold text-dark">NOT</span> allowed.Only one profile per
-                    person is allowed and your
-                    <span className="ms-1 fw-bold">name/date of birth</span> should match the
-                    verifiable documents you provide.Report us if you notice any of the above.
-                  </span>
-                </li>
-                <li className="text-lg p-2">
-                  <span>
-                    This app is created with{' '}
-                    <span className="me-1 text-green-600">good intentions</span> to help people, in
-                    a way people want. You suggestions to help and improve this app are always
-                    welcome. Please <span className="text-blue-500">email</span> us for that.
-                  </span>
-                </li>
-                <li className="text-lg p-2">
-                  <span>
-                    Please help by sharing this app with your connections on
-                    <span className="ms-1 fs-4">
-                      <span className="text-green-600">WhatsApp</span>/
-                      <span className="text-red-700">Instagram</span>/
-                      <span className="text-blue-500">Facebook</span>.
-                    </span>
-                    <span hidden>We all grow as we grow.</span>
-                  </span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
+
+        {/* Hero Section - Only show when not logged in */}
+        {!user && (
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+            <div className="container mx-auto px-4 text-center">
+              <div className="flex justify-center mb-6">
+                <Heart className="h-16 w-16 text-pink-300" />
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                About MarryLocal
+              </h1>
+              <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto">
+                Connecting hearts, bridging communities, and making meaningful relationships easier than ever.
+              </p>
+              <div className="flex justify-center gap-4 mt-8">
+                <Badge variant="secondary" className="text-lg px-4 py-2 bg-white/20 text-white border-white/30">
+                  <Users className="h-5 w-5 mr-2" />
+                  Building Trust
+                </Badge>
+                <Badge variant="secondary" className="text-lg px-4 py-2 bg-white/20 text-white border-white/30">
+                  <Shield className="h-5 w-5 mr-2" />
+                  Verified Users Only
+                </Badge>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-6xl mx-auto">
+
+            {/* Mission Section */}
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Our Mission
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                We believe in creating lasting relationships by connecting people from the same locale.
+                Love knows no boundaries of language, community, or background - only shared values and proximity matter.
+              </p>
+            </div>
+
+            {/* Features Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+
+              {/* Feature 1 */}
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-blue-100 rounded-full">
+                      <MapPin className="h-8 w-8 text-blue-600" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                    Location-Based Matching
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Find matches within your preferred radius (10-50km). We use GPS coordinates to show you
+                    compatible partners from your state and neighboring cities.
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Feature 2 */}
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-green-100 rounded-full">
+                      <Lock className="h-8 w-8 text-green-600" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                    Privacy Control
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    You control your contact information visibility. Set preferences for phone, Instagram,
+                    and Facebook visibility in your settings. Email remains visible for communication.
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Feature 3 */}
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-purple-100 rounded-full">
+                      <Shield className="h-8 w-8 text-purple-600" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                    Verified & Safe
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Every user is verified. No scammers, fake profiles, duplicates, or matchmaking agents.
+                    One profile per person with verified name and date of birth.
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Feature 4 */}
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-orange-100 rounded-full">
+                      <Globe className="h-8 w-8 text-orange-600" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                    Inclusive Platform
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    No restrictions based on language, community, or background. We focus on what truly matters -
+                    shared values, compatibility, and proximity for long-term relationships.
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Feature 5 */}
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-pink-100 rounded-full">
+                      <Heart className="h-8 w-8 text-pink-600" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                    Built with Love
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Created with good intentions to help people find meaningful relationships.
+                    Your suggestions are always welcome to improve and enhance the platform.
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Feature 6 */}
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-indigo-100 rounded-full">
+                      <Share2 className="h-8 w-8 text-indigo-600" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                    Community Driven
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Help us grow by sharing MarryLocal with your connections on WhatsApp, Instagram, and Facebook.
+                    Together, we can help more people find their perfect match.
+                  </p>
+                </CardContent>
+              </Card>
+
+            </div>
+
+            {/* Vision Section */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white text-center mb-16">
+              <h3 className="text-2xl md:text-3xl font-bold mb-8">Our Vision for the Future</h3>
+              <div className="grid md:grid-cols-3 gap-8">
+                <div>
+                  <div className="text-4xl font-bold mb-2">🌟</div>
+                  <div className="text-blue-100">Revolutionize</div>
+                  <div className="text-sm text-blue-200 mt-1">Local Matching</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-bold mb-2">🤝</div>
+                  <div className="text-blue-100">Build Trust</div>
+                  <div className="text-sm text-blue-200 mt-1">Through Verification</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-bold mb-2">💕</div>
+                  <div className="text-blue-100">Create Connections</div>
+                  <div className="text-sm text-blue-200 mt-1">That Last Forever</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Call to Action */}
+            <div className="text-center">
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                Be Among the First
+              </h3>
+              <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                Join our exclusive early community and help shape the future of local matching.
+                Be part of something revolutionary that prioritizes genuine connections over algorithms.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+                  <Heart className="h-5 w-5 mr-2" />
+                  Get Started
+                </Button>
+                <Button variant="outline" size="lg" className="px-8 py-3">
+                  <Mail className="h-5 w-5 mr-2" />
+                  Contact Us
+                </Button>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
       {!user ? <Footer /> : <></>}

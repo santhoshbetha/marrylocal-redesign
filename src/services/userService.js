@@ -1,8 +1,8 @@
 import supabase from '../lib/supabase.js';
 
-export const getProfileData = async userid => {
+export const getProfileData = async (userid, signal) => {
   try {
-    const { data, error } = await supabase.from('users').select().eq('userid', userid).single();
+    const { data, error } = await supabase.from('users').select().eq('userid', userid).single(signal ? { signal } : {});
     if (error) {
       return {
         success: false,
@@ -43,13 +43,13 @@ export const updateUserInfo = async (userid, data) => {
   }
 };
 
-export const getShortlist = async userid => {
+export const getShortlist = async (userid, signal) => {
   try {
     const { data, error } = await supabase
       .from('users')
       .select('shortlist')
       .eq('userid', userid)
-      .single();
+      .single(signal ? { signal } : {});
     if (error) {
       return {
         success: false,
@@ -68,9 +68,9 @@ export const getShortlist = async userid => {
   }
 };
 
-export const getShortlistData = async (userid) => {
+export const getShortlistData = async (userid, signal) => {
   try {
-    const res = await getShortlist(userid);
+    const res = await getShortlist(userid, signal);
 
     if (!res.success) {
       return {
@@ -91,7 +91,8 @@ export const getShortlistData = async (userid) => {
         const { data, error } = await supabase
           .from('users')
           .select('userid, shortid, firstname, age, images')
-          .filter('shortid', 'in', `(${res.shortlist})`); // `(${shortlist})`
+          .filter('shortid', 'in', `(${res.shortlist})`)
+          .abortSignal(signal); // Assuming Supabase supports abortSignal
 
         if (error) {
           return {
@@ -119,11 +120,11 @@ export const getShortlistData = async (userid) => {
 };
 
 //https://github.com/orgs/supabase/discussions/2771
-export const addToShortlist = async (userid, shortidtoadd) => {
+export const addToShortlist = async (userid, shortidtoadd, signal) => {
   try {
     const { data: data0, error: error0 } = await supabase.rpc('get_shortlist_count', {
       userid: userid,
-    });
+    }, { signal });
 
     if (error0) {
       return {
@@ -137,7 +138,8 @@ export const addToShortlist = async (userid, shortidtoadd) => {
       const { data: data1, error: error1 } = await supabase
         .from('users')
         .update({ shortlist: [`${shortidtoadd}`] })
-        .eq('userid', userid);
+        .eq('userid', userid)
+        .abortSignal(signal);
 
       if (error1) {
         return {
@@ -153,7 +155,7 @@ export const addToShortlist = async (userid, shortidtoadd) => {
       const { data: data2, error: error2 } = await supabase.rpc('append_to_shortlist', {
         shortidtoadd: shortidtoadd,
         userid: userid,
-      });
+      }, { signal });
 
       if (error2) {
         return {
@@ -199,7 +201,7 @@ export const removeFromShortlist = async (userid, shortidtoremove) => {
   }
 };
 
-export const getUserProfile = async shortid => {
+export const getUserProfile = async (shortid, signal) => {
   try {
     const { data, error } = await supabase
       .from('users')
@@ -214,7 +216,7 @@ export const getUserProfile = async shortid => {
                  userstate',
       )
       .eq('shortid', shortid)
-      .single();
+      .single(signal ? { signal } : {});
     if (error) {
       return {
         success: false,

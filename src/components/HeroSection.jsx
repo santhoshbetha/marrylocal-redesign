@@ -13,7 +13,7 @@ export function HeroSection({ openLogin, setOpenLogin }) {
   };
 
   return (
-    <section className="bg-slate-900 text-white py-12 sm:py-16 lg:py-32">
+    <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-12 sm:py-16 lg:py-32">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div className="space-y-6 lg:space-y-8 text-center lg:text-left bg-yellow-700d lg:w-[120%] lg:ps-24">

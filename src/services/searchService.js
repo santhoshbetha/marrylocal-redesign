@@ -15,7 +15,7 @@ const digits = (num, count = 0) => {
   return count;
 };
 
-export const searchUsers = async searchinput => {
+export const searchUsers = async (searchinput, signal) => {
   try {
     const gender = searchinput.gender;
     let state = searchinput.state; //search 'state' although 'city' is passed
@@ -61,7 +61,7 @@ export const searchUsers = async searchinput => {
       //community: community,
     };
 
-    const { data, error } = await supabase.rpc('search_by_distance', cols);
+    const { data, error } = await supabase.rpc('search_by_distance', cols, { signal });
 
     let filtereddata = data
       .filter(eachuser => {

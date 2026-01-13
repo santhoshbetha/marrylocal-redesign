@@ -2,13 +2,13 @@ import supabase from '../lib/supabase';
 
 //https://stackoverflow.com/questions/77724555/supabase-trigger-on-email-verification
 
-export const checkIfUserExists = async userdata => {
+export const checkIfUserExists = async (userdata, signal) => {
   try {
     const { data, error } = await supabase.rpc('check_if_user_exists', {
       email: userdata.email,
       phonenumber: userdata.phonenumber,
       aadharnumber: userdata.aadharnumber,
-    });
+    }, { signal });
 
     if (error) {
       return {
@@ -29,13 +29,13 @@ export const checkIfUserExists = async userdata => {
   }
 };
 
-export const getPasswordRetryCount = async email => {
+export const getPasswordRetryCount = async (email, signal) => {
   try {
     const { data, error } = await supabase
       .from('users')
       .select('password_retry_count')
       .eq('email', email)
-      .single();
+      .single(signal ? { signal } : {});
 
     if (error) {
       return {
@@ -79,12 +79,12 @@ export const updatePasswordRetryCount = async dataIn => {
   }
 };
 
-export const getCityUsercount = async dataIn => {
+export const getCityUsercount = async (dataIn, signal) => {
   try {
     const { data, error } = await supabase.rpc('get_city_usercount', {
       city: dataIn.city,
       gender: dataIn.gender,
-    });
+    }, { signal });
 
     if (error) {
       return {
@@ -129,12 +129,12 @@ export const getUsercountToday = async () => {
   }
 };
 
-export const appendToRefereeEmails = async dataIn => {
+export const appendToRefereeEmails = async (dataIn, signal) => {
   try {
     const { data, error } = await supabase.rpc('append_to_referee_emails', {
       emailtoadd: dataIn.emailtoadd,
       referrer: dataIn.referrer_code,
-    });
+    }, { signal });
 
     if (error) {
       return {

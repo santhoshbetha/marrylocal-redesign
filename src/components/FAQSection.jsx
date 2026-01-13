@@ -42,7 +42,7 @@ export function FAQSection() {
               <AccordionContent>
                 <p className="text-muted-foreground">
                   To ensure authenticity and safety, we require one government-issued ID for
-                  verification: Aadhaar Card, Passport, or Driver's License. All documents are
+                  verification: <span hidden>Aadhaar Card, </span>Passport, or Driver's License. All documents are
                   securely processed and stored with bank-level encryption. Your personal
                   information is never shared with other users.
                 </p>
