@@ -207,27 +207,6 @@ export function About() {
               </div>
             </div>
 
-            {/* Call to Action */}
-            <div className="text-center">
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                Be Among the First
-              </h3>
-              <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                Join our exclusive early community and help shape the future of local matching.
-                Be part of something revolutionary that prioritizes genuine connections over algorithms.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
-                  <Heart className="h-5 w-5 mr-2" />
-                  Get Started
-                </Button>
-                <Button variant="outline" size="lg" className="px-8 py-3">
-                  <Mail className="h-5 w-5 mr-2" />
-                  Contact Us
-                </Button>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>

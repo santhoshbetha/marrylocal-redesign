@@ -73,129 +73,140 @@ const getcoords = (city) => {
 }
 
 const authRegister = async (userdata, signal) => {
-    const res1 = await checkIfUserExists(userdata, signal);
+  // Create AbortController with 10 second timeout for the entire registration process
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds
+
+  try {
+    const res1 = await checkIfUserExists(userdata, controller.signal);
     let userExists = false;
     if (res1.success) {
-        userExists = res1.userExists;
-        if (userExists) {
-            console.log("userExists true")
-            throw new Error('User with given email or phone number or aadhar number exists!');
-        }
+      userExists = res1.userExists;
+      if (userExists) {
+        console.log("userExists true")
+        clearTimeout(timeoutId);
+        throw new Error('User with given email or phone number or aadhar number exists!');
+      }
     }
     if (!res1.success) {
-        throw new Error('Registration Error, try again later')
+      clearTimeout(timeoutId);
+      throw new Error('Registration Error, try again later');
     }
     
     if (!userExists) {
-        const dateofbirth = userdata?.dob == '' ? (new Date('2002-01-01')).toISOString()
-                                               : (new Date(`${userdata.dob}`)).toISOString()
-        const age = calcAge(dateofbirth.toString());
-        const dateofcreation = (new Date()).toISOString();
-        const short_uid = new ShortUniqueId({ length: 9 });
-        const shortid = short_uid.rnd();
+      const dateofbirth = userdata?.dob == '' ? (new Date('2002-01-01')).toISOString()
+                                              : (new Date(`${userdata.dob}`)).toISOString()
+      const age = calcAge(dateofbirth.toString());
+      const dateofcreation = (new Date()).toISOString();
+      const short_uid = new ShortUniqueId({ length: 9 });
+      const shortid = short_uid.rnd();
 
-        const referrercode_uid = new ShortUniqueId({ length: 10 });
-        const referrer_code = referrercode_uid.rnd();
-        const referrer = isObjEmpty(userdata?.referrer) ? null : userdata?.referrer;
+      const referrercode_uid = new ShortUniqueId({ length: 10 });
+      const referrer_code = referrercode_uid.rnd();
+      const referrer = isObjEmpty(userdata?.referrer) ? null : userdata?.referrer;
 
-        console.log("referrer_code:;", referrer_code)
-        console.log("referrer:;", referrer)
-    
-        let onetimefeesrequired = false;
+      console.log("referrer_code:;", referrer_code)
+      console.log("referrer:;", referrer)
 
-        const res2 = await getCityUsercount({
-            city: userdata.city,
-            gender: userdata.gender
-        }, signal);
+      let onetimefeesrequired = false;
 
-        if (res2.success) {
-          if (res2.userCount <= 500) {
-              onetimefeesrequired = false; 
-          } else {
-              onetimefeesrequired = true;
-          }
+      const res2 = await getCityUsercount({
+        city: userdata.city,
+        gender: userdata.gender
+      }, controller.signal);
+
+      if (res2.success) {
+        if (res2.userCount <= 500) {
+          onetimefeesrequired = false; 
         } else {
-          onetimefeesrequired = false;
+          onetimefeesrequired = true;
         }
+      } else {
+        onetimefeesrequired = false;
+      }
 
-       let email = userdata.email.trim();
-       let password = userdata.password.trim();
+      let email = userdata.email.trim();
+      let password = userdata.password.trim();
 
       const {data, error} = await supabase.auth.signUp({
-          email: email,
-          password: password,
-          options: {
-              data: {
-                  shortid: shortid,
-                  firstname: userdata.firstname.trim(),
-                  lastname: userdata.lastname.trim(),
-                  dateofbirth: dateofbirth,
-                  age: age,
-                  gender: userdata.gender,
-                  educationlevel: userdata.educationlevel,
-                  jobstatus: userdata.jobstatus,
-                  city: userdata.city,
-                  state: userdata.state,
-                  language: userdata.language,
-                  religion: userdata.language,
-                  community: userdata.community,
-                  economicstatus: userdata.economicstatus,
-                  phonenumber: userdata.phonenumber,
-                  email: userdata.email.toLowerCase(),
-                  dateofcreation: dateofcreation,
-                  dateofactivation: dateofcreation, 
-                  dateoflocation: dateofcreation,   
-                  onetimefeesrequired: onetimefeesrequired,
-                  referral_code: referrer_code,
-                  referrer: referrer,
-                  latitude: getcoords(userdata.city).lat,
-                  longitude: getcoords(userdata.city).lng
-              },
-              emailRedirectTo: `${BASE_URL}/login`
-          }
+        email: email,
+        password: password,
+        options: {
+          data: {
+            shortid: shortid,
+            firstname: userdata.firstname.trim(),
+            lastname: userdata.lastname.trim(),
+            dateofbirth: dateofbirth,
+            age: age,
+            gender: userdata.gender,
+            educationlevel: userdata.educationlevel,
+            jobstatus: userdata.jobstatus,
+            city: userdata.city,
+            state: userdata.state,
+            language: userdata.language,
+            religion: userdata.language,
+            community: userdata.community,
+            economicstatus: userdata.economicstatus,
+            phonenumber: userdata.phonenumber,
+            email: userdata.email.toLowerCase(),
+            dateofcreation: dateofcreation,
+            dateofactivation: dateofcreation, 
+            dateoflocation: dateofcreation,   
+            onetimefeesrequired: onetimefeesrequired,
+            referral_code: referrer_code,
+            referrer: referrer,
+            latitude: getcoords(userdata.city).lat,
+            longitude: getcoords(userdata.city).lng
+          },
+          emailRedirectTo: `${BASE_URL}/login`
+        }
       });
 
       console.log("data:", data)
-
-      //data.user.id
-      //data.user.aud = "authenticated"
-      //data.user.role = "authenticated"
-      //data.user.created_at
-      //data.user.updated_at
       console.log("data.session:", data.session)
       console.log("error:", error)
       
       if (error) {
-          console.log("signUp Error: error", error)
-          throw error
+        console.log("signUp Error: error", error)
+        clearTimeout(timeoutId);
+        throw error
       }
 
       if (!error && data) {
-          console.log("not error and data")
-          //
-          // add this email to the user who referred
-          //
-          const res3 = await appendToRefereeEmails({
-              referrer_code: userdata.referrer,
-              emailtoadd: userdata.email.toLowerCase()
-          }, signal);
+        console.log("not error and data")
+        //
+        // add this email to the user who referred
+        //
+        const res3 = await appendToRefereeEmails({
+          referrer_code: userdata.referrer,
+          emailtoadd: userdata.email.toLowerCase()
+        }, controller.signal);
 
-          //if (res3.success) {
-          //  return session;
-          //} else {
-          //    console.log("signUp Error: error", error)
-          //    throw error;
-          //}
+        //if (res3.success) {
+        //  return session;
+        //} else {
+        //    console.log("signUp Error: error", error)
+        //    throw error;
+        //}
       }
+
+      clearTimeout(timeoutId);
 
       if (!isObjEmpty(data?.session)) {
-          return data.session;
+        return data.session;
       } else {
-          if (!isObjEmpty(data)) {
-              return null;
-          }
+        if (!isObjEmpty(data)) {
+            return null;
+        }
       }
     }
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Registration timed out. Please try again.');
+    }
+    throw error;
+  }
 }
 
 export function Register() {
@@ -230,8 +241,7 @@ export function Register() {
 
   const doRegister = useMutation({
     mutationFn: async (variables) => {
-      const controller = new AbortController();
-      return authRegister(variables, controller.signal);
+      return authRegister(variables);
     },
     onSuccess: (resp) => {
       console.log("register onSuccess")

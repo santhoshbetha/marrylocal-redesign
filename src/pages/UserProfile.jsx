@@ -47,7 +47,7 @@ export function UserProfile() {
   const userstate = JSON.parse(localStorage.getItem('userstate'));
   const backbutton = isObjEmpty(userstate) ? true : userstate?.backbutton;
 
-  const { data: userinfo, isLoading } = useGetUserProfile({
+  const { data: userinfo, isLoading, error } = useGetUserProfile({
     shortid: params.shortid,
   });
 
@@ -186,6 +186,28 @@ export function UserProfile() {
 
   if (isLoading) {
     return <ProfileSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex items-center justify-center">
+        <div className="container mx-auto px-4 py-4 max-w-md">
+          <div className="bg-background rounded-2xl shadow-xl border border-border p-8 text-center">
+            <div className="text-6xl mb-4">⏱️</div>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Request Timed Out</h2>
+            <p className="text-muted-foreground mb-6">
+              {error.message || 'The request took too long to complete. Please try again.'}
+            </p>
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

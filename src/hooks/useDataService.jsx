@@ -22,8 +22,21 @@ export function useGetProfileData(userid) {
   return useQuery({
     queryKey: ['profiledata'],
     queryFn: async ({ signal }) => {
-      const response = await getProfileData(userid, signal);
-      return response.data || null;
+      // Create AbortController with 10 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds
+
+      try {
+        const response = await getProfileData(userid, controller.signal);
+        clearTimeout(timeoutId);
+        return response.data || null;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          throw new Error('Request timed out. Please try again.');
+        }
+        throw error;
+      }
     },
   });
 }
@@ -32,8 +45,21 @@ export function useGetUserProfile(dataIn) {
   return useQuery({
     queryKey: ['userprofile', dataIn.shortid],
     queryFn: async ({ signal }) => {
-      const response = await getUserProfile(dataIn.shortid, signal);
-      return response.data || null;
+      // Create AbortController with 10 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds
+
+      try {
+        const response = await getUserProfile(dataIn.shortid, controller.signal);
+        clearTimeout(timeoutId);
+        return response.data || null;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          throw new Error('Request timed out. Please try again.');
+        }
+        throw error;
+      }
     },
   });
 }
@@ -44,12 +70,26 @@ export function useShortlistData(dataIn) {
     queryKey: shortlistDataQueryKey(),
     queryFn: async ({ signal }) => {
       console.log('useShortlistData...2');
-      if (!isObjEmpty(dataIn.userid)) {
-        console.log('useShortlistData...3');
-        const response = await getShortlistData(dataIn.userid, signal);
-        return response.data || null;
-      } else {
-        return null;
+      // Create AbortController with 10 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds
+
+      try {
+        if (!isObjEmpty(dataIn.userid)) {
+          console.log('useShortlistData...3');
+          const response = await getShortlistData(dataIn.userid, controller.signal);
+          clearTimeout(timeoutId);
+          return response.data || null;
+        } else {
+          clearTimeout(timeoutId);
+          return null;
+        }
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          throw new Error('Request timed out. Please try again.');
+        }
+        throw error;
       }
     },
   });

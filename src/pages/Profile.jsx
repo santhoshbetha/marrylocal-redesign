@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mail, Phone, RefreshCw } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Mail, Phone, RefreshCw, Edit3, Check, X } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { Spinner } from '@/components/ui/Spinner';
 import { Editable } from '@/components/Editable';
 import { SearchDataAndRecoveryContext } from '../context/SearchDataAndRecoveryContext';
-import EdiText from 'react-editext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useAuth } from '../context/AuthContext';
 import { updateUserInfo } from '../services/userService';
@@ -37,6 +37,10 @@ export function Profile() {
   const [reload, setReload] = useState(false);
   const [change, setChange] = useState(false);
   const [value, setValue] = useState('');
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [bioValue, setBioValue] = useState(
+    !isObjEmpty(profiledata?.bio) ? profiledata?.bio : ''
+  );
   const isOnline = useOnlineStatus();
 
   useEffect(() => {
@@ -44,6 +48,7 @@ export function Profile() {
       setPhone(isObjEmpty(profiledata?.phonenumber) ? '' : profiledata?.phonenumber);
       setFacebook(isObjEmpty(profiledata?.facebook) ? '' : profiledata?.facebook);
       setInstagram(isObjEmpty(profiledata?.instagram) ? '' : profiledata?.instagram);
+      setBioValue(!isObjEmpty(profiledata?.bio) ? profiledata?.bio : '');
       setReload(false);
     }
   }, [profiledata, reload]);
@@ -112,26 +117,36 @@ export function Profile() {
     }
   }
 
-  const handleSave = async val => {
-    console.log('Edited Value -> ', val);
-    setValue(val);
-    let editdata = {
-      bio: val,
-    };
+  const handleSaveBio = async () => {
+    if (bioValue.trim() === profiledata?.bio?.trim()) {
+      setIsEditingBio(false);
+      return;
+    }
+
+    setEditing(true);
     if (isOnline) {
       if (userSession) {
-        // add bio data to database
-        if (String(val) !== String(profiledata?.bio)) {
-          await addbiodata(editdata);
-          setEditing(false);
+        const res = await updateUserInfo(user?.id, { bio: bioValue.trim() });
+        if (res.success) {
+          setProfiledata({ ...profiledata, bio: bioValue.trim() });
+          setIsEditingBio(false);
+        } else {
+          alert('Edit Biodata Error.. try again later');
         }
+        setEditing(false);
       } else {
+        setEditing(false);
         alert('Error, logout and login again');
       }
     } else {
+      setEditing(false);
       alert('You are offline. check your internet connection.');
-      return;
     }
+  };
+
+  const handleCancelBio = () => {
+    setBioValue(!isObjEmpty(profiledata?.bio) ? profiledata?.bio : '');
+    setIsEditingBio(false);
   };
 
   const addDefaultImg = ev => {
@@ -286,37 +301,61 @@ export function Profile() {
                     </div>
                   </div>
                   <div className="py-6 mx-3 border-t border-border">
-                    <EdiText
-                      value={
-                        !isObjEmpty(profiledata?.bio)
-                          ? profiledata?.bio
-                          : 'Write about you here (optional)'
-                      }
-                      type="textarea"
-                      onSave={handleSave}
-                      editButtonProps={{
-                        style: {
-                          color: 'blue',
-                          backgroundColor: 'yellow',
-                        },
-                      }}
-                      inputProps={{
-                        style: {
-                          outline: 'none',
-                          minWidth: 'auto',
-                        },
-                        rows: 5,
-                      }}
-                    />
-                    {change == true ? (
-                      <div className="flex py-4 px-4">
-                        <Button className="ms-auto" type="submit" variant="secondary">
-                          SAVE
-                        </Button>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-gray-700">About Me</label>
+                        {!isEditingBio && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsEditingBio(true)}
+                            className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
-                    ) : (
-                      <></>
-                    )}
+
+                      {isEditingBio ? (
+                        <div className="space-y-3">
+                          <Textarea
+                            value={bioValue}
+                            onChange={(e) => setBioValue(e.target.value)}
+                            placeholder="Write about yourself here (optional)"
+                            rows={5}
+                            className="resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleCancelBio}
+                              className="h-8"
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Cancel
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={handleSaveBio}
+                              disabled={editing}
+                              className="h-8 bg-blue-600 hover:bg-blue-700"
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              Save
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="min-h-[120px] p-3 bg-gray-50 rounded-md border border-gray-200">
+                          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                            {!isObjEmpty(bioValue)
+                              ? bioValue
+                              : 'Write about yourself here (optional)'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </form>

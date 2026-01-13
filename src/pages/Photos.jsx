@@ -139,39 +139,39 @@ export function Photos() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-8">
         <Card className="w-full shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="text-center pb-2">
-            <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
-                <Camera className="h-8 w-8 text-white" />
+          <CardHeader className="text-center py-4">
+            <div className="flex items-center justify-center mb-2">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
+                <Camera className="h-6 w-6 text-white" />
               </div>
             </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Your Photo Gallery
             </CardTitle>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 text-sm mt-1">
               Upload up to 10 photos to showcase your personality and lifestyle
             </p>
           </CardHeader>
 
-          <CardContent className="pt-8">
+          <CardContent className="pt-4">
             {/* Photo Stats */}
-            <div className="flex justify-center mb-8">
-              <div className="flex items-center space-x-4 bg-white rounded-lg px-6 py-3 shadow-md border border-gray-100">
+            <div className="flex justify-center mb-6">
+              <div className="flex items-center space-x-4 bg-white rounded-lg px-4 py-2 shadow-md border border-gray-100">
                 <div className="flex items-center space-x-2">
-                  <ImageIcon className="h-5 w-5 text-blue-500" />
+                  <ImageIcon className="h-4 w-4 text-blue-500" />
                   <span className="text-sm font-medium text-gray-700">
                     {images.filter(img => img !== null).length} of 10 photos uploaded
                   </span>
                 </div>
-                <div className="w-px h-6 bg-gray-300"></div>
-                <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
+                <div className="w-px h-4 bg-gray-300"></div>
+                <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
                   {visibleSlots} slots shown
                 </Badge>
               </div>
             </div>
 
             {/* Photo Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-6">
               {images.slice(0, getDisplayedSlots()).map((image, index) => (
                 <div key={index} className="relative group">
                   {/* Photo Number Badge */}
