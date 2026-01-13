@@ -120,7 +120,7 @@ export function Contact() {
                     Developer Support
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    For developers interested in contributing to the project
+                    For developers interested in contributing to this project
                   </p>
                   <div className="text-left">
                     <p className="font-medium text-gray-900">Email:</p>

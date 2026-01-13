@@ -1,5 +1,6 @@
 import { Card } from '@/components/ui/card';
-import { Heart } from 'lucide-react';
+import { Heart, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import dayjs from 'dayjs';
 
 function isObjEmpty(val) {
@@ -16,8 +17,13 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
     <Card
       key={profile?.id}
       onClick={() => setSelectedUser(profile)}
-      className={`overflow-hidden shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] border-2 cursor-pointer py-0 rounded-none`}
+      className={`overflow-hidden shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] border-2 cursor-pointer py-0 rounded-none relative`}
     >
+      {shortlisted && (
+        <div className="absolute top-4 right-4 z-10">
+          <Heart className="text-red-600 w-6 h-6" fill="red" />
+        </div>
+      )}
       <div className="p-6">
         <div className="flex gap-4 mb-4">
           {/* Profile Image */}
@@ -41,11 +47,31 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
 
           {/* Profile Info */}
           <div className="flex-1 min-w-0 space-y-2">
-            <div className="flex flex-row justify-between">
-              <div className="font-bold text-lg text-foreground mb-2">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="font-bold text-lg text-foreground">
                 {profile?.firstname}, {profile?.age}
               </div>
-              {shortlisted && <Heart className="text-red-600" fill="red" />}
+              <TooltipProvider>
+                {profile?.aadharverified ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <CheckCircle className="h-4 w-4 text-green-600 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Verified</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <AlertTriangle className="h-4 w-4 text-yellow-600 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Not Verified</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </TooltipProvider>
             </div>
 
             <p className="text-sm text-muted-foreground mb-1">{profile?.educationlevel}</p>

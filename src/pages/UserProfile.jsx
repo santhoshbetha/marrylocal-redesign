@@ -11,9 +11,12 @@ import {
   ChevronRight,
   ExternalLink,
   Heart,
+  CheckCircle,
+  AlertTriangle,
 } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAddToShortlist, useGetUserProfile } from '../hooks/useDataService';
@@ -44,12 +47,12 @@ export function UserProfile() {
   const userstate = JSON.parse(localStorage.getItem('userstate'));
   const backbutton = isObjEmpty(userstate) ? true : userstate?.backbutton;
 
-  const { data: userinfo } = useGetUserProfile({
+  const { data: userinfo, isLoading } = useGetUserProfile({
     shortid: params.shortid,
   });
 
   const images = user?.images || [
-    user.image || '/professional-portrait-in-urban-setting.jpg',
+    user?.image || '/professional-portrait-in-urban-setting.jpg',
     '/professional-woman-smiling.png',
     '/young-woman-portrait.png',
     '/professional-headshot-of-a-young-man-with-brown-ha.jpg',
@@ -114,16 +117,111 @@ export function UserProfile() {
     }
   };
 
+  const openInNewTab = () => {
+    const url = `/userprofile/${user?.shortid}`;
+    window.open(url, '_blank');
+  };
+
+  const ProfileSkeleton = () => (
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+      {/* Profile Content */}
+      <div className="container mx-auto px-4 py-4 max-w-4xl dark:border-3 mt-2">
+        <div className="bg-background rounded-2xl shadow-xl border border-border overflow-hidden">
+          {/* Profile Header Skeleton */}
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 px-6 py-8 border-b border-border flex items-start justify-between shadow-sm">
+            <div className="space-y-3">
+              <Skeleton className="h-10 w-64 bg-gray-200" />
+              <div className="flex gap-2">
+                <Skeleton className="h-6 w-16 bg-gray-200" />
+                <Skeleton className="h-6 w-20 bg-gray-200" />
+                <Skeleton className="h-6 w-24 bg-gray-200" />
+              </div>
+            </div>
+            <Skeleton className="h-10 w-10 rounded-full bg-gray-200" />
+          </div>
+
+          {/* Image Carousel Skeleton */}
+          <div className="px-6 py-4">
+            <Skeleton className="w-full aspect-video rounded-2xl bg-gray-200" />
+          </div>
+
+          {/* Profile Details Skeleton */}
+          <div className="py-6 px-6 space-y-6">
+            <div className="pb-4">
+              <div className="mx-2 mt-2 p-6 rounded-3 bg-yellow-100 dark:bg-background border-3 rounded-lg border-[#FFD700] shadow-lg">
+                <div className="py-2">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="space-y-4">
+                      <Skeleton className="h-8 w-48 bg-gray-100" />
+                      <div className="flex gap-2">
+                        <Skeleton className="h-6 w-20 bg-gray-100" />
+                        <Skeleton className="h-6 w-24 bg-gray-100" />
+                        <Skeleton className="h-6 w-28 bg-gray-100" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-12 w-48 rounded-lg bg-gray-100" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mx-4 my-4">
+                    <div className="space-y-4">
+                      <Skeleton className="h-20 w-full rounded-lg bg-gray-100" />
+                      <Skeleton className="h-20 w-full rounded-lg bg-gray-100" />
+                      <Skeleton className="h-20 w-full rounded-lg bg-gray-100" />
+                    </div>
+                    <div className="space-y-4">
+                      <Skeleton className="h-20 w-full rounded-lg bg-gray-100" />
+                      <Skeleton className="h-20 w-full rounded-lg bg-gray-100" />
+                      <Skeleton className="h-20 w-full rounded-lg bg-gray-100" />
+                      <Skeleton className="h-20 w-full rounded-lg bg-gray-100" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isLoading) {
+    return <ProfileSkeleton />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
       {/* Profile Content */}
       <div className="container mx-auto px-4 py-4 max-w-4xl dark:border-3 mt-2">
         <div className="bg-background rounded-2xl shadow-xl border border-border overflow-hidden">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 px-6 py-6 border-b border-border flex items-start justify-between">
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 px-6 py-8 border-b border-border flex items-start justify-between shadow-sm">
             <div>
-              <div className="text-3xl font-bold text-foreground">
-                {user?.firstname} <span className="text-lg">({user?.city})</span>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="text-4xl font-bold text-foreground bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                  {user?.firstname} <span className="text-2xl text-muted-foreground">({user?.city})</span>
+                </div>
+                {user?.aadharverified ? (
+                  <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-2 rounded-full text-sm font-medium shadow-sm border border-green-200">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Verified</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 bg-yellow-100 text-yellow-800 px-3 py-2 rounded-full text-sm font-medium shadow-sm border border-yellow-200">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>Not Verified</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-4 text-muted-foreground">
+                <span className="text-lg">Age: {user?.age}</span>
+                <span className="text-lg">•</span>
+                <span className="text-lg">{user?.language}</span>
+                {user?.showcommunity == true && user?.community && user?.community != 'Do not wish to mention' && (
+                  <>
+                    <span className="text-lg">•</span>
+                    <span className="text-lg">{user?.community}</span>
+                  </>
+                )}
               </div>
             </div>
             {backbutton ? (
@@ -150,20 +248,20 @@ export function UserProfile() {
 
           {/* Image Carousel */}
           {!isObjEmpty(user?.images) && (
-            <div className="px-6 py-2">
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-lg group">
+            <div className="px-6 py-4">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-2xl group border border-border/50">
                 <div className="relative w-full h-full">
                   {images?.map((image, index) => (
                     <div
                       key={index}
-                      className={`absolute inset-0 transition-opacity duration-500 ${
-                        index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                      className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                        index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
                       }`}
                     >
                       <img
-                        src={`${CDNURL}/${user.shortid}/${image}}`}
+                        src={`${CDNURL}/${user?.shortid}/${image}}`}
                         alt={`${user?.firstname} - Photo ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                       />
                     </div>
                   ))}
@@ -173,55 +271,66 @@ export function UserProfile() {
                   <>
                     <button
                       onClick={prevImage}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/30 hover:bg-black/50 text-white rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110 shadow-lg"
                     >
-                      <ChevronLeft className="w-5 h-5" />
+                      <ChevronLeft className="w-6 h-6" />
                     </button>
                     <button
                       onClick={nextImage}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/30 hover:bg-black/50 text-white rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110 shadow-lg"
                     >
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-6 h-6" />
                     </button>
+
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
+                      {images.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => goToImage(index)}
+                          className={`w-3 h-3 rounded-full transition-all duration-300 shadow-lg ${
+                            index === currentImageIndex
+                              ? 'bg-white w-8 shadow-white/50'
+                              : 'bg-white/50 hover:bg-white/75 hover:scale-110'
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    <div className="absolute top-6 right-6 px-4 py-2 bg-black/40 backdrop-blur-sm text-white text-sm rounded-full font-medium border border-white/20">
+                      {currentImageIndex + 1} / {images.length}
+                    </div>
                   </>
-                )}
-
-                {images?.length > 1 && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    {images.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => goToImage(index)}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                          index === currentImageIndex
-                            ? 'bg-white w-6'
-                            : 'bg-white/50 hover:bg-white/75'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {images?.length > 1 && (
-                  <div className="absolute top-4 right-4 px-3 py-1 bg-black/50 text-white text-sm rounded-full">
-                    {currentImageIndex + 1} / {images.length}
-                  </div>
                 )}
               </div>
             </div>
           )}
 
           {/* Profile Details */}
-          <div className="py-2 px-4 space-y-4">
+          <div className="py-6 px-6 space-y-6">
             {/* Contact Information */}
             {!isObjEmpty(user) && user?.userstate == 'active' && (
               <div className="pb-4">
-                <div className="mx-2 mt-2 p-6 rounded-3 bg-yellow-100 dark:bg-background border-3 rounded-lg border-[#FFD700]">
+                <div className="mx-2 mt-2 p-6 rounded-3 bg-yellow-100 dark:bg-background border-3 rounded-lg border-[#FFD700] shadow-lg">
                   <div className="py-2">
-                    <div className="flex justify-between">
-                      <div className="pb-3 flex flex-col md:flex-row">
-                        <div className="font-bold text-blue-400 ms-2 capitalize inline-block text-2xl">
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="pb-3 flex flex-col md:flex-row items-start md:items-center gap-4">
+                        <div className="font-bold text-blue-600 ms-2 capitalize inline-block text-3xl">
                           {user?.firstname}, {user?.age}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                            {user?.language}
+                          </span>
+                          {user?.showcommunity == true && user?.community && user?.community != 'Do not wish to mention' && (
+                            <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                              {user?.community}
+                            </span>
+                          )}
+                          {user?.religion && (
+                            <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                              {user?.religion}
+                            </span>
+                          )}
                         </div>
                       </div>
                       {backbutton == false ? (
@@ -230,23 +339,21 @@ export function UserProfile() {
                           <>
                             <div className="me-5 pb-2">
                               {shortlistarray?.includes(user?.shortid) ? (
-                                <Button variant="ghost" className="rounded-none" disabled>
-                                  <span className="hidden sm:block">ADDED TO SHORTLIST</span>
-                                  <Heart className="" />
+                                <Button variant="ghost" className="rounded-lg border-2 border-gray-300" disabled>
+                                  <Heart className="mr-2 text-red-500" fill="red" />
+                                  <span className="hidden sm:block font-medium">ADDED TO SHORTLIST</span>
                                 </Button>
                               ) : (
                                 <Button
                                   variant={`${buttonvariant}`}
-                                  className="bg-red-600 text-white font-bold rounded-none"
+                                  className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                                   onClick={async e => {
-                                    //setShortListtext("ADDED TO SHORTLIST")
-                                    //localStorage.setItem("reloadshortlistdata", true);
                                     secureLocalStorage.setItem('reloadshortlistdata', true);
                                     shortlistClick(e);
                                   }}
                                 >
+                                  <Heart className="mr-2" />
                                   <span className="hidden sm:block">{shortlisttext}</span>
-                                  <Heart className="" />
                                 </Button>
                               )}
                             </div>
@@ -258,118 +365,102 @@ export function UserProfile() {
                         <></>
                       )}
                     </div>
+                  </div>
 
-                    <div className="flex flex-col md:flex-row justify-between space-y-8 mx-4 my-4">
-                      <div className="flex flex-col space-y-1">
-                        <div>{user?.language}</div>
-                        <div>
-                          {user?.showcommunity == true ? (
-                            <>
-                              {user?.community ? (
-                                <>
-                                  {user?.community != 'Do not wish to mention' ? (
-                                    <>{user?.community}</>
-                                  ) : (
-                                    <></>
-                                  )}
-                                </>
-                              ) : (
-                                <></>
-                              )}
-                            </>
-                          ) : (
-                            <></>
-                          )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mx-4 my-4">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg border border-yellow-200">
+                          <div className="p-2 bg-green-100 rounded-lg">
+                            <span className="text-green-700 font-bold text-lg">💼</span>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600 font-medium">Economic Status</div>
+                            <div className="text-green-700 font-semibold">{user?.economicstatus}</div>
+                          </div>
                         </div>
-                        <div>{user?.religion}</div>
-                        <div className="text-green-700">{user?.economicstatus}</div>
-                        <div>
-                          <span className="font-bold">Education: </span>
-                          {user?.educationlevel}
+
+                        <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg border border-yellow-200">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <span className="text-blue-700 font-bold text-lg">🎓</span>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600 font-medium">Education</div>
+                            <div className="font-semibold">{user?.educationlevel}</div>
+                          </div>
                         </div>
-                        <div>
-                          <span className="font-bold">Work: </span>
-                          {user?.jobstatus ? 'True' : 'false'}
+
+                        <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg border border-yellow-200">
+                          <div className="p-2 bg-purple-100 rounded-lg">
+                            <span className="text-purple-700 font-bold text-lg">💼</span>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600 font-medium">Work Status</div>
+                            <div className="font-semibold">{user?.jobstatus ? 'Employed' : 'Not Employed'}</div>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="">
-                        {/* Phone */}
-                        <div className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors group">
+                      <div className="space-y-4">
+                        {/* Location */}
+                        <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg border border-yellow-200 hover:bg-white/70 transition-colors">
                           <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
                             <MapPin className="w-5 h-5 text-primary" />
                           </div>
-                          <span className="text-lg font-medium">{user.city}</span>
-                        </div>
-                        {/* Phone */}
-                        <div>
-                          {user?.showphone ? (
-                            <>
-                              <div className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors group">
-                                <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                                  <Phone className="w-5 h-5 text-primary" />
-                                </div>
-                                <span className="text-sm font-medium">{user.phonenumber}</span>
-                              </div>
-                            </>
-                          ) : (
-                            <></>
-                          )}
+                          <div>
+                            <div className="text-sm text-gray-600 font-medium">Location</div>
+                            <div className="text-lg font-semibold text-primary">{user?.city}</div>
+                          </div>
                         </div>
 
-                        {/* Email */}
-                        <div className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors group">
-                          <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                            <Mail className="w-5 h-5 text-primary" />
+                        {/* Phone */}
+                        {user?.showphone && (
+                          <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg border border-yellow-200 hover:bg-white/70 transition-colors">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                              <Phone className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div>
+                              <div className="text-sm text-gray-600 font-medium">Phone</div>
+                              <div className="text-lg font-semibold text-green-700">{user?.phonenumber}</div>
+                            </div>
                           </div>
-                          <span className="text-sm font-medium break-all">{user.email}</span>
+                        )}
+
+                        {/* Email */}
+                        <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg border border-yellow-200 hover:bg-white/70 transition-colors">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <Mail className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600 font-medium">Email</div>
+                            <div className="text-sm font-semibold text-blue-700 break-all">{user?.email}</div>
+                          </div>
                         </div>
 
                         {/* Facebook */}
-                        <div>
-                          {user?.showfacebook == true ? (
-                            <>
-                              {user?.facebook ? (
-                                <div className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors group">
-                                  <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
-                                    <FaFacebook className="w-5 h-5 text-blue-500" />
-                                  </div>
-                                  <span className="text-sm font-medium">{user.facebook}</span>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                            </>
-                          ) : (
-                            <></>
-                          )}
-                        </div>
+                        {user?.showfacebook == true && user?.facebook && (
+                          <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg border border-yellow-200 hover:bg-white/70 transition-colors">
+                            <div className="p-2 bg-blue-500/10 rounded-lg">
+                              <FaFacebook className="w-5 h-5 text-blue-500" />
+                            </div>
+                            <div>
+                              <div className="text-sm text-gray-600 font-medium">Facebook</div>
+                              <div className="text-sm font-semibold text-blue-600 break-all">{user?.facebook}</div>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Instagram */}
-                        <div>
-                          {user?.showinstagram == true ? (
-                            <>
-                              {user?.instagram ? (
-                                <div className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors group">
-                                  <div className="p-2 bg-pink-500/10 rounded-lg group-hover:bg-pink-500/20 transition-colors">
-                                    <FaInstagram className="w-5 h-5 text-pink-500" />
-                                  </div>
-                                  <span className="text-sm font-medium">{user.instagram}</span>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                            </>
-                          ) : (
-                            <></>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bio */}
-                    <div className="pt-4 border-t border-border">
-                      <p className="text-sm text-muted-foreground leading-relaxed">{user.bio}</p>
+                        {user?.showinstagram == true && user?.instagram && (
+                          <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg border border-yellow-200 hover:bg-white/70 transition-colors">
+                            <div className="p-2 bg-pink-100 rounded-lg">
+                              <FaInstagram className="w-5 h-5 text-pink-500" />
+                            </div>
+                            <div>
+                              <div className="text-sm text-gray-600 font-medium">Instagram</div>
+                              <div className="text-sm font-semibold text-pink-600 break-all">{user?.instagram}</div>
+                            </div>
+                          </div>
+                        )}
                     </div>
                   </div>
                 </div>

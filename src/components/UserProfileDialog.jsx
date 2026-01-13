@@ -8,6 +8,8 @@ import {
   ChevronRight,
   ExternalLink,
   Heart,
+  CheckCircle,
+  AlertTriangle,
 } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { useState } from 'react';
@@ -114,9 +116,22 @@ export function UserProfileDialog({ user, onClose }) {
       <div className="relative w-full max-w-2xl bg-background dark:border-3 rounded-2xl shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-          <h2 className="text-2xl font-bold text-foreground">
-            {user.firstname} ({user.city})
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-foreground">
+              {user.firstname} ({user.city})
+            </h2>
+            {user?.aadharverified ? (
+              <div className="flex items-center gap-1 bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                <CheckCircle className="h-4 w-4" />
+                <span>Verified</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
+                <AlertTriangle className="h-4 w-4" />
+                <span>Not Verified</span>
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <button className="p-2 hover:bg-destructive/10 rounded-full transition-colors group">
               <Flag

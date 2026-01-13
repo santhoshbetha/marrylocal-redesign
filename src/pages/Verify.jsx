@@ -6,13 +6,14 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import QrScanner from 'qr-scanner';
 import axios from 'axios';
 import { convertXML } from 'simple-xml-to-json';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { updateUserInfo } from '../services/userService';
 import { useAuth } from '../context/AuthContext';
-import { RotateCw } from 'lucide-react';
+import { RotateCw, CreditCard, Car, Plane } from 'lucide-react';
 import { toast } from 'sonner';
 
 const OCR_API_URL = import.meta.env.VITE_OCR_API_URL || import.meta.env.VITE_API_URL || '';
@@ -481,23 +482,41 @@ export function Verify() {
           {aadharAdding && (
             <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
           )}
-          {profiledata?.aadharverified == true && (
-            <div className="p-4">
-              <span className="inline-block border border-accent-500 px-4 py-4 text-md font-semibold rounded-lg bg-yellow-200">
-                You are verified, nothing to do here.
-              </span>
-            </div>
-          )}
-          {profiledata?.aadharverified == false && (
-            <div className={`${opacityclass} w-[80%]`}>
-              <div className="underline underline-offset-2 text-2xl pb-2">
-                Upload your Aadhar front picture &nbsp;
-              </div>
-              <div className="text-red-600 text-lg pb-4">
-                (QR code should be visibly clear on your aadhar picture)
-              </div>
-              <div className="">
-                <form className="mt-4" onSubmit={verifyNumber}>
+
+          <Tabs defaultValue="aadhaar" className="w-full max-w-4xl">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="aadhaar" className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Aadhaar Card
+              </TabsTrigger>
+              <TabsTrigger value="driver-license" className="flex items-center gap-2">
+                <Car className="h-4 w-4" />
+                Driver License
+              </TabsTrigger>
+              <TabsTrigger value="passport" className="flex items-center gap-2">
+                <Plane className="h-4 w-4" />
+                Passport
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="aadhaar" className="space-y-6">
+              {profiledata?.aadharverified == true && (
+                <div className="p-4">
+                  <span className="inline-block border border-accent-500 px-4 py-4 text-md font-semibold rounded-lg bg-yellow-200">
+                    You are verified, nothing to do here.
+                  </span>
+                </div>
+              )}
+              {profiledata?.aadharverified == false && (
+                <div className={`${opacityclass} w-[80%]`}>
+                  <div className="underline underline-offset-2 text-2xl pb-2">
+                    Upload your Aadhar front picture &nbsp;
+                  </div>
+                  <div className="text-red-600 text-lg pb-4">
+                    (QR code should be visibly clear on your aadhar picture)
+                  </div>
+                  <div className="">
+                    <form className="mt-4" onSubmit={verifyNumber}>
                   <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                     <div className={`${numclass} space-y-2 md:w-[400px]`}>
                       <Label>Enter Aadhar Number&nbsp;:</Label>
@@ -611,6 +630,176 @@ export function Verify() {
               </div>
             </div>
           )}
+            </TabsContent>
+
+            <TabsContent value="driver-license" className="space-y-6">
+              <div className="text-center space-y-4">
+                <div className="flex items-center justify-center mb-4">
+                  <Car className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-2xl font-semibold">Driver License Verification</h3>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Verify your identity using your Driver License. This helps us ensure the security and authenticity of your account.
+                </p>
+              </div>
+
+              <Card className="max-w-2xl mx-auto">
+                <CardHeader>
+                  <CardTitle className="text-lg">Submit Driver License Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="dl-number">License Number</Label>
+                      <Input
+                        id="dl-number"
+                        placeholder="Enter license number"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="dl-state">State</Label>
+                      <Input
+                        id="dl-state"
+                        placeholder="Issuing state"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="dl-dob">Date of Birth</Label>
+                      <Input
+                        id="dl-dob"
+                        type="date"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="dl-expiry">Expiry Date</Label>
+                      <Input
+                        id="dl-expiry"
+                        type="date"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Upload Driver License (Front)</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Upload Driver License (Back)</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <Button className="w-full mt-6" disabled>
+                    Submit for Verification
+                    <span className="ml-2 text-xs">(Coming Soon)</span>
+                  </Button>
+
+                  <p className="text-sm text-gray-500 text-center mt-4">
+                    Driver License verification will be available soon. Please use Aadhaar verification for now.
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="passport" className="space-y-6">
+              <div className="text-center space-y-4">
+                <div className="flex items-center justify-center mb-4">
+                  <Plane className="h-12 w-12 text-green-500" />
+                </div>
+                <h3 className="text-2xl font-semibold">Passport Verification</h3>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Verify your identity using your Passport. This provides the highest level of identity verification.
+                </p>
+              </div>
+
+              <Card className="max-w-2xl mx-auto">
+                <CardHeader>
+                  <CardTitle className="text-lg">Submit Passport Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="passport-number">Passport Number</Label>
+                      <Input
+                        id="passport-number"
+                        placeholder="Enter passport number"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="passport-country">Issuing Country</Label>
+                      <Input
+                        id="passport-country"
+                        placeholder="Country of issue"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="passport-dob">Date of Birth</Label>
+                      <Input
+                        id="passport-dob"
+                        type="date"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="passport-expiry">Expiry Date</Label>
+                      <Input
+                        id="passport-expiry"
+                        type="date"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Upload Passport Photo Page</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Upload Passport Address Page (Optional)</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <Button className="w-full mt-6" disabled>
+                    Submit for Verification
+                    <span className="ml-2 text-xs">(Coming Soon)</span>
+                  </Button>
+
+                  <p className="text-sm text-gray-500 text-center mt-4">
+                    Passport verification will be available soon. Please use Aadhaar verification for now.
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>
