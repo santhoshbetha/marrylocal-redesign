@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Mail, Phone, RefreshCw, Edit3, Check, X } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/components/ui/spinner';
 import { Editable } from '@/components/Editable';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useAuth } from '../context/AuthContext';
