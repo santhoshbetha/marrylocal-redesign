@@ -76,6 +76,13 @@ export function UserProfile() {
     setCurrentImageIndex(index);
   };
 
+  const reportUser = () => {
+    const subject = encodeURIComponent('Report User');
+    const body = encodeURIComponent(`Reporting user ID: ${user?.shortid || user?.id}\n\nPlease provide details about the issue:`);
+    const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = mailtoLink;
+  };
+
   const shortlistClick = async e => {
     e.preventDefault();
 
@@ -259,7 +266,12 @@ export function UserProfile() {
                 Back
               </Button>
             ) : (
-              <button className="p-2 hover:bg-destructive/10 rounded-full transition-colors group">
+              <button 
+                onClick={reportUser}
+                className="p-2 hover:bg-destructive/10 rounded-full transition-colors group"
+                aria-label="Report user"
+                title="Report this user"
+              >
                 <Flag
                   fill="red"
                   className="w-8 h-8 text-destructive group-hover:scale-110 transition-transform"

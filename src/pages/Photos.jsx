@@ -42,13 +42,23 @@ export function Photos() {
   useEffect(() => {
     const loadImages = async () => {
       if (!isObjEmpty(profiledata?.images)) {
+        console.log('Loading images...profiledata?.images::', profiledata?.images);
         const newImages = Array(10).fill(null);
+        let maxIndexWithImage = 2; // Start with minimum 3 slots (index 0, 1, 2)
+
         profiledata.images.forEach((imageName, index) => {
           if (imageName && index < 10) {
             newImages[index] = { uri: `${CDNURL}/${shortid}/${imageName}` };
+            maxIndexWithImage = Math.max(maxIndexWithImage, index);
           }
         });
+
         setImages(newImages);
+
+        // Ensure visibleSlots shows at least the slots that have images, minimum 3
+        const requiredSlots = Math.max(3, maxIndexWithImage + 1);
+        setVisibleSlots(requiredSlots);
+
         setReload(false);
       }
     };
@@ -171,9 +181,9 @@ export function Photos() {
             </div>
 
             {/* Photo Grid */}
-            <div className="flex flex-wrap justify-center gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-6 place-items-center">
               {images.slice(0, getDisplayedSlots()).map((image, index) => (
-                <div key={index} className="relative group w-48">
+                <div key={index} className="relative group w-full max-w-48">
                   {/* Photo Number Badge */}
                   <div className="absolute -top-2 -left-2 z-10">
                     <Badge
@@ -189,33 +199,34 @@ export function Photos() {
                   </div>
 
                   {/* Image Container */}
-                  <div className="aspect-square rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-gray-100 hover:border-blue-300">
+                  <div className="aspect-square rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-gray-100 hover:border-blue-300 w-full">
                     {image ? (
-                      <ImageLoader
-                        imgSrc={image}
-                        onImageRemove={() => handleImageRemove(index)}
-                        className="w-full h-full"
-                      />
+                      <div className="w-full h-full relative">
+                        <img
+                          src={image.uri}
+                          alt={`Photo ${index + 1}`}
+                          className="w-full h-full object-cover rounded-xl"
+                        />
+                        <Button
+                          onClick={() => handleImageRemove(index)}
+                          className="absolute top-2 right-2 h-8 w-8 p-0 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          variant="destructive"
+                          size="sm"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-blue-50 group-hover:to-purple-50 transition-all duration-300">
+                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-blue-50 group-hover:to-purple-50 transition-all duration-300 rounded-xl overflow-hidden">
                         <ImageUploader
                           onImageCropped={(blob) => handleImageCropped(blob, index)}
                           setReload={setReload}
+                          minimal={true}
                           className="w-full h-full"
                         />
                       </div>
                     )}
                   </div>
-
-                  {/* Upload Hint */}
-                  {!image && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <Upload className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-blue-600">Click to upload</p>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Remove Empty Slot Button */}
                   {!image && visibleSlots > 3 && (

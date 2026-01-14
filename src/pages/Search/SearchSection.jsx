@@ -90,6 +90,7 @@ export function SearchSection({
   const [selectcity, setSelectcity] = useState(primarycity);
   const [cityusercount, SetCityusercount] = useState(999999);
   const [cityNum, setCityNum] = useState(1);
+  const [conditionsLoaded, setConditionsLoaded] = useState(false);
 
   const getMin = () => {
     return formik.values.agefrom;
@@ -184,6 +185,21 @@ export function SearchSection({
   }, [querydata]);
 
   useEffect(() => {
+    // Check if all condition variables are loaded (not undefined)
+    if (
+      verified !== undefined &&
+      active !== undefined &&
+      locationset !== undefined &&
+      onetimepaymentrequired !== undefined
+    ) {
+      setConditionsLoaded(true);
+    }
+  }, [verified, active, locationset, onetimepaymentrequired]);
+
+  useEffect(() => {
+    // Only set error messages after condition variables are fully loaded
+    if (!conditionsLoaded) return;
+
     if (onetimepaymentrequired) {
       if (verified) {
         setOpacity('opacity-50');
@@ -206,7 +222,7 @@ export function SearchSection({
       setOpacity('');
       setError('');
     }
-  }, [verified, locationset, onetimepaymentrequired, active]);
+  }, [verified, locationset, onetimepaymentrequired, active, conditionsLoaded]);
 
   useEffect(() => {
     secureLocalStorage.setItem('searchdata', JSON.stringify(searchData));

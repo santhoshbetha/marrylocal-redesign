@@ -7,11 +7,16 @@ import { useAuth } from './context/AuthContext';
 import { Toaster } from 'sonner';
 import { SearchDataAndRecoveryContextProvider } from './context/SearchDataAndRecoveryContext';
 import { AuthVerify } from './commons/AuthVerify';
+import { Suspense, lazy } from 'react';
 
 function App() {
   const [openLogin, setOpenLogin] = useState(false);
-  const { user } = useAuth();
+  const { user, profiledata } = useAuth();
   const [theme, _setTheme] = useState('light');
+  const [shouldLoadTermsPopup, setShouldLoadTermsPopup] = useState(false);
+
+  // Lazy load TermsPopup only when needed
+  const TermsPopup = lazy(() => import('./pages/TermsPopup'));
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -30,6 +35,15 @@ function App() {
     root.classList.add(theme);
   }, [theme]);
 
+  // Check if TermsPopup should be loaded
+  useEffect(() => {
+    if (user && profiledata && profiledata.termsaccepted === false) {
+      setShouldLoadTermsPopup(true);
+    } else {
+      setShouldLoadTermsPopup(false);
+    }
+  }, [user, profiledata]);
+
   return (
     <div className="App">
       <Toaster richColors />
@@ -41,6 +55,11 @@ function App() {
         </Layout>
       </SearchDataAndRecoveryContextProvider>
       <AuthVerify />
+      {shouldLoadTermsPopup && (
+        <Suspense fallback={null}>
+          <TermsPopup />
+        </Suspense>
+      )}
     </div>
   );
 }

@@ -22,6 +22,7 @@ export function ImageUploader({
   onImageCropped,
   onImageRemove,
   setReload,
+  minimal = false, // New prop for minimal mode
 }) {
   const [image, setImage] = useState(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -153,106 +154,128 @@ export function ImageUploader({
 
   return (
     <div className={cn('w-full', className)}>
-      <Card className="w-full relative">
-        {removing && (
-          <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10 text-red-800" />
-        )}
-        {loading && (
-          <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10 text-green-700" />
-        )}
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex gap-2">
-              {previewImage && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button size="icon" variant="outline" onClick={clearImage}>
-                        <Trash2 size={16} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Clear image</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!previewImage ? (
-            <div
-              className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-muted/20 transition-colors"
-              onDragOver={handleDragOver}
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => inputRef.current?.click()}
-            >
-              <input
-                ref={inputRef}
-                type="file"
-                className="hidden"
-                accept={acceptedFileTypes.join(',')}
-                onChange={e => handleFileSelect(e.target.files ? e.target.files[0] : null)}
-              />
-              <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">
-                Drag and drop an image here or click to browse
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {`Accepted formats: ${acceptedFileTypes.map(type => type.replace('image/', '.')).join(', ')}`}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {`Max size: ${maxSize / (1024 * 1024)}MB`}
-              </p>
-              {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
-            </div>
-          ) : (
-            <div className="relative rounded-lg overflow-hidden">
-              <img
-                src={previewImage}
-                alt="Cropped preview"
-                className="w-full h-auto rounded-lg object-cover aspect-ratio-1/1"
-                style={{ aspectRatio: aspectRatio }}
-              />
-              <Button
-                className="absolute bottom-4 right-4"
-                onClick={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsCropDialogOpen(true);
-                }}
-              >
-                Edit
-              </Button>
-            </div>
+      {minimal ? (
+        // Minimal version for photo grid slots
+        <div 
+          className="w-full h-full flex flex-col items-center justify-center cursor-pointer relative"
+          onClick={() => inputRef.current?.click()}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            className="hidden"
+            accept={acceptedFileTypes.join(',')}
+            onChange={e => handleFileSelect(e.target.files ? e.target.files[0] : null)}
+          />
+          <Upload className="h-8 w-8 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" />
+          <p className="text-xs text-gray-500 group-hover:text-blue-600 transition-colors duration-300 mt-2 text-center px-2">
+            Click to upload
+          </p>
+          {error && <p className="mt-1 text-xs text-red-500 text-center">{error}</p>}
+        </div>
+      ) : (
+        // Full version with Card wrapper
+        <Card className="w-full relative">
+          {removing && (
+            <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10 text-red-800" />
           )}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          {!previewImage ? (
-            <p className="text-xs text-muted-foreground">Upload an image to preview and crop</p>
-          ) : (
-            <div className="flex">
-              <Button
-                className="ms-auto"
-                onClick={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (setReload) {
-                    setLoading(true);
-                    delay(2000).then(() => {
-                      setReload(true);
-                      setLoading(false);
-                    });
-                  }
-                }}
-              >
-                Submit
-              </Button>
-            </div>
+          {loading && (
+            <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10 text-green-700" />
           )}
-        </CardFooter>
-      </Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex gap-2">
+                {previewImage && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button size="icon" variant="outline" onClick={clearImage}>
+                          <Trash2 size={16} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Clear image</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!previewImage ? (
+              <div
+                className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-muted/20 transition-colors"
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => inputRef.current?.click()}
+              >
+                <input
+                  ref={inputRef}
+                  type="file"
+                  className="hidden"
+                  accept={acceptedFileTypes.join(',')}
+                  onChange={e => handleFileSelect(e.target.files ? e.target.files[0] : null)}
+                />
+                <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Drag and drop an image here or click to browse
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {`Accepted formats: ${acceptedFileTypes.map(type => type.replace('image/', '.')).join(', ')}`}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {`Max size: ${maxSize / (1024 * 1024)}MB`}
+                </p>
+                {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+              </div>
+            ) : (
+              <div className="relative rounded-lg overflow-hidden">
+                <img
+                  src={previewImage}
+                  alt="Cropped preview"
+                  className="w-full h-auto rounded-lg object-cover aspect-ratio-1/1"
+                  style={{ aspectRatio: aspectRatio }}
+                />
+                <Button
+                  className="absolute bottom-4 right-4"
+                  onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsCropDialogOpen(true);
+                  }}
+                >
+                  Edit
+                </Button>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            {!previewImage ? (
+              <p className="text-xs text-muted-foreground">Upload an image to preview and crop</p>
+            ) : (
+              <div className="flex">
+                <Button
+                  className="ms-auto"
+                  onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (setReload) {
+                      setLoading(true);
+                      delay(2000).then(() => {
+                        setReload(true);
+                        setLoading(false);
+                      });
+                    }
+                  }}
+                >
+                  Submit
+                </Button>
+              </div>
+            )}
+          </CardFooter>
+        </Card>
+      )}
 
       <Dialog open={isCropDialogOpen} onOpenChange={setIsCropDialogOpen} modal={false}>
         <DialogContent className="sm:max-w-lg">

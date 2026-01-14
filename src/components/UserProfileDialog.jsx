@@ -61,6 +61,13 @@ export function UserProfileDialog({ user, onClose }) {
     setCurrentImageIndex(index);
   };
 
+  const reportUser = () => {
+    const subject = encodeURIComponent('Report User');
+    const body = encodeURIComponent(`Reporting user ID: ${user?.shortid || user?.id}\n\nPlease provide details about the issue:`);
+    const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = mailtoLink;
+  };
+
   const openInNewTab = () => {
     console.log('user handle::', user?.shortid);
     const profileUrl = `/user/${user?.shortid}`;
@@ -133,7 +140,12 @@ export function UserProfileDialog({ user, onClose }) {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-destructive/10 rounded-full transition-colors group">
+            <button 
+              onClick={reportUser}
+              className="p-2 hover:bg-destructive/10 rounded-full transition-colors group"
+              aria-label="Report user"
+              title="Report this user"
+            >
               <Flag
                 fill="red"
                 className="w-5 h-5 text-destructive group-hover:scale-110 transition-transform"
@@ -158,9 +170,9 @@ export function UserProfileDialog({ user, onClose }) {
         </div>
 
         {/* Profile Image */}
-        <div className="px-6 pt-2">
+        <div className="px-6 pt-2 flex justify-center">
           {!isObjEmpty(user?.images) && (
-            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-lg group">
+            <div className="relative w-full max-w-2xl aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-lg group">
               {/* Carousel Images */}
               <div className="relative w-full h-full">
                 {images.map((image, index) => (
@@ -208,7 +220,7 @@ export function UserProfileDialog({ user, onClose }) {
                       onClick={() => goToImage(index)}
                       className={`w-2 h-2 rounded-full transition-all duration-300 ${
                         index === currentImageIndex
-                          ? 'bg-white w-6'
+                          ? 'bg-white h-3'
                           : 'bg-white/50 hover:bg-white/75'
                       }`}
                       aria-label={`Go to image ${index + 1}`}

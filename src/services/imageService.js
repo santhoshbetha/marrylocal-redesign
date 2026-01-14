@@ -73,6 +73,9 @@ export const getImage = async (shortid, imagename) => {
 export const uploadImage = async (shortid, file, imageid, timestamp) => {
   let imagename;
   switch (imageid) {
+    case 0:
+      imagename = 'face.png';
+      break;
     case 1:
       imagename = 'first';
       break;
@@ -82,8 +85,26 @@ export const uploadImage = async (shortid, file, imageid, timestamp) => {
     case 3:
       imagename = 'third';
       break;
-    case 0:
-      imagename = 'face.png';
+    case 4:
+      imagename = 'fourth';
+      break;
+    case 5:
+      imagename = 'fifth';
+      break;
+    case 6:
+      imagename = 'sixth';
+      break;
+    case 7:
+      imagename = 'seventh';
+      break;
+    case 8:
+      imagename = 'eighth';
+      break;
+    case 9:
+      imagename = 'ninth';
+      break;
+    case 10:
+      imagename = 'tenth';
       break;
     default:
       imagename = 'other';
@@ -143,6 +164,9 @@ export const uploadFaceImage = async (shortid, file) => {
 export const deleteImage = async (shortid, imageid) => {
   let imagename;
   switch (imageid) {
+    case 0:
+      imagename = 'face.png';
+      break;
     case 1:
       imagename = 'first';
       break;
@@ -152,8 +176,26 @@ export const deleteImage = async (shortid, imageid) => {
     case 3:
       imagename = 'third';
       break;
-    case 0:
-      imagename = 'face.png';
+    case 4:
+      imagename = 'fourth';
+      break;
+    case 5:
+      imagename = 'fifth';
+      break;
+    case 6:
+      imagename = 'sixth';
+      break;
+    case 7:
+      imagename = 'seventh';
+      break;
+    case 8:
+      imagename = 'eighth';
+      break;
+    case 9:
+      imagename = 'ninth';
+      break;
+    case 10:
+      imagename = 'tenth';
       break;
     default:
       imagename = 'other';
