@@ -67,18 +67,20 @@ export function ForgotPassword() {
     e.preventDefault();
 
     try {
-      const OTP = Math.floor(Math.random() * 1000000 + 1);
-      setCode(OTP);
-      await setEmail(formik.values.email.trim());
+      //const OTP = Math.floor(Math.random() * 1000000 + 1);
+      //setCode(OTP);
+      //await setEmail(formik.values.email.trim());
 
       if (!isOnline) {
-        alert('You are offline. check your internet connection.');
+        toast.error('You are offline. Check your internet connection.');
+        return;
       } else {
         if (!isObjEmpty(userSession)) {
           if (!isObjEmpty(profiledata)) {
             if (formik.values.email != profiledata?.email) {
-              alert('Email entered is not your email, try again.');
+              toast.error('Email entered is not your email. Please try again.');
               navigate('/');
+              return;
             }
           }
         }
@@ -116,23 +118,27 @@ export function ForgotPassword() {
                 passwordretrycount = res2.passwordretrycount;
               } else {
                 setLoading(false);
-                alert('Something wrong. Try again later 1');
+                toast.error('Something went wrong. Please try again later.');
                 navigate('/');
+                return;
               }
             } else {
               setLoading(false);
-              alert('Incorrect Email. Try again');
+              toast.error('Incorrect email address. Please try again.');
               navigate('/');
+              return;
             }
           } else {
-            alert('Something wrong. Try again later 2');
+            toast.error('Something went wrong. Please try again later.');
             navigate('/');
+            return;
           }
         }
 
-        if (passwordretrycount > 5) {
-          alert('Password retry limit exceeded. Please contact us: contact@marrylocal.in');
+        if (passwordretrycount > 6) {
+          toast.error('Password retry limit exceeded. Please contact us: contact@marrylocal.in');
           navigate('/');
+          return;
         }
 
         // increment 'passwordretrycount' on "SEND CODE" click
@@ -198,7 +204,7 @@ export function ForgotPassword() {
       setLoading(false);
       console.error(error);
       console.log("otp error:", error);
-      alert('Something wrong. try again later 3');
+      toast.error('Something went wrong. Please try again later.');
     }
   };
 
@@ -247,7 +253,10 @@ export function ForgotPassword() {
           {countdown > 0 && (
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
               <p className="text-blue-800 text-center font-medium">
-                Logging out in {countdown} seconds for security reasons...
+                {isObjEmpty(userSession) 
+                  ? `Closing in ${countdown} for security reasons` 
+                  : `Logging out in ${countdown} seconds for security reasons...`
+                }
               </p>
             </div>
           )}

@@ -19,6 +19,7 @@ import { Photos } from '@/pages/Photos';
 import { Addons } from '@/pages/Addons';
 
 import { Terms } from '@/pages/Terms';
+import { TermsPopup } from '@/pages/TermsPopup';
 import { Privacy } from '@/pages/Privacy';
 import { Delete } from '@/pages/Delete';
 import { Referrals } from '@/pages/Referrals';
@@ -31,6 +32,7 @@ import { EmailNotVerified } from '@/pages/auth/EmailNotVerified';
 export default function AppRouter({ openLogin, setOpenLogin }) {
   return (
     <>
+      <TermsPopup/>
       <Routes>
         <Route path="/" element={<Home openLogin={openLogin} setOpenLogin={setOpenLogin} />} />
         <Route path="/about" element={<About />} />

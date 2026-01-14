@@ -75,8 +75,8 @@ export function LoginPage({ setOpenLogin }) {
 
   return (
     <div className="flex justify-center mt-4">
-      <Card className="w-[90%] sm:max-w-[425px]">
-        {loading && <Spinner size="lg" className="fixed top-[50%] left-[50%] z-50 cursor-pointer" />}
+      <Card className="w-[90%] sm:max-w-[425px] relative">
+        {loading && <Spinner size="lg" className="top-[50%] left-[50%] z-50 cursor-pointer absolute" />}
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>Enter your email below to login to your account</CardDescription>

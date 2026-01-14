@@ -11,7 +11,6 @@ import { AuthVerify } from './commons/AuthVerify';
 function App() {
   const [openLogin, setOpenLogin] = useState(false);
   const { user } = useAuth();
-
   const [theme, _setTheme] = useState('light');
 
   useEffect(() => {
