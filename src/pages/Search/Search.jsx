@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { SearchDataAndRecoveryContext } from '../../context/SearchDataAndRecoveryContext';
 import { current } from '@reduxjs/toolkit';
 import { updateUserInfo } from '../../services/userService';
+import { Search as SearchIcon, Heart, UserSearch } from 'lucide-react';
 
 function isObjEmpty(val) {
   return val == null ||
@@ -260,76 +261,91 @@ export function Search() {
   }, [profiledata]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="bg-card border-b border-border/50 overflow-x-auto">
-        <div className="max-w-[1600px] mx-auto flex min-w-max">
-          <button
-            onClick={() => setActiveTab('search')}
-            className={`px-4 md:px-8 py-4 text-md font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-              activeTab === 'search'
-                ? 'text-foreground bg-background border-b-2 border-primary'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-            }`}
-          >
-            Search
-          </button>
-          <button
-            onClick={() => setActiveTab('shortlist')}
-            className={`px-4 md:px-8 py-4 text-md font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-              activeTab === 'shortlist'
-                ? 'text-foreground bg-background border-b-2 border-primary'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-            }`}
-          >
-            Shortlist
-          </button>
-          <button
-            onClick={() => setActiveTab('searchuser')}
-            className={`px-4 md:px-8 py-4 text-md font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-              activeTab === 'searchuser'
-                ? 'text-foreground bg-background border-b-2 border-primary'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-            }`}
-          >
-            Search User
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+      {/* Enhanced Tab Navigation */}
+      <div className="bg-background/95 backdrop-blur-sm border-b border-border/50 shadow-sm mx-4 rounded-t-2xl overflow-hidden">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="flex">
+            <button
+              onClick={() => setActiveTab('search')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
+                activeTab === 'search'
+                  ? 'text-primary bg-primary/5 border-b-2 border-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
+            >
+              <SearchIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Search</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('shortlist')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
+                activeTab === 'shortlist'
+                  ? 'text-primary bg-primary/5 border-b-2 border-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
+            >
+              <Heart className="w-4 h-4" />
+              <span className="hidden sm:inline">Shortlist</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('searchuser')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
+                activeTab === 'searchuser'
+                  ? 'text-primary bg-primary/5 border-b-2 border-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
+            >
+              <UserSearch className="w-4 h-4" />
+              <span className="hidden sm:inline">Search User</span>
+            </button>
+          </div>
         </div>
       </div>
-      {activeTab === 'search' ? (
-        <SearchSection
-          gender={profiledata?.gender}
-          shortlist={profiledata?.shortlist}
-          addons={profiledata?.addons}
-          primarycity={profiledata?.city}
-          verified={verified}
-          active={active}
-          locationset={profiledata?.defaultcoordsset || profiledata?.usercoordsset}
-          onetimepaymentrequired={profiledata?.onetimefeesrequired && !profiledata?.onetimefeespaid}
-          maxsearchdistance={
-            isObjEmpty(profiledata?.maxsearchdistance) ? 100 : profiledata?.maxsearchdistance
-          }
-          profilereligion={isObjEmpty(profiledata?.religion) ? '' : profiledata?.religion}
-          profiledata={profiledata}
-        />
-      ) : activeTab === 'shortlist' ? (
-        <ShortlistSection
-          loggedInUser={profiledata?.userid}
-          userid={user?.id}
-          gender={profiledata?.gender}
-          shortlist={profiledata?.shortlist}
-          profiledata={profiledata}
-          setProfiledata={setProfiledata}
-        />
-      ) : activeTab === 'searchuser' ? (
-        <SearchUser />
-      ) : (
-        <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-8 md:py-12">
-          <h1 className="text-2xl md:text-3xl font-bold mb-6">
-            {activeTab === 'search' ? 'Search' : 'Search Users'}
-          </h1>
-          <p className="text-muted-foreground">This page is under construction.</p>
-        </main>
-      )}
+
+      {/* Content Container */}
+      <div className="flex-1">
+        {activeTab === 'search' ? (
+          <SearchSection
+            gender={profiledata?.gender}
+            shortlist={profiledata?.shortlist}
+            addons={profiledata?.addons}
+            primarycity={profiledata?.city}
+            verified={verified}
+            active={active}
+            locationset={profiledata?.defaultcoordsset || profiledata?.usercoordsset}
+            onetimepaymentrequired={profiledata?.onetimefeesrequired && !profiledata?.onetimefeespaid}
+            maxsearchdistance={
+              isObjEmpty(profiledata?.maxsearchdistance) ? 100 : profiledata?.maxsearchdistance
+            }
+            profilereligion={isObjEmpty(profiledata?.religion) ? '' : profiledata?.religion}
+            profiledata={profiledata}
+          />
+        ) : activeTab === 'shortlist' ? (
+          <ShortlistSection
+            loggedInUser={profiledata?.userid}
+            userid={user?.id}
+            gender={profiledata?.gender}
+            shortlist={profiledata?.shortlist}
+            profiledata={profiledata}
+            setProfiledata={setProfiledata}
+          />
+        ) : activeTab === 'searchuser' ? (
+          <SearchUser />
+        ) : (
+          <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-8 md:py-12">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-muted rounded-full mb-4">
+                <SearchIcon className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
+                {activeTab === 'search' ? 'Search' : 'Search Users'}
+              </h1>
+              <p className="text-muted-foreground">This page is under construction.</p>
+            </div>
+          </main>
+        )}
+      </div>
     </div>
   );
 }
