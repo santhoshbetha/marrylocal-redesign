@@ -28,8 +28,17 @@ import { Cancellation } from './pages/Cancellation';
 import { RegistrationSuccess } from '@/pages/auth/RegistrationSuccess';
 import { EmailVerification } from '@/pages/auth/EmailVerification';
 import { EmailNotVerified } from '@/pages/auth/EmailNotVerified';
+import { Maintenance } from '@/pages/Maintenance';
 
 export default function AppRouter({ openLogin, setOpenLogin }) {
+  // Check if maintenance mode is enabled
+  const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
+
+  // If maintenance mode is enabled, show maintenance page
+  if (isMaintenanceMode) {
+    return <Maintenance />;
+  }
+
   return (
     <>
       <TermsPopup/>
