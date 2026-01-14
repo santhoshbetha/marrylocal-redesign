@@ -1,11 +1,30 @@
-# React + Vite
+# MarryLocal - React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the MarryLocal application built with React and Vite.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Clone the repository
+2. Copy `.env.example` to `.env` and fill in your environment variables
+3. Install dependencies: `npm install`
+4. Start development server: `npm run dev`
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and configure the following variables:
+
+- `VITE_CRYPTO_SECRET`: Secret key for encryption
+- `VITE_RESEND_API_KEY`: API key for Resend email service
+- `VITE_SUPABASE_*`: Supabase configuration
+- `VITE_TOKEN_KEY`: Key for token encryption
+- `VITE_MARRYLOCAL_URL`: Application URL (localhost for dev, production URL for prod)
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
 
 ## React Compiler
 
@@ -14,3 +33,7 @@ The React Compiler is currently not compatible with SWC. See [this issue](https:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+==================================================
+qfwoaopvraxyzocxpf@xfavaj.com -- edoPASS1*
+vfbjkhbxsxwlpayqfx@enotj.com -- edoPASS1*

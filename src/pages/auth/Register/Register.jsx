@@ -22,7 +22,7 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
 
-const BASE_URL = 'http://localhost:5173';
+const BASE_URL = import.meta.env.VITE_MARRYLOCAL_URL;
 
 function isObjEmpty(val) {
   return val == null ||
@@ -31,6 +31,10 @@ function isObjEmpty(val) {
     ? true
     : false;
 }
+
+// Calculate max date (20 years ago from today)
+const maxDate = new Date();
+maxDate.setFullYear(maxDate.getFullYear() - 20);
 
 const INITIAL_DATA = {
   // referrer
@@ -273,12 +277,36 @@ export function Register() {
     if (!isLast) {
       if (!userInfoformValid) {
         simpleValidator1.current.showMessages();
+        toast.error('Please fill all required fields and correct any errors.');
         //forceUpdate(1)
         return false;
+      }
+
+      // Check if date of birth is valid (not later than 20 years ago)
+      if (!isObjEmpty(data.dob)) {
+        const selectedDate = new Date(data.dob);
+        console.log("Selected Date of Birth:", selectedDate);
+        console.log("Maximum Allowed Date:", maxDate);
+        if (selectedDate > maxDate) {
+          toast.error('You must be at least 20 years old to register. Please select a valid date of birth.');
+          return false;
+        }
+      } else {
+        toast.error('Please select your date of birth.');
+        return false;
+      }
+
+      // Check community fields if going to account step (when language is already filled)
+      if (!isObjEmpty(data.language)) {
+        if (isObjEmpty(data.language) || isObjEmpty(data.religion) || isObjEmpty(data.community) || isObjEmpty(data.economicstatus)) {
+          toast.error('Please fill all community and personal info fields.');
+          return false;
+        }
       }
     } else {
       if (!(accountformValid && accountformallValid)) {
         simpleValidator2.current.showMessages();
+        toast.error('Please fill all required fields and correct any errors.');
         //forceUpdate(1)
         return false;
       }
@@ -287,11 +315,42 @@ export function Register() {
     if (!isObjEmpty(data.password)) {
       if (!isObjEmpty(data.passwordconfirm)) {
         if (data.password != data.passwordconfirm) {
+          toast.error('Passwords do not match.');
           return false;
         }
       }
     }
     return true;
+  };
+
+  const isCurrentStepValid = () => {
+    if (currentStepIndex === 0) {
+      // User Info step
+      const userInfoValid = simpleValidator1.current.allValid();
+      if (!userInfoValid) return false;
+      // Check required selects
+      if (isObjEmpty(data.gender) || isObjEmpty(data.educationlevel) || isObjEmpty(data.jobstatus) || isObjEmpty(data.state) || isObjEmpty(data.city)) return false;
+      // Check DOB
+      if (!isObjEmpty(data.dob)) {
+        const selectedDate = new Date(data.dob);
+        console.log("Selected Date of Birth:", selectedDate);
+        console.log("Maximum Allowed Date:", maxDate);
+        if (selectedDate > maxDate) {
+          console.log("Selected date is later than the maximum allowed date.");
+          return false;
+        }
+      } else {
+        return false;
+      }
+      return true;
+    } else if (currentStepIndex === 1) {
+      // Community step
+      return !isObjEmpty(data.language) && !isObjEmpty(data.religion) && !isObjEmpty(data.community) && !isObjEmpty(data.economicstatus);
+    } else if (currentStepIndex === 2) {
+      // Account step
+      return !isObjEmpty(data.phonenumber) && !isObjEmpty(data.email) && !isObjEmpty(data.password) && !isObjEmpty(data.passwordconfirm) && data.password === data.passwordconfirm && accountformallValid;
+    }
+    return false;
   };
 
   const { currentStepIndex, step, isFirstStep, isLastStep, back, next } =
@@ -416,7 +475,7 @@ export function Register() {
                     className="text-base font-semibold min-w-[200px]"
                     type="submit"
                     size="lg"
-                    disabled={loading}
+                    disabled={loading || !isCurrentStepValid()}
                   >
                     {loading ? (
                       <span className="flex items-center gap-2">

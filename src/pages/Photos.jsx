@@ -171,9 +171,9 @@ export function Photos() {
             </div>
 
             {/* Photo Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-6">
+            <div className="flex flex-wrap justify-center gap-6 mb-6">
               {images.slice(0, getDisplayedSlots()).map((image, index) => (
-                <div key={index} className="relative group">
+                <div key={index} className="relative group w-48">
                   {/* Photo Number Badge */}
                   <div className="absolute -top-2 -left-2 z-10">
                     <Badge

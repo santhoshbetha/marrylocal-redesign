@@ -13,13 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChevronDownIcon } from 'lucide-react';
 import { FormWrapper } from './FormWrapper';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { cities } from '@/lib/cities';
-//import  DatePicker from "react-datepicker";
-//import "react-datepicker/dist/react-datepicker.css";
+import { states } from '@/lib/states';
 
 export function UserInfoForm({
   firstname,
@@ -36,6 +36,31 @@ export function UserInfoForm({
   const [state1, setState1] = useState('');
   const [open, setOpen] = useState(false);
   const [dobDate, setDobDate] = useState(new Date('2002-01-01'));
+  const [dobError, setDobError] = useState('');
+  const [searchState, setSearchState] = useState('');
+  const [searchCity, setSearchCity] = useState('');
+  const [stateOpen, setStateOpen] = useState(false);
+  const [cityOpen, setCityOpen] = useState(false);
+
+  const filteredStates = states.filter(st => 
+    st.toLowerCase().includes(searchState.toLowerCase())
+  );
+
+  const filteredCities = cities
+    .filter(function (city) {
+      return city.state === state1;
+    })
+    .filter(city => 
+      city.name.toLowerCase().includes(searchCity.toLowerCase())
+    );
+
+  // Calculate max date (20 years ago from today)
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() - 20);
+
+  const currentYear = new Date().getFullYear();
+  const fromYear = 1900;
+  const toYear = currentYear - 20;
 
   const getCities = () =>
     cities
@@ -72,7 +97,10 @@ export function UserInfoForm({
         .max(15)
         .required('required')
         .matches(/^[aA-zZ\s]+$/, 'Only alphabets are allowed'),
+      dob: Yup.date()
+        .required('Date of birth is required'),
     }),
+    validateOnChange: false,
   });
 
   return (
@@ -86,7 +114,6 @@ export function UserInfoForm({
             placeholder=""
             className=""
             autoFocus
-            required
             value={formik.values.firstname}
             onChange={e => {
               formik.values.firstname = e.target.value.trim();
@@ -107,7 +134,6 @@ export function UserInfoForm({
             name="lastname"
             placeholder=""
             className=""
-            required
             value={formik.values.lastname}
             onChange={e => {
               formik.values.lastname = e.target.value.trim();
@@ -126,7 +152,6 @@ export function UserInfoForm({
             Gender
           </Label>
           <Select
-            required
             name="gender"
             value={gender}
             onValueChange={value => {
@@ -162,14 +187,27 @@ export function UserInfoForm({
                 mode="single"
                 selected={dobDate}
                 captionLayout="dropdown"
+                toDate={maxDate}
+                fromYear={fromYear}
+                toYear={toYear}
                 onSelect={date => {
                   setDobDate(date);
+                  formik.setFieldValue('dob', date);
+                  formik.setFieldTouched('dob', true);
+                  if (date > maxDate) {
+                    setDobError('You must be at least 20 years old to register. Please select a valid date of birth.');
+                  } else {
+                    setDobError('');
+                  }
                   updateFields({ dob: date });
                   setOpen(false);
                 }}
               />
             </PopoverContent>
           </Popover>
+          {formik.touched.dob && dobError ? (
+            <p className="text-red-600 text-sm mt-1">{dobError}</p>
+          ) : null}
         </div>
 
         <div>
@@ -177,7 +215,6 @@ export function UserInfoForm({
             Education
           </Label>
           <Select
-            required
             name="educationlevel"
             value={educationlevel}
             onValueChange={value => {
@@ -203,7 +240,6 @@ export function UserInfoForm({
             Job status
           </Label>
           <Select
-            required
             name="job"
             value={jobstatus === true || jobstatus === 'Yes' ? 'Yes' : jobstatus === false || jobstatus === 'No' ? 'No' : ''}
             onValueChange={value => {
@@ -227,86 +263,83 @@ export function UserInfoForm({
           <Label htmlFor="state" className="px-1 py-2">
             State or Union territory
           </Label>
-          <Select
-            required
-            name="state"
-            value={state}
-            onValueChange={value => {
-              formik.values.state = value;
-              updateFields({ state: value });
-              setState1(value);
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose state" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="Andaman and Nichobar Islands">
-                  Andaman and Nichobar Islands
-                </SelectItem>
-                <SelectItem value="Andhra Pradesh">Andhra Pradesh</SelectItem>
-                <SelectItem value="Arunachal Pradesh">Arunachal Pradesh</SelectItem>
-                <SelectItem value="Assam">Assam</SelectItem>
-                <SelectItem value="Bihar">Bihar</SelectItem>
-                <SelectItem value="Chandigarh">Chandigarh</SelectItem>
-                <SelectItem value="Chhattisgarh">Chhattisgarh</SelectItem>
-                <SelectItem value="Dadra and Nagar Haveli and Daman and Diu">
-                  Dadra and Nagar Haveli and Daman and Diu
-                </SelectItem>
-                <SelectItem value="Delhi">Delhi</SelectItem>
-                <SelectItem value="Goa">Goa</SelectItem>
-                <SelectItem value="Gujarat">Gujarat</SelectItem>
-                <SelectItem value="Haryana">Haryana</SelectItem>
-                <SelectItem value="Himachal Pradesh">Himachal Pradesh</SelectItem>
-                <SelectItem value="Jammu and Kashmir">Jammu and Kashmir</SelectItem>
-                <SelectItem value="Jharkhand">Jharkhand</SelectItem>
-                <SelectItem value="Karnataka">Karnataka</SelectItem>
-                <SelectItem value="Kerala">Kerala</SelectItem>
-                <SelectItem value="Ladakh">Ladakh</SelectItem>
-                <SelectItem value="Lakshadweep">Lakshadweep</SelectItem>
-                <SelectItem value="Madhya Pradesh">Madhya Pradesh</SelectItem>
-                <SelectItem value="Maharashtra">Maharashtra</SelectItem>
-                <SelectItem value="Manipur">Manipur</SelectItem>
-                <SelectItem value="Meghalaya">Meghalaya</SelectItem>
-                <SelectItem value="Mizoram">Mizoram</SelectItem>
-                <SelectItem value="Nagaland">Nagaland</SelectItem>
-                <SelectItem value="Odisha">Odisha</SelectItem>
-                <SelectItem value="Puducherry">Puducherry</SelectItem>
-                <SelectItem value="Punjab">Punjab</SelectItem>
-                <SelectItem value="Rajasthan">Rajasthan</SelectItem>
-                <SelectItem value="Sikkim">Sikkim</SelectItem>
-                <SelectItem value="Tamil Nadu">Tamil Nadu</SelectItem>
-                <SelectItem value="Telangana">Telangana</SelectItem>
-                <SelectItem value="Tripura">Tripura</SelectItem>
-                <SelectItem value="Uttar Pradesh">Uttar Pradesh</SelectItem>
-                <SelectItem value="Uttarakhand">Uttarakhand</SelectItem>
-                <SelectItem value="West Bengal">West Bengal</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <Popover open={stateOpen} onOpenChange={setStateOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-between font-normal">
+                {state || 'Choose state'}
+                <ChevronDownIcon className="ml-2 h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="start">
+              <div className="p-2">
+                <Input
+                  placeholder="Search states..."
+                  value={searchState}
+                  onChange={(e) => setSearchState(e.target.value)}
+                  className="mb-2"
+                />
+              </div>
+              <ScrollArea className="h-64">
+                {filteredStates.map((st, index) => (
+                  <Button
+                    key={index}
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      formik.values.state = st;
+                      updateFields({ state: st });
+                      setState1(st);
+                      setSearchState('');
+                      setStateOpen(false);
+                    }}
+                  >
+                    {st}
+                  </Button>
+                ))}
+              </ScrollArea>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div>
           <Label htmlFor="city" className="px-1 py-2">
             City or Nearby City
           </Label>
-          <Select
-            required
-            name="city"
-            value={city}
-            onValueChange={value => {
-              formik.values.city = value;
-              updateFields({ city: value });
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose city" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>{getCities()}</SelectGroup>
-            </SelectContent>
-          </Select>
+          <Popover open={cityOpen} onOpenChange={setCityOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-between font-normal">
+                {city || 'Choose city'}
+                <ChevronDownIcon className="ml-2 h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="start">
+              <div className="p-2">
+                <Input
+                  placeholder="Search cities..."
+                  value={searchCity}
+                  onChange={(e) => setSearchCity(e.target.value)}
+                  className="mb-2"
+                />
+              </div>
+              <ScrollArea className="h-64">
+                {filteredCities.map((ct, index) => (
+                  <Button
+                    key={index}
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      formik.values.city = ct.name;
+                      updateFields({ city: ct.name });
+                      setSearchCity('');
+                      setCityOpen(false);
+                    }}
+                  >
+                    {ct.name}
+                  </Button>
+                ))}
+              </ScrollArea>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </FormWrapper>

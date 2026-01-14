@@ -1,6 +1,6 @@
-import { useState, useContext } from 'react';
+﻿import { useState, useContext, useEffect } from 'react';
 import { useFormik } from 'formik';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -26,12 +26,53 @@ function isObjEmpty(val) {
 export function ChangePassword() {
   const { user, userSession, profiledata } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [customerror, setCustomError] = useState('');
+  const [tokenValid, setTokenValid] = useState(false);
+  const [tokenError, setTokenError] = useState('');
   const [PasswordInputType, ToggleIcon] = usePasswordToggle();
+  const [ConfirmPasswordInputType, ConfirmToggleIcon] = usePasswordToggle();
   const { email, code } = useContext(SearchDataAndRecoveryContext);
 
   console.log('ChangePassword code::', code);
+
+  // Validate token on component mount
+  useEffect(() => {
+    const validateToken = async () => {
+      try {
+        // Check if there's a token in URL parameters
+        const token = searchParams.get('token');
+        const type = searchParams.get('type');
+
+        // For password recovery, Supabase should have automatically authenticated the user
+        // Check if we have a valid user session
+        if (!userSession || !user) {
+          setTokenError('Invalid or expired token. Please request a new password reset link.');
+          setTokenValid(false);
+          return;
+        }
+
+        // Check if this is a recovery type request
+        if (type !== 'recovery') {
+          setTokenError('Invalid request type. Please use the password reset link from your email.');
+          setTokenValid(false);
+          return;
+        }
+
+        // If we have a user session and it's a recovery type, token is valid
+        setTokenValid(true);
+        setTokenError('');
+
+      } catch (error) {
+        console.error('Token validation error:', error);
+        setTokenError('Token validation failed. Please try again.');
+        setTokenValid(false);
+      }
+    };
+
+    validateToken();
+  }, [user, userSession, searchParams]);
 
   const formik = useFormik({
     initialValues: {
@@ -54,10 +95,10 @@ export function ChangePassword() {
   const handleChangePassSubmit = async e => {
     e.preventDefault();
     try {
-      if (!isObjEmpty(code)) {
-        if (formik.values.code != code) {
-          setCustomError('Invalid Code or Code Expired. Please check email for latest code');
-        }
+      //if (!isObjEmpty(code)) {
+        //if (formik.values.code != code) {
+        //  setCustomError('Invalid Code or Code Expired. Please check email for latest code');
+        //}
         if (formik.values.code == code) {
           setLoading(true);
 
@@ -100,7 +141,7 @@ export function ChangePassword() {
             navigate('/login?msg=reset');
           }
         }
-      }
+      //}
     } catch (error) {
       alert('Something wrong. Try again later');
       setLoading(false);
@@ -112,6 +153,146 @@ export function ChangePassword() {
   return (
     <div className="mt-2 flex justify-center">
       <Card className="bg-white w-[90%] sm:max-w-[525px] relative">
+        {loading && (
+          <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
+        )}
+
+        {/* Show error if token is invalid */}
+        {!tokenValid ? (
+          <>
+            <CardHeader>
+              <CardTitle className="text-red-500">
+                {tokenError || 'Invalid or Expired Token'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-gray-600">
+                  The password reset link is invalid or has expired. Please request a new password reset link.
+                </p>
+                <div className="flex">
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/')}
+                    className="mr-2"
+                  >
+                    Go Home
+                  </Button>
+                  <Button
+                    onClick={() => navigate('/forgotpassword')}
+                    className="ml-auto"
+                  >
+                    Request New Link
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </>
+        ) : (
+          <>
+            <CardHeader>
+              <CardTitle className="text-black">Set New Password</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleChangePassSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="code" className="mb-2">
+                Code
+              </Label>
+              <Input
+                id="code"
+                type="text"
+                placeholder=""
+                name="code"
+                value={formik.values.code}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                required
+              />
+              {formik.touched.code && formik.errors.code ? (
+                <p className="text-red-700">{formik.errors.code} </p>
+              ) : null}
+            </div>
+
+            <div>
+              <Label htmlFor="password" className="mb-2">
+                New Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={PasswordInputType}
+                  placeholder=""
+                  name="password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  required
+                />
+                <span
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500
+                                    hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 bg-background"
+                >
+                  {ToggleIcon}
+                </span>
+              </div>
+              {formik.touched.password && formik.errors.password ? (
+                <p className="text-red-700">{formik.errors.password} </p>
+              ) : null}
+            </div>
+
+            <div>
+              <Label htmlFor="passwordconfirm" className="mt-2 mb-2">
+                New Password (Confirm)
+              </Label>
+              <div className="relative">
+                <Input
+                  id="passwordconfirm"
+                  type={ConfirmPasswordInputType}
+                  placeholder=""
+                  name="passwordconfirm"
+                  value={formik.values.passwordconfirm}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  required
+                />
+                <span
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500
+                                    hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 bg-background"
+                >
+                  {ConfirmToggleIcon}
+                </span>
+              </div>
+              {formik.touched.passwordconfirm && formik.errors.passwordconfirm ? (
+                <p className="text-red-700">{formik.errors.passwordconfirm} </p>
+              ) : null}
+            </div>
+
+            <div className="flex mt-3">
+              <Button
+                variant="outline"
+                onClick={e => {
+                  e.preventDefault();
+                  navigate('/myspace');
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="ms-auto">
+                Confirm New Password
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+          </>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+/* OLD CODR - USE later when "SEND CODE" functionality is 
+                <Card className="bg-white w-[90%] sm:max-w-[525px] relative">
         {loading && (
           <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
         )}
@@ -262,6 +443,4 @@ export function ChangePassword() {
           </>
         )}
       </Card>
-    </div>
-  );
-}
+      */

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -17,6 +17,7 @@ import { url } from '../api';
 import { checkIfUserExists } from '../services/registerService';
 import { updateUserInfo } from '../services/userService';
 import { getPasswordRetryCount, updatePasswordRetryCount } from '../services/registerService';
+import { toast } from 'sonner';
 
 function isObjEmpty(val) {
   return val == null ||
@@ -30,8 +31,28 @@ export function ForgotPassword() {
   const { user, profiledata, userSession } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [customerror, setCustomError] = useState('');
+  const [countdown, setCountdown] = useState(0);
   const { setCode, setEmail } = useContext(SearchDataAndRecoveryContext);
   const isOnline = useOnlineStatus();
+
+  // Countdown timer effect
+  useEffect(() => {
+    let interval;
+    if (countdown > 0) {
+      interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            // Countdown finished, navigate to logout
+            navigate('/logout');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [countdown, navigate]);
 
   const formik = useFormik({
     initialValues: {
@@ -95,7 +116,7 @@ export function ForgotPassword() {
                 passwordretrycount = res2.passwordretrycount;
               } else {
                 setLoading(false);
-                alert('Something wrong. Try again later');
+                alert('Something wrong. Try again later 1');
                 navigate('/');
               }
             } else {
@@ -104,7 +125,7 @@ export function ForgotPassword() {
               navigate('/');
             }
           } else {
-            alert('Something wrong. Try again later');
+            alert('Something wrong. Try again later 2');
             navigate('/');
           }
         }
@@ -132,25 +153,31 @@ export function ForgotPassword() {
           //
           setLoading(true);
 
-          if (isObjEmpty(userSession)) {
+        //  if (isObjEmpty(userSession)) {
             const { data, error } = await supabase.auth.resetPasswordForEmail(
               formik.values.email.trim(),
               {
-                redirectTo: 'https://marrylocal.in/changepassword',
+                redirectTo: `${import.meta.env.VITE_MARRYLOCAL_URL}/changepassword`,
               },
             );
             setLoading(false);
             if (data) {
               setLoading(false);
-              navigate('/');
-              alert('Please check you emails for password reset');
+              toast.success('Password reset email sent! Please check your inbox and follow the instructions.', {
+                duration: 10000,
+                description: `You will be logged out for security reasons in ${countdown} seconds.`,
+              });
+              // Start countdown timer for logout
+              setCountdown(10);
             }
             if (error) {
               setLoading(false);
               navigate('/');
-              alert('Email Error. Try again later');
+              toast.error('Email Error. Try again later', {
+                description: 'Please check your email address and try again.',
+              });
             }
-          } else {
+        /*  } else {
             const response = await axios.post(`${url}/recovery/sendrecoveryemail`, {
               otp: OTP,
               email: formik.values.email.trim(),
@@ -164,12 +191,14 @@ export function ForgotPassword() {
               navigate('/');
               alert('Email Error. Try again later');
             }
-          }
+          }*/
         }
       }
     } catch (error) {
       setLoading(false);
-      alert('Something wrong. try again later');
+      console.error(error);
+      console.log("otp error:", error);
+      alert('Something wrong. try again later 3');
     }
   };
 
@@ -210,13 +239,24 @@ export function ForgotPassword() {
               >
                 Cancel
               </Button>
-              <Button type="submit" className="ms-auto">
-                {!isObjEmpty(userSession) ? <>Send Code</> : <>Send password reset email</>}
+              <Button type="submit" className="ms-auto" disabled={countdown > 0}>
+                {countdown > 0 ? 'Email Sent' : 'Send password reset email'}
               </Button>
             </div>
           </form>
+          {countdown > 0 && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <p className="text-blue-800 text-center font-medium">
+                Logging out in {countdown} seconds for security reasons...
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
   );
 }
+
+/*
+ {!isObjEmpty(userSession) ? <>Send Code</> : <>Send password reset email</>}
+*/
