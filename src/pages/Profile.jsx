@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -6,12 +6,10 @@ import { Mail, Phone, RefreshCw, Edit3, Check, X } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { Spinner } from '@/components/ui/Spinner';
 import { Editable } from '@/components/Editable';
-import { SearchDataAndRecoveryContext } from '../context/SearchDataAndRecoveryContext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useAuth } from '../context/AuthContext';
 import { updateUserInfo } from '../services/userService';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
-import { getSupabaseFileUrl, getImagesList } from '../services/imageService';
 
 function isObjEmpty(val) {
   return val == null ||
