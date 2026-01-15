@@ -16,12 +16,12 @@ function isObjEmpty(val) {
 
 export function ShortCard({ loggedInUser, userprofile, profiledata, setProfiledata }) {
   const [removing, setRemoving] = useState(false);
-  let [imgSrc, setImgSrc] = useState(`${CDNURL}/${userprofile?.shortid}/first`);
   const removeFromShortlist = useRemoveFromShortlist();
+  //let [imgSrc, setImgSrc] = useState(`${CDNURL}/${userprofile?.shortid}/${userprofile?.images[0]}`);
 
-  useEffect(() => {
-    setImgSrc(`${CDNURL}/${userprofile?.shortid}/face.png`);
-  }, []);
+  //useEffect(() => {
+  //  setImgSrc(`${CDNURL}/${userprofile?.shortid}/${userprofile?.images[0]}`);
+  //}, []);
 
   async function removeFromShortlistNow(shortidtoremove) {
     await removeFromShortlist.mutateAsync({

@@ -129,20 +129,20 @@ export const searchUser = async searchtext => {
       if (digits(Number(searchtext)) == 10) {
         dataout = await supabase
           .from('users')
-          .select('userid, shortid, firstname, gender, age, userstate')
+          .select('userid, shortid, firstname, gender, age, images, userstate')
           .textSearch('phonenumber', Number(searchtext))
           .single();
       } else {
         dataout = await supabase
           .from('users')
-          .select('userid, shortid, firstname, gender, age, userstate')
+          .select('userid, shortid, firstname, gender, age, images,userstate')
           .textSearch('userid', searchtext)
           .single();
       }
     } else {
       dataout = await supabase
         .from('users')
-        .select('userid, shortid, firstname, gender, age, userstate')
+        .select('userid, shortid, firstname, gender, age, images, userstate')
         .textSearch('email', searchtext.toLowerCase())
         .single();
     }

@@ -137,11 +137,12 @@ export function SearchUser() {
           target="_blank"
         >
           <SearchUserCard
-            profile={userdata}
+            images={userdata?.images}
             userid={userdata?.userid}
             shortid={userdata?.shortid}
             firstname={userdata?.firstname}
             age={userdata?.age}
+            gender={userdata?.gender}
             setUserdata={setUserdata}
           />
         </Link>

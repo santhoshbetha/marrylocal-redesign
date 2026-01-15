@@ -4,21 +4,17 @@ import { Button } from '@/components/ui/button';
 
 const CDNURL = 'https://gweikvxgqoptvyqiljhp.supabase.co/storage/v1/object/public/localm/images';
 
-export function SearchUserCard({ profile, shortid, firstname, age, setUserdata }) {
+export function SearchUserCard({ images, shortid, firstname, age, gender, setUserdata }) {
   let [imgSrc, setImgSrc] = useState(`${CDNURL}/${shortid}/first`);
   const [removing, setRemoving] = useState(false);
-
-  const removeClick = async e => {
+   
+  const removeClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     setRemoving(true);
     setUserdata(null);
     setRemoving(false);
   };
-
-  useEffect(() => {
-    setImgSrc(`${CDNURL}/${shortid}/face.png`);
-  }, [shortid]);
 
   return (
     <Card
@@ -29,20 +25,41 @@ export function SearchUserCard({ profile, shortid, firstname, age, setUserdata }
       <div className="flex flex-col items-center">
         {/* Profile Image */}
         <div className="w-30 h-30 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-400 to-blue-600">
-          {imgSrc ? (
-            <img
-              src={imgSrc || '/placeholder.svg'}
-              alt={firstname}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-[#1B93D5]">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="50" cy="35" r="15" fill="#FDB" />
-                <ellipse cx="50" cy="75" rx="25" ry="20" fill="#333" />
-              </svg>
-            </div>
-          )}
+          {images && images.length > 0 ?
+          <>
+           {gender == 'Male' ? (
+              <img
+                // eslint-disable-next-line no-constant-binary-expression
+                src={`${CDNURL}/${shortid}/first` || "/male-default-4.png"}
+                alt={firstname}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img
+                // eslint-disable-next-line no-constant-binary-expression
+                src={`${CDNURL}/${shortid}/first` || "/female-default-2.png"}
+                alt={firstname}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </>
+          :
+          <>
+           {gender == 'Male' ? (
+              <img
+                src={"/male-default-4.png"}
+                alt={firstname}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img
+                src={"/female-default-2.png"}
+                alt={firstname}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </>
+        }
         </div>
 
         {/* Profile Info */}
