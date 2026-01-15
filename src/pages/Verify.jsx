@@ -483,12 +483,12 @@ export function Verify() {
             <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
           )}
 
-          <Tabs defaultValue="aadhaar" className="w-full max-w-4xl">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="aadhaar" className="flex items-center gap-2">
+          <Tabs defaultValue="driver-license" className="w-full max-w-4xl">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              {/* <TabsTrigger value="aadhaar" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 Aadhaar Card
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger value="driver-license" className="flex items-center gap-2">
                 <Car className="h-4 w-4" />
                 Driver License
@@ -499,7 +499,7 @@ export function Verify() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="aadhaar" className="space-y-6">
+            {/* <TabsContent value="aadhaar" className="space-y-6">
               {profiledata?.aadharverified == true && (
                 <div className="p-4">
                   <span className="inline-block border border-accent-500 px-4 py-4 text-md font-semibold rounded-lg bg-yellow-200">
@@ -650,7 +650,7 @@ export function Verify() {
                   </Card>
                 </>
               )}
-            </TabsContent>
+            </TabsContent> */}
 
             <TabsContent value="driver-license" className="space-y-6">
               <div className="text-center space-y-4">
@@ -730,7 +730,8 @@ export function Verify() {
                   </Button>
 
                   <p className="text-sm text-gray-500 text-center mt-4">
-                    Driver License verification will be available soon. Please use Aadhaar verification for now.
+                    Driver License verification will be available soon. 
+                    {/*Please use Aadhaar verification for now.*/}
                   </p>
                 </CardContent>
               </Card>
@@ -814,7 +815,8 @@ export function Verify() {
                   </Button>
 
                   <p className="text-sm text-gray-500 text-center mt-4">
-                    Passport verification will be available soon. Please use Aadhaar verification for now.
+                    Passport verification will be available soon. 
+                    {/*Please use Aadhaar verification for now.*/}
                   </p>
                 </CardContent>
               </Card>

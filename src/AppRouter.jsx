@@ -18,6 +18,9 @@ import { Photos } from '@/pages/Photos';
 
 import { Addons } from '@/pages/Addons';
 
+import { ServiceFeesPhonePePayPage } from '@/pages/ServiceFeesPhonePePayPage'
+import { ServiceFeesPhonePePaymentStatus } from '@/pages/ServiceFeesPhonePePaymentStatus'
+
 import { Terms } from '@/pages/Terms';
 import { Privacy } from '@/pages/Privacy';
 import { Delete } from '@/pages/Delete';
@@ -60,6 +63,9 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/cancellation" element={<Cancellation />} />
 
+        <Route path="/servicefees" element={<ServiceFeesPhonePePayPage/>}/>
+        <Route path="/paymentstatus" element={<ServiceFeesPhonePePaymentStatus/>}/>
+
         <Route element={<ProtectedRoute />}>
           <Route path="/myspace" element={<Navigate to="/search" />} />
           <Route path="/location" element={<Location />} />
@@ -69,12 +75,17 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
 
           <Route path="/addons" element={<Addons />} />
 
+
+
+
           <Route path="/referrals" element={<Referrals />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/logout" element={<Logout />} />
 
           <Route path="/delete" element={<Delete />} />
           <Route path="*" element={<PageNotFound />} />
+
+
         </Route>
       </Routes>
     </>
