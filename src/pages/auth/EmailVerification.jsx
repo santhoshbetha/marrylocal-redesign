@@ -121,7 +121,7 @@ export function EmailVerification() {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" hidden>
               <Label htmlFor="code">Verification Code (Optional)</Label>
               <Input
                 id="code"
