@@ -46,7 +46,7 @@ export function Contact() {
           <div className="max-w-6xl mx-auto">
 
             {/* Contact Info Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
 
               {/* General Inquiries */}
               <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -86,6 +86,27 @@ export function Contact() {
                   <div className="text-left">
                     <p className="font-medium text-gray-900">Email:</p>
                     <p className="text-purple-600 font-medium">developers@marrylocal.in</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Location */}
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-red-100 rounded-full">
+                      <MapPin className="h-8 w-8 text-red-600" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                    Our Location
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Visit our office or reach out for in-person meetings
+                  </p>
+                  <div className="text-left">
+                    <p className="font-medium text-gray-900">Address:</p>
+                    <p className="text-red-600 font-medium">Mumbai, Maharashtra, India</p>
                   </div>
                 </CardContent>
               </Card>
