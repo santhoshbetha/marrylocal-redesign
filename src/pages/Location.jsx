@@ -279,66 +279,87 @@ export function Location() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Card className="rounded-none">
-        {loading && (
-          <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
-        )}
-        <div className="sticky top-0 bg-card border-b border-border/50 px-6 py-1 flex items-center justify-between z-10">
-          <div className="">
-            {profiledata?.defaultcoordsset == false ? (
-              <h2 className="text-2xl font-bold text-foreground">Change GPS Co-ordinates</h2>
-            ) : (
-              <h2 className="text-2xl font-bold text-foreground">Set GPS Co-ordinates</h2>
-            )}
-            <div className="text-sm text-muted-foreground mt-1">
-              Use this on computer or large screen for accuracy
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+      <div className="container mx-auto px-4 py-4 max-w-7xl">
+        <Card className="bg-background rounded-2xl shadow-xl border border-border">
+          {loading && (
+            <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
+          )}
+
+          {/* Enhanced Header with Gradient Text */}
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 border-b border-border/50 px-6 py-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <MapPin className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  {profiledata?.defaultcoordsset == false ? 'Change GPS Location' : 'Set GPS Location'}
+                </h1>
+                <p className="text-muted-foreground mt-1">
+                  Use this on computer or large screen for accuracy
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <Separator />
-
-        <div className="px-6 space-y-2">
+          <div className="p-6 space-y-6">
           {!isObjEmpty(profiledata?.usercoordsset) && profiledata?.usercoordsset == true && (
             <>
-              <div className="" role="">
-                Your co-ordinates is set to
-                <span className="text-orange-600 mx-2">
-                  ({profiledata?.latitude}, {profiledata?.longitude})
-                </span>
-                .
-                <div>
-                  You may reset using button below or email us the co-ordinates.
+              <div className="bg-card rounded-xl p-6 border border-border shadow-sm space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                    <MapPin className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground mb-2">Custom Location Set</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Your coordinates are currently set to:
+                    </p>
+                    <div className="bg-muted/50 rounded-lg p-3 border border-border/50">
+                      <span className="text-primary font-mono font-semibold">
+                        ({profiledata?.latitude}, {profiledata?.longitude})
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-3">
+                      You may reset to default coordinates using the button below, or contact us to update them.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
                   <Button
-                    className="mt-0 opacity-75"
-                    data-toggle="tooltip"
-                    title="Reset coordinates"
-                    onClick={e => {
-                      setShowResetConfirmDialog(true);
-                    }}
+                    onClick={() => setShowResetConfirmDialog(true)}
+                    variant="outline"
+                    className="border-orange-200 text-orange-700 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-900/20"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      fill="white"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
                       viewBox="0 0 512 512"
+                      className="mr-2"
                     >
                       <path d="M105.1 202.6c7.7-21.8 20.2-42.3 37.8-59.8c62.5-62.5 163.8-62.5 226.3 0L386.3 160H336c-17.7 0-32 14.3-32 32s14.3 32 32 32H463.5c0 0 0 0 0 0h.4c17.7 0 32-14.3 32-32V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0C73.2 122 55.6 150.7 44.8 181.4c-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5zM39 289.3c-5 1.5-9.8 4.2-13.7 8.2c-4 4-6.7 8.8-8.1 14c-.3 1.2-.6 2.5-.8 3.8c-.3 1.7-.4 3.4-.4 5.1V448c0 17.7 14.3 32 32 32s32-14.3 32-32V396.9l17.6 17.5 0 0c87.5 87.4 229.3 87.4 316.7 0c24.4-24.4 42.1-53.1 52.9-83.7c5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8c-62.5 62.5-163.8 62.5-226.3 0l-.1-.1L125.6 352H176c17.7 0 32-14.3 32-32s-14.3-32-32-32H48.4c-1.6 0-3.2 .1-4.8 .3s-3.1 .5-4.6 1z" />
                     </svg>
-                    <span className="text-white ms-1 d-none d-sm-block">Reset</span>
+                    Reset to Default
                   </Button>
                 </div>
               </div>
-              <Separator className="my-4" />
             </>
           )}
 
           {!isObjEmpty(profiledata?.defaultcoordsset) && profiledata?.defaultcoordsset == true && (
-            <div className="text-sm text-blue-900 dark:text-blue-100">
-              Default co-ordinates are set. Change it through map below or email us the
-              co-ordinates.
+            <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                  <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                  Default coordinates are currently set. You can change them through the map below or contact us for assistance.
+                </p>
+              </div>
             </div>
           )}
 
@@ -346,53 +367,48 @@ export function Location() {
             <Button
               onClick={getCurrentLocation}
               disabled={isGettingLocation}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-4 shadow-md hover:shadow-lg transition-all"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-4 shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
             >
-              <Navigation className="w-4 h-4 mr-2" />
+              <Navigation className="w-5 h-5 mr-3" />
               {isGettingLocation ? 'Getting Location...' : 'GET MY COORDINATES AND SET'}
             </Button>
           )}
 
           {!isObjEmpty(profiledata?.usercoordsset) && profiledata?.usercoordsset == false && (
             <>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <div className="flex-1 h-px bg-border"></div>
-                  <span className="text-sm text-muted-foreground font-medium">OR</span>
+                  <span className="text-sm text-muted-foreground font-medium bg-background px-3">OR</span>
                   <div className="flex-1 h-px bg-border"></div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                  <div className="text-sm font-medium text-foreground">
-                    Mark your exact location on below map and then click below &nbsp;
-                    <span className='text-green-700 font-bold'>"Save Coordinates"</span>&nbsp;
-                    button (<span className='text-orange-600 font-bold'>draggable marker/pin</span>).
-                  </div>
-                  <Button
-                    hidden
-                    onClick={handleSetCoordinates}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 shadow-md hover:shadow-lg transition-all"
-                  >
-                    CLICK TO SET
-                  </Button>
+                <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
+                  <p className="text-sm font-medium text-foreground mb-2">
+                    Mark your exact location on the map below and then click the{' '}
+                    <span className="text-primary font-bold">"Save Coordinates"</span> button.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Use the <span className="text-orange-600 font-semibold">draggable marker/pin</span> to adjust your location.
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-2 justify-center py-2">
-                  <MapPin className="w-5 h-5 text-destructive" />
-                  <span className="text-sm font-medium text-muted-foreground">Co-ordinates:</span>
-                  <span className="text-base font-bold text-destructive">
+                <div className="flex items-center justify-center gap-3 bg-card rounded-lg p-4 border border-border shadow-sm">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">Current Coordinates:</span>
+                  <span className="text-lg font-bold text-primary bg-primary/10 px-3 py-1 rounded-md">
                     ({markerPosition?.lat?.toFixed(4)}, {markerPosition?.lng?.toFixed(4)})
                   </span>
                 </div>
               </div>
 
-              <div className="relative rounded-xl overflow-hidden border border-border shadow-lg z-10">
-                <div id="coordinates-map1" className="w-[450px] h-[530px] bg-muted">
+              <div className="relative rounded-xl overflow-hidden border border-border shadow-lg bg-card">
+                <div id="coordinates-map1" className="w-full h-[650px] sm:h-[750px]">
                   <MapContainer
                     center={[coordinates?.lat, coordinates?.lng]}
                     zoom={14}
                     ref={mapRef}
-                    style={{ height: '100vh', width: '100vw' }}
+                    style={{ height: '100%', width: '100%' }}
                   >
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -413,11 +429,11 @@ export function Location() {
                       }
                     }
                   }}
-                  className="absolute top-4 right-4 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-md hover:shadow-lg transition-all z-[1000]"
+                  className="absolute top-4 right-4 bg-background/95 backdrop-blur-sm border border-border p-3 rounded-lg shadow-lg hover:shadow-xl transition-all z-[1000] hover:bg-background"
                   aria-label="Toggle fullscreen"
                 >
                   <svg
-                    className="w-5 h-5 text-gray-700 dark:text-gray-300"
+                    className="w-5 h-5 text-foreground"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -432,20 +448,19 @@ export function Location() {
                 </button>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-border">
+              <div className="flex justify-end gap-3 pt-6 border-t border-border">
                 <Button
-                  // onClick={() => {
-                  //     handleSetCoordinates()
-                  // }}
                   onClick={() => setShowGeoConfirmDialog(true)}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 font-semibold shadow-lg hover:shadow-xl transition-all"
                 >
+                  <MapPin className="w-4 h-4 mr-2" />
                   Save Coordinates
                 </Button>
               </div>
             </>
           )}
         </div>
+
         <Dialog open={showResetConfirmDialog} onOpenChange={setShowResetConfirmDialog}>
           <DialogContent className="">
             {loading && (
@@ -495,6 +510,7 @@ export function Location() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
         <Dialog open={showGeoConfirmDialog} onOpenChange={setShowGeoConfirmDialog}>
           <DialogContent className="">
             {loading && (
@@ -543,6 +559,7 @@ export function Location() {
           </DialogContent>
         </Dialog>
       </Card>
+      </div>
     </div>
   );
 }
