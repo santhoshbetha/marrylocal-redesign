@@ -172,26 +172,6 @@ export function AppNavigation({ children }) {
         <div className="h-10" />
       </SidebarHeader>
       <SidebarContent>
-        {/* Connection Status */}
-        <div className={cn(
-          "mx-4 mb-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-medium",
-          isOnline 
-            ? "bg-green-50 border-green-200 text-green-700" 
-            : "bg-red-50 border-red-200 text-red-700"
-        )}>
-          {isOnline ? (
-            <>
-              <Wifi className="h-4 w-4" />
-              Online
-            </>
-          ) : (
-            <>
-              <WifiOff className="h-4 w-4" />
-              Offline - Try later
-            </>
-          )}
-        </div>
-
         <SidebarMenu className="p-4 space-y-2">
           {navigationItems.map(item => {
             //if (item.requireAuth && !user) return null;
@@ -233,6 +213,26 @@ export function AppNavigation({ children }) {
             );
           })}
         </SidebarMenu>
+
+        {/* Connection Status */}
+        <div className={cn(
+          "mx-4 mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-medium",
+          isOnline 
+            ? "bg-green-50 border-green-200 text-green-700" 
+            : "bg-red-50 border-red-200 text-red-700"
+        )}>
+          {isOnline ? (
+            <>
+              <Wifi className="h-4 w-4" />
+              Online
+            </>
+          ) : (
+            <>
+              <WifiOff className="h-4 w-4" />
+              Offline - Try later
+            </>
+          )}
+        </div>
       </SidebarContent>
     </Sidebar>
   );
