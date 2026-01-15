@@ -67,7 +67,8 @@ export function AppNavigation({ children }) {
     try {
       const userstatedata = {
         userstate: 'active',
-        onetimefeespaid: false
+        onetimefeespaid: false,
+        dateofactivation: new Date().toISOString()
       };
       const res = await updateUserInfo(user?.id, userstatedata);
       if (res.success) {
