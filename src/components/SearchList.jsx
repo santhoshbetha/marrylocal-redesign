@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { UserCard } from './UserCard';
 import { UserProfileDialog } from './UserProfileDialog';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react';
 
 function isObjEmpty(val) {
@@ -185,8 +186,9 @@ export function SearchList({
   };
 
   return (
-    <div>
-      <div className="mb-1 relative h-1 bg-muted/30 rounded-full overflow-hidden">
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      {/* Loading Progress Bar */}
+      <div className="mb-6 relative h-2 bg-muted/30 rounded-full overflow-hidden">
         <div
           className={`h-full bg-gradient-to-r from-primary via-primary/80 to-primary rounded-full transition-all duration-500 ${
             isLoading ? 'w-full animate-pulse' : 'w-0'
@@ -197,20 +199,37 @@ export function SearchList({
         />
       </div>
 
+      {/* No Results - Initial State */}
       {currentProfiles?.length == 0 && searchresultszero != true && (
-        <div className="flex justify-center">
-          <div className="p-4 border-2 bg-yellow-200 dark:bg-accent-foreground m-2 rounded-lg lg:w-[70%]">
-            Search results will be displayed here.
-          </div>
-        </div>
+        <Card className="bg-background rounded-2xl shadow-xl border border-border">
+          <CardContent className="p-12 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-muted rounded-full mb-6">
+              <LayoutGrid className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">Ready to Search</h3>
+            <p className="text-muted-foreground">Your search results will appear here once you submit your preferences.</p>
+          </CardContent>
+        </Card>
       )}
 
+      {/* No Results Found */}
       {currentProfiles?.length == 0 && searchresultszero == true && (
-        <div className="flex justify-center">
-          <div className="p-4 border-2 bg-orange-200 m-2 rounded-lg lg:w-[70%]">
-            No results found of your search criteria. try new.
-          </div>
-        </div>
+        <Card className="bg-background rounded-2xl shadow-xl border border-border">
+          <CardContent className="p-12 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 dark:bg-orange-900/20 rounded-full mb-6">
+              <Search className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">No Matches Found</h3>
+            <p className="text-muted-foreground mb-4">Try adjusting your search criteria to find more potential matches.</p>
+            <Button
+              variant="outline"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="border-orange-200 text-orange-700 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-900/20"
+            >
+              Adjust Search Criteria
+            </Button>
+          </CardContent>
+        </Card>
       )}
 
       {currentProfiles?.length > 0 && (
@@ -251,71 +270,71 @@ export function SearchList({
         </div>
       </div>
 
-      {/* Pagination Controls */}
+      {/* Enhanced Pagination */}
       {totalPages > 1 && (
-        <div className="my-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-          {/* Previous Button */}
-          <Button
-            onClick={goToPrevious}
-            disabled={currentPage === 1}
-            variant="outline"
-            className="px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-primary-foreground transition-all bg-transparent"
-          >
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Previous
-          </Button>
+        <Card className="bg-background rounded-2xl shadow-xl border border-border">
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              {/* Previous Button */}
+              <Button
+                onClick={goToPrevious}
+                disabled={currentPage === 1}
+                variant="outline"
+                className="px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-primary-foreground transition-all"
+              >
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Previous
+              </Button>
 
-          <div className="flex items-center gap-2 flex-wrap justify-center">
-            {getPageNumbers().map((page, index) => {
-              if (typeof page === 'string') {
-                // Render ellipsis
-                return (
-                  <span
-                    key={`${page}-${index}`}
-                    className="w-10 h-10 flex items-center justify-center text-muted-foreground"
-                  >
-                    ...
-                  </span>
-                );
-              }
-              // Render page number button
-              return (
-                <button
-                  key={page}
-                  onClick={() => goToPage(page)}
-                  className={`w-10 h-10 rounded-lg font-medium transition-all ${
-                    currentPage === page
-                      ? 'bg-primary text-primary-foreground shadow-md'
-                      : 'bg-background border border-border hover:bg-muted text-foreground'
-                  }`}
-                >
-                  {page}
-                </button>
-              );
-            })}
-          </div>
+              <div className="flex items-center gap-2 flex-wrap justify-center">
+                {getPageNumbers().map((page, index) => {
+                  if (typeof page === 'string') {
+                    return (
+                      <span
+                        key={`${page}-${index}`}
+                        className="w-12 h-12 flex items-center justify-center text-muted-foreground font-medium"
+                      >
+                        ...
+                      </span>
+                    );
+                  }
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => goToPage(page)}
+                      className={`w-12 h-12 rounded-xl font-semibold transition-all ${
+                        currentPage === page
+                          ? 'bg-primary text-primary-foreground shadow-lg'
+                          : 'bg-muted/50 border border-border hover:bg-muted text-foreground hover:border-primary/50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+              </div>
 
-          {/* Next Button */}
-          <Button
-            onClick={goToNext}
-            disabled={currentPage === totalPages}
-            variant="outline"
-            className="px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-primary-foreground transition-all bg-transparent"
-          >
-            Next
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
-        </div>
+              {/* Next Button */}
+              <Button
+                onClick={goToNext}
+                disabled={currentPage === totalPages}
+                variant="outline"
+                className="px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-primary-foreground transition-all"
+              >
+                Next
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Results Info */}
-      {currentProfiles?.length > 0 ? (
-        <div className="mt-6 text-center text-md text-muted-foreground pb-6">
+      {/* Results Summary */}
+      {currentProfiles?.length > 0 && (
+        <div className="text-center text-sm text-muted-foreground mt-6 pb-6">
           Showing {startIndex + 1}-{Math.min(endIndex, searchProfiles?.length)} of{' '}
           {searchProfiles?.length} profiles
         </div>
-      ) : (
-        <></>
       )}
 
       {/* User Profile Dialog */}

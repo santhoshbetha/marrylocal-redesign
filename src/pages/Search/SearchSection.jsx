@@ -339,291 +339,310 @@ export function SearchSection({
     },
   });
   return (
-    <>
-      <Accordion
-        type="single"
-        collapsible
-        className="w-full p-5 bg-white dark:bg-background"
-        defaultValue="item-1"
-      >
-        <AccordionItem value="item-1">
-          <AccordionTrigger className="text-2xl py-0">Search matches around you</AccordionTrigger>
-          <AccordionContent className="flex flex-col items-center justify-center gap-4 text-balance">
-            <form
-              className="w-[100%] md:w-[84%] lg:w-[72%]"
-              onSubmit={e => {
-                e.preventDefault();
-                formik.handleSubmit(e);
-              }}
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+      <div className="container mx-auto px-4 py-4 max-w-7xl">
+        <Card className="bg-background rounded-2xl shadow-xl border border-border mb-2">
+          <CardContent className="p-4">
+            <Accordion
+              type="single"
+              collapsible
+              className="w-full"
+              defaultValue="item-1"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
-                <Select
-                  required
-                  name="religion"
-                  onValueChange={value => {
-                    formik.values.religion = value;
-                  }}
-                >
-                  <SelectTrigger className="w-full md:mt-5">
-                    <SelectValue placeholder="Religion" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="All">All</SelectItem>
-                      <SelectItem value="Hindu">Hindu</SelectItem>
-                      <SelectItem value="Muslim">Muslim</SelectItem>
-                      <SelectItem value="Christian">Christian</SelectItem>
-                      <SelectItem value="Sikh">Sikh</SelectItem>
-                      <SelectItem value="Parsi">Parsi</SelectItem>
-                      <SelectItem value="Jain">Jain</SelectItem>
-                      <SelectItem value="Buddhist">Buddhist</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-
-                <Select
-                  required
-                  name="language"
-                  onValueChange={value => {
-                    formik.values.language = value;
-                  }}
-                >
-                  <SelectTrigger className="w-full md:mt-5">
-                    <SelectValue placeholder="Language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="All">All</SelectItem>
-                      {getLanguages}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-
-                {!isObjEmpty(addons) && addons?.communitySearch ? (
-                  <Select
-                    required
-                    name="community"
-                    onValueChange={value => {
-                      formik.values.searchdistance = value;
+              <AccordionItem value="item-1" className="border-none">
+                <AccordionTrigger className="text-lg font-semibold text-foreground hover:text-primary transition-colors px-0 py-3 hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-primary/10 rounded-md">
+                      <Search className="w-4 h-4 text-primary" />
+                    </div>
+                    Search Preferences
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-0 pb-0">
+                  <form
+                    className="space-y-4"
+                    onSubmit={e => {
+                      e.preventDefault();
+                      formik.handleSubmit(e);
                     }}
                   >
-                    <SelectTrigger className="w-full md:mt-5">
-                      <SelectValue placeholder="Community" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="All">All</SelectItem>
-                        {getCommunities}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <></>
-                )}
+                    {/* Basic Preferences Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-semibold text-foreground">Religion</Label>
+                        <Select
+                          required
+                          name="religion"
+                          onValueChange={value => {
+                            formik.values.religion = value;
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select religion" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="All">All Religions</SelectItem>
+                              <SelectItem value="Hindu">Hindu</SelectItem>
+                              <SelectItem value="Muslim">Muslim</SelectItem>
+                              <SelectItem value="Christian">Christian</SelectItem>
+                              <SelectItem value="Sikh">Sikh</SelectItem>
+                              <SelectItem value="Parsi">Parsi</SelectItem>
+                              <SelectItem value="Jain">Jain</SelectItem>
+                              <SelectItem value="Buddhist">Buddhist</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                <Select
-                  required
-                  name="economicstatus"
-                  onValueChange={value => {
-                    formik.values.economicstatus = value;
-                  }}
-                >
-                  <SelectTrigger className="w-full md:mt-5">
-                    <SelectValue placeholder="Economic Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="All">All</SelectItem>
-                      <SelectItem value="Below Middleclass">Below Middleclass</SelectItem>
-                      <SelectItem value="Middleclass">Middleclass</SelectItem>
-                      <SelectItem value="Above Middleclass">Above Middleclass</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-semibold text-foreground">Language</Label>
+                        <Select
+                          required
+                          name="language"
+                          onValueChange={value => {
+                            formik.values.language = value;
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select language" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="All">All Languages</SelectItem>
+                              {getLanguages}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                <Select
-                  required
-                  name="searchdistance"
-                  onValueChange={value => {
-                    formik.values.searchdistance = value;
-                  }}
-                >
-                  <SelectTrigger className="w-full md:mt-5">
-                    <SelectValue placeholder="Search distance" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="10 kms">10 kms</SelectItem>
-                      <SelectItem value="25 kms">25 kms</SelectItem>
-                      <SelectItem value="35 kms">35 kms</SelectItem>
-                      <SelectItem value="50 kms">50 kms</SelectItem>
-                      {getmaxsearchdistance(formik.values.city) < 75 ? (
-                        <SelectItem value="75 kms" hidden>
-                          75 kms
-                        </SelectItem>
-                      ) : (
-                        <SelectItem value="75 kms">75 kms</SelectItem>
-                      )}
-                      {getmaxsearchdistance(formik.values.city) < 100 ? (
-                        <SelectItem value="100 kms" hidden>
-                          100 kms
-                        </SelectItem>
-                      ) : (
-                        <SelectItem value="100 kms">100 kms</SelectItem>
-                      )}
-                      {!isObjEmpty(addons) && addons?.fullcitySearch == true ? (
-                        <SelectItem value="Full City">Full City</SelectItem>
-                      ) : (
-                        <SelectItem value="Full City (coming soon)" disabled>
-                          Full City (coming soon)
-                        </SelectItem>
-                      )}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                      {!isObjEmpty(addons) && addons?.communitySearch ? (
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold text-foreground">Community</Label>
+                          <Select
+                            required
+                            name="community"
+                            onValueChange={value => {
+                              formik.values.searchdistance = value;
+                            }}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select community" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectItem value="All">All Communities</SelectItem>
+                                {getCommunities}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : null}
 
-                {true ? (
-                  <div>
-                    <Select
-                      required
-                      name="city"
-                      onValueChange={value => {
-                        formik.values.city = value;
-                      }}
-                    >
-                      <SelectTrigger className="w-full md:mt-5">
-                        <SelectValue placeholder="Search Location" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="22">{primarycity}</SelectItem>
-                          {!isObjEmpty(addons?.location2?.city2) &&
-                          (addons?.location2?.usercoordsset == true ||
-                            addons?.location2?.defaultcoordsset == true) ? (
-                            <SelectItem value="33">{addons?.location2?.city2}</SelectItem>
-                          ) : (
-                            <></>
-                          )}
-                          {!isObjEmpty(addons?.location3?.city3) &&
-                          (addons?.location3?.usercoordsset == true ||
-                            addons?.location3?.defaultcoordsset == true) ? (
-                            <SelectItem value="43">{addons?.location3?.city3}</SelectItem>
-                          ) : (
-                            <></>
-                          )}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ) : (
-                  <></>
-                )}
+                      <div className="space-y-2">
+                        <Label className="text-sm font-semibold text-foreground">Economic Status</Label>
+                        <Select
+                          required
+                          name="economicstatus"
+                          onValueChange={value => {
+                            formik.values.economicstatus = value;
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="All">All Status</SelectItem>
+                              <SelectItem value="Below Middleclass">Below Middleclass</SelectItem>
+                              <SelectItem value="Middleclass">Middleclass</SelectItem>
+                              <SelectItem value="Above Middleclass">Above Middleclass</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                <Select
-                  required
-                  name="economicstatus"
-                  onValueChange={value => {
-                    formik.values.educationlevel = value;
-                  }}
-                >
-                  <SelectTrigger className="w-full md:mt-5">
-                    <SelectValue placeholder="Education level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="All">All</SelectItem>
-                      <SelectItem value="High School">High School</SelectItem>
-                      <SelectItem value="Bachelors level">Bachelors level</SelectItem>
-                      <SelectItem value="Masters level">Masters level</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-semibold text-foreground">Search Distance</Label>
+                        <Select
+                          required
+                          name="searchdistance"
+                          onValueChange={value => {
+                            formik.values.searchdistance = value;
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select distance" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="10 kms">10 kms</SelectItem>
+                              <SelectItem value="25 kms">25 kms</SelectItem>
+                              <SelectItem value="35 kms">35 kms</SelectItem>
+                              <SelectItem value="50 kms">50 kms</SelectItem>
+                              {getmaxsearchdistance(formik.values.city) < 75 ? null : (
+                                <SelectItem value="75 kms">75 kms</SelectItem>
+                              )}
+                              {getmaxsearchdistance(formik.values.city) < 100 ? null : (
+                                <SelectItem value="100 kms">100 kms</SelectItem>
+                              )}
+                              {!isObjEmpty(addons) && addons?.fullcitySearch == true ? (
+                                <SelectItem value="Full City">Full City</SelectItem>
+                              ) : (
+                                <SelectItem value="Full City (coming soon)" disabled>
+                                  Full City (coming soon)
+                                </SelectItem>
+                              )}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-              <div className="flex flex-row justify-between gap-3 mt-6 mx-2">
-                <div className="grid gap-2 mb-2 w-full">
-                  <Label htmlFor="agefrom">Age from</Label>
-                  <Input
-                    required
-                    id="agefrom"
-                    type="number"
-                    min={21}
-                    max={45}
-                    onChange={formik.handleChange}
-                    value={formik.values.agefrom}
-                  />
-                </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-semibold text-foreground">Search Location</Label>
+                        <Select
+                          required
+                          name="city"
+                          onValueChange={value => {
+                            formik.values.city = value;
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select location" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="22">{primarycity}</SelectItem>
+                              {!isObjEmpty(addons?.location2?.city2) &&
+                              (addons?.location2?.usercoordsset == true ||
+                                addons?.location2?.defaultcoordsset == true) ? (
+                                <SelectItem value="33">{addons?.location2?.city2}</SelectItem>
+                              ) : null}
+                              {!isObjEmpty(addons?.location3?.city3) &&
+                              (addons?.location3?.usercoordsset == true ||
+                                addons?.location3?.defaultcoordsset == true) ? (
+                                <SelectItem value="43">{addons?.location3?.city3}</SelectItem>
+                              ) : null}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                <div className="grid gap-2 mb-2 w-full">
-                  <Label htmlFor="ageto">Age to</Label>
-                  <Input
-                    required
-                    id="ageto"
-                    type="number"
-                    min={getMin()}
-                    max={48}
-                    onChange={formik.handleChange}
-                    value={formik.values.ageto}
-                  />
-                </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-semibold text-foreground">Education Level</Label>
+                        <Select
+                          required
+                          name="economicstatus"
+                          onValueChange={value => {
+                            formik.values.educationlevel = value;
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select education" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="All">All Levels</SelectItem>
+                              <SelectItem value="High School">High School</SelectItem>
+                              <SelectItem value="Bachelors level">Bachelors level</SelectItem>
+                              <SelectItem value="Masters level">Masters level</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
 
-                <div className="grid gap-2 mb-2 w-full mt-6">
-                  <label htmlFor="jobstatus" className="md:w-2/3 block text-gray-500 font-bold">
-                    <input
-                      className="mr-2 leading-tight controls"
-                      type="checkbox"
-                      id="jobstatus"
-                      checked={formik.values.jobstatus}
-                      value={formik.values.jobstatus}
-                      onChange={formik.handleChange}
-                    />
-                    <span className="text-sm">With Job</span>
-                  </label>
-                </div>
-              </div>
+                    {/* Age Range and Job Status */}
+                    <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
+                      <h3 className="text-base font-semibold text-foreground mb-3 flex items-center gap-2">
+                        <div className="p-1 bg-primary/10 rounded">
+                          <Search className="w-3.5 h-3.5 text-primary" />
+                        </div>
+                        Additional Preferences
+                      </h3>
 
-              <div className="mt-4">
-                {error == '' ? (
-                  <Button
-                    type="submit"
-                    variant="default"
-                    className={`w-full ${opacity} font-semibold`}
-                  >
-                    <Search className="h-4 w-4 mr-2" />
-                    SEARCH
-                  </Button>
-                ) : (
-                  <>
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      // /disabled={true}
-                    >
-                      <Search className="" />
-                      <span className="text-lg">SEARCH</span>
-                    </Button>
-                  </>
-                )}
-                {error && (
-                  <div className="p-6 mt-2 bg-orange-400 font-bold border-2 rounded-lg text-dark text-center text-lg">
-                    {error}
-                  </div>
-                )}
-              </div>
-            </form>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="agefrom" className="text-sm font-semibold text-foreground">Age From</Label>
+                          <Input
+                            required
+                            id="agefrom"
+                            type="number"
+                            min={21}
+                            max={45}
+                            onChange={formik.handleChange}
+                            value={formik.values.agefrom}
+                            className="w-full"
+                            placeholder="21"
+                          />
+                        </div>
 
-      <SearchList
-        profiledata={profiledata}
-        searchProfiles={searchData}
-        shortlist={shortlist}
-        searchresultszero={searchresultszero}
-        cityNum={cityNum}
-        loading={loading}
-      />
-    </>
+                        <div className="space-y-2">
+                          <Label htmlFor="ageto" className="text-sm font-semibold text-foreground">Age To</Label>
+                          <Input
+                            required
+                            id="ageto"
+                            type="number"
+                            min={getMin()}
+                            max={48}
+                            onChange={formik.handleChange}
+                            value={formik.values.ageto}
+                            className="w-full"
+                            placeholder="35"
+                          />
+                        </div>
+
+                        <div className="flex items-center space-x-3 pt-8">
+                          <Checkbox
+                            id="jobstatus"
+                            checked={formik.values.jobstatus}
+                            onCheckedChange={(checked) => {
+                              formik.setFieldValue('jobstatus', checked);
+                            }}
+                          />
+                          <Label htmlFor="jobstatus" className="text-sm font-semibold text-foreground cursor-pointer">
+                            Employed
+                          </Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Error Display */}
+                    {error && (
+                      <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                        <p className="text-destructive font-medium text-center">{error}</p>
+                      </div>
+                    )}
+
+                    {/* Search Button */}
+                    <div className="flex justify-center pt-2">
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="w-full md:w-auto px-10 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all"
+                        disabled={loading}
+                      >
+                        <Search className="w-4 h-4 mr-2" />
+                        {loading ? 'Searching...' : 'Find Matches'}
+                      </Button>
+                    </div>
+                  </form>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </CardContent>
+        </Card>
+
+        <SearchList
+          profiledata={profiledata}
+          searchProfiles={searchData}
+          shortlist={shortlist}
+          searchresultszero={searchresultszero}
+          cityNum={cityNum}
+          loading={loading}
+        />
+      </div>
+    </div>
   );
 }

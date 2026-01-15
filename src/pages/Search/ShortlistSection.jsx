@@ -139,13 +139,13 @@ export function ShortlistSection({ loggedInUser, userid, shortlist, profiledata,
         <div className="text-center text-muted-foreground">
           <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
           <p className="text-lg">No shortlisted profiles yet</p>
-          <p className="text-sm mt-2">Start searching to find your perfect matchs</p>
+          <p className="text-sm mt-2">Start searching to find your perfect matches</p>
         </div>
       )}
       {shortListProfiles?.length > 0 && !isObjEmpty(data) && (
         <>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl">Your shortlited users</CardTitle>
+            <CardTitle className="text-2xl">Your shortlisted users</CardTitle>
           </CardHeader>
           <CardContent>
             <div

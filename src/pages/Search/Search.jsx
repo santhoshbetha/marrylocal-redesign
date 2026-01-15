@@ -333,17 +333,19 @@ export function Search() {
         ) : activeTab === 'searchuser' ? (
           <SearchUser />
         ) : (
-          <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-8 md:py-12">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-muted rounded-full mb-4">
-                <SearchIcon className="w-6 h-6 text-muted-foreground" />
-              </div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
-                {activeTab === 'search' ? 'Search' : 'Search Users'}
-              </h1>
-              <p className="text-muted-foreground">This page is under construction.</p>
-            </div>
-          </main>
+          <div className="container mx-auto px-4 py-8 max-w-4xl">
+            <Card className="bg-background rounded-2xl shadow-xl border border-border">
+              <CardContent className="p-12 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-muted rounded-full mb-6">
+                  <SearchIcon className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h1 className="text-3xl font-bold mb-4 text-foreground">
+                  {activeTab === 'search' ? 'Search' : 'Search Users'}
+                </h1>
+                <p className="text-muted-foreground text-lg">This page is under construction.</p>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
     </div>
