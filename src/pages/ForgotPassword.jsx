@@ -160,12 +160,11 @@ export function ForgotPassword() {
           setLoading(true);
 
         //  if (isObjEmpty(userSession)) {
-            const { data, error } = await supabase.auth.resetPasswordForEmail(
-              formik.values.email.trim(),
-              {
-                redirectTo: `${import.meta.env.VITE_MARRYLOCAL_URL}/changepassword`,
-              },
-            );
+
+            const { data, error } = await supabase.auth.resetPasswordForEmail(formik.values.email.trim(), {
+              redirectTo: `${import.meta.env.VITE_MARRYLOCAL_URL}/changepassword`,
+            })
+
             setLoading(false);
             if (data) {
               setLoading(false);
