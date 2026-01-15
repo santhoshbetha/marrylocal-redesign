@@ -1,79 +1,40 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Footer } from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import {
   Mail,
   Phone,
   MapPin,
-  Send,
   MessageSquare,
   Users,
   Heart,
   Clock,
   CheckCircle
 } from 'lucide-react';
-import { toast } from 'sonner';
 
 export function Contact() {
   const { user } = useAuth();
-  const [formData, setFormData] = useState({
-    name: user?.firstname || '',
-    email: user?.email || '',
-    subject: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate form submission
-    setTimeout(() => {
-      toast.success('Thank you for your message! We\'ll get back to you soon.', {
-        position: 'top-center'
-      });
-      setFormData({
-        name: user?.firstname || '',
-        email: user?.email || '',
-        subject: '',
-        message: ''
-      });
-      setIsSubmitting(false);
-    }, 2000);
-  };
 
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
         {/* Hero Section - Only show when not logged in */}
         {!user && (
-          <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-16">
+          <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-12 md:py-16">
             <div className="container mx-auto px-4 text-center">
-              <div className="flex justify-center mb-6">
-                <MessageSquare className="h-16 w-16 text-green-300" />
+              <div className="flex justify-center mb-4 md:mb-6">
+                <MessageSquare className="h-12 w-12 md:h-16 md:w-16 text-green-300" />
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4">
                 Get In Touch
               </h1>
-              <p className="text-xl md:text-2xl text-green-100 max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl lg:text-2xl text-green-100 max-w-3xl mx-auto px-2">
                 Have questions, suggestions, or need help? We're here to assist you on your journey to finding love.
               </p>
             </div>
@@ -149,104 +110,38 @@ export function Contact() {
                   </div>
                 </CardContent>
               </Card>
-
             </div>
 
             {/* Contact Form Section */}
-            <div className="grid lg:grid-cols-2 gap-12">
-
-              {/* Contact Form */}
+            <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
+              {/* Contact Email */}
               <Card className="border-0 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-2xl text-gray-900 flex items-center">
-                    <Send className="h-6 w-6 mr-3 text-blue-600" />
-                    Send us a Message
+                    <Mail className="h-6 w-6 mr-3 text-blue-600" />
+                    Get In Touch
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name" className="text-gray-700 font-medium">
-                          Full Name *
-                        </Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          type="text"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          required
-                          className="mt-1"
-                          placeholder="Your full name"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email" className="text-gray-700 font-medium">
-                          Email Address *
-                        </Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          className="mt-1"
-                          placeholder="your.email@example.com"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="subject" className="text-gray-700 font-medium">
-                        Subject *
-                      </Label>
-                      <Input
-                        id="subject"
-                        name="subject"
-                        type="text"
-                        value={formData.subject}
-                        onChange={handleInputChange}
-                        required
-                        className="mt-1"
-                        placeholder="What's this about?"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="message" className="text-gray-700 font-medium">
-                        Message *
-                      </Label>
-                      <Textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        required
-                        className="mt-1 min-h-[120px]"
-                        placeholder="Tell us how we can help you..."
-                      />
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="h-4 w-4 mr-2" />
-                          Send Message
-                        </>
-                      )}
-                    </Button>
-                  </form>
+                <CardContent className="text-center py-12">
+                  <div className="mb-6">
+                    <Mail className="h-16 w-16 text-blue-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Contact Us
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      Have questions or need assistance? Reach out to us directly.
+                    </p>
+                  </div>
+                  <a
+                    href="mailto:contact@marrylocal.in"
+                    className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                  >
+                    <Mail className="h-5 w-5 mr-2" />
+                    contact@marrylocal.in
+                  </a>
+                  <p className="text-sm text-gray-500 mt-4">
+                    We typically respond within 24-48 hours
+                  </p>
                 </CardContent>
               </Card>
 
@@ -283,7 +178,7 @@ export function Contact() {
                     <p className="text-gray-600 mb-4">
                       Stay connected and share MarryLocal with your friends and family.
                     </p>
-                    <div className="flex space-x-4">
+                    <div className="space-x-4">
                       <Button variant="outline" size="sm" className="flex items-center">
                         <span className="text-green-600 font-bold mr-2">WhatsApp</span>
                         Share
@@ -315,7 +210,6 @@ export function Contact() {
                 </Card>
 
               </div>
-
             </div>
 
           </div>
