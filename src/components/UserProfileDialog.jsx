@@ -127,7 +127,7 @@ export function UserProfileDialog({ user, onClose }) {
             <h2 className="text-2xl font-bold text-foreground">
               {user.firstname} ({user.city})
             </h2>
-            {user?.aadharverified ? (
+            {(user?.aadharverified || user?.passportverified || user?.licenseverified) ? (
               <div className="flex items-center gap-1 bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
                 <CheckCircle className="h-4 w-4" />
                 <span>Verified</span>

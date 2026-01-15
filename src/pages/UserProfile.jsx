@@ -229,7 +229,7 @@ export function UserProfile() {
                 <div className="text-4xl font-bold text-foreground bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                   {user?.firstname} <span className="text-2xl text-muted-foreground">({user?.city})</span>
                 </div>
-                {user?.aadharverified ? (
+                {(user?.aadharverified || user?.passportverified || user?.licenseverified) ? (
                   <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-2 rounded-full text-sm font-medium shadow-sm border border-green-200">
                     <CheckCircle className="h-4 w-4" />
                     <span>Verified</span>

@@ -25,6 +25,7 @@ export function SearchUser() {
   const [loading, setLoading] = useState(false);
   const [searchdone, setSearchdone] = useState(false);
   const isOnline = useOnlineStatus();
+  const [useractive, setUseractive] = useState(true);
 
   const handleSearchSubmit = async e => {
     e.preventDefault();
@@ -40,15 +41,19 @@ export function SearchUser() {
       setLoading(false);
       if (res.success) {
         setUserdata(res.data);
+        setUseractive(res.data?.userstate === 'active');
       } else {
         setUserdata(null);
         setSearchdone(true);
+        setUseractive(false);
       }
     } else {
       alert('invalid email or phone');
     }
     setSearchtext('');
   };
+
+  console.log("useractive:", useractive);
 
   return (
     <div className="mt-2 flex flex-col justify-center items-center">
@@ -93,10 +98,10 @@ export function SearchUser() {
         </CardContent>
       </Card>
       <br />
-      {isObjEmpty(userdata) && searchdone && (
+      {((isObjEmpty(userdata) && searchdone) || (!useractive)) && (
         <div className="rounded-lg bg-yellow-200 p-3">
           <div className="flex flex-row items-center">
-            No user found
+            No user found OR {useractive ? '' : 'User is not active'}
             <Button
               type="button"
               className="text-danger rounded bg-transparent border-0 ms-auto mb-1"
@@ -104,6 +109,7 @@ export function SearchUser() {
               onClick={e => {
                 setSearchdone(false);
                 setUserdata(null);
+                setUseractive(true)
               }}
             >
               <svg
@@ -119,7 +125,7 @@ export function SearchUser() {
           </div>
         </div>
       )}
-      {!isObjEmpty(userdata) && (
+      {!isObjEmpty(userdata) && useractive && (
         <Link
           to={{ pathname: `/user/${userdata?.shortid}` }}
           onClick={() => {

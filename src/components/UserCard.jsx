@@ -52,7 +52,7 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
                 {profile?.firstname}, {profile?.age}
               </div>
               <TooltipProvider>
-                {profile?.aadharverified ? (
+                {(profile?.aadharverified || profile?.passportverified || profile?.licenseverified) ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <CheckCircle className="h-4 w-4 text-green-600 cursor-help" />

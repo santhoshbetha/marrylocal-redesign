@@ -212,8 +212,9 @@ export const getUserProfile = async (shortid, signal) => {
                  showphone, showinstagram, showfacebook, showcommunity, \
                  facebook, instagram, \
                  aadharverified,\
+                 licenseverified, \
                  passportverified, \
-                 userstate',
+                 userstate'
       )
       .eq('shortid', shortid)
       .single(signal ? { signal } : {});

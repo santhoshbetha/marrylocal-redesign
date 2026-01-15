@@ -62,7 +62,7 @@ export function Search() {
       //
       // Verified check
       //
-      if (!(profiledata?.aadharverified || profiledata?.passportverified)) {
+      if (!(profiledata?.aadharverified || profiledata?.passportverified || profiledata?.licenseverified)) {
         if (!isObjEmpty(profiledata?.dateofactivation)) {
           let dif = Math.abs(datenow - new Date(profiledata?.dateofcreation));
           let dayssincecreation = Math.floor(dif / (1000 * 3600 * 24));
