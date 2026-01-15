@@ -143,10 +143,8 @@ export function NavAfter() {
             <SheetContent side="right" className={`w-[300px] sm:w-[400px] bg-gradient-to-b ${gradient} text-white border-l-0`}>
               <SheetHeader>
                 <SheetTitle className="flex items-center space-x-2 text-white">
-                  <div className="p-1 bg-white/20 rounded-lg">
-                    <Heart className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="font-bold text-lg">MarryLocal</span>
+                  <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+                  <span className="font-custom text-lg">MarryLocal</span>
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col space-y-4 mt-8">
@@ -190,7 +188,7 @@ export function NavAfter() {
                   <Users className="h-5 w-5" />
                   <span>Referrals</span>
                 </Link>
-                <div className="pt-6 border-t border-white/20">
+                <div className="pt-6 border-t border-white/20 hidden md:block">
                   <div className="flex items-center space-x-3 mb-4">
                     <Avatar className="h-10 w-10 border-2 border-white/20">
                       <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />

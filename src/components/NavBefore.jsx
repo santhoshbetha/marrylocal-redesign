@@ -85,10 +85,8 @@ export function NavBefore({ openLogin, setOpenLogin }) {
           <SheetContent side="right" className={`w-[300px] sm:w-[400px] bg-gradient-to-b ${gradient} text-white border-l-0`}>
             <SheetHeader>
               <SheetTitle className="flex items-center space-x-2 text-white">
-                <div className="p-1 bg-white/20 rounded-lg">
-                  <Heart className="h-5 w-5 text-white" />
-                </div>
-                <span className="font-bold text-lg">MarryLocal</span>
+                <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+                <span className="font-custom">MarryLocal</span>
               </SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col space-y-4 mt-8">

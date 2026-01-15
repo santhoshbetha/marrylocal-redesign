@@ -237,6 +237,56 @@ export function AppNavigation({ children }) {
     </Sidebar>
   );
 
+  // Mobile bottom navigation
+  const MobileBottomNav = () => (
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border shadow-lg">
+      <div className="grid grid-cols-5 h-16">
+        {navigationItems.slice(0, 5).map(item => (
+          <Link
+            key={item.href}
+            to={item.href}
+            onClick={(e) => {
+              if (!isOnline) {
+                e.preventDefault();
+                toast.error('Please check your internet connection and try again.');
+                return;
+              }
+            }}
+            className={cn(
+              'flex flex-col items-center justify-center text-xs font-medium transition-colors',
+              item.isActive 
+                ? 'text-primary' 
+                : 'text-muted-foreground hover:text-primary',
+              !isOnline && 'opacity-50'
+            )}
+          >
+            <item.icon className="h-5 w-5 mb-1" />
+            <span>{item.label}</span>
+          </Link>
+        ))}
+      </div>
+      {/* Connection Status for Mobile */}
+      <div className={cn(
+        "px-4 py-2 text-xs font-medium text-center",
+        isOnline 
+          ? "bg-green-50 text-green-700 border-t border-green-200" 
+          : "bg-red-50 text-red-700 border-t border-red-200"
+      )}>
+        {isOnline ? (
+          <div className="flex items-center justify-center gap-1">
+            <Wifi className="h-3 w-3" />
+            <span>Online</span>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center gap-1">
+            <WifiOff className="h-3 w-3" />
+            <span>Offline - Try later</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Dialog open={showReactivateDialog} modal={true}>
@@ -269,7 +319,7 @@ export function AppNavigation({ children }) {
         <>
           <SidebarProvider defaultOpen={true}>
             <DesktopSidebar />
-            <main className="container animate-slide-up relative">
+            <main className="container animate-slide-up relative md:pb-0 pb-20">
               {!isOnline && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
                   <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm mx-4">
@@ -290,6 +340,7 @@ export function AppNavigation({ children }) {
               {children}
             </main>
           </SidebarProvider>
+          <MobileBottomNav />
         </>
       ) : (
         <>{children}</>

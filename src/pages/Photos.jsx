@@ -183,7 +183,7 @@ export function Photos() {
             {/* Photo Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-6 place-items-center">
               {images.slice(0, getDisplayedSlots()).map((image, index) => (
-                <div key={index} className="relative group w-full max-w-48">
+                <div key={index} className="relative group w-full max-w-64 sm:max-w-48">
                   {/* Photo Number Badge */}
                   <div className="absolute -top-2 -left-2 z-10">
                     <Badge
