@@ -21,13 +21,69 @@ import {
   UserPen,
   BadgeCheck,
   MapPin,
+  CreditCard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { updateUserInfo } from '../services/userService';
+import { toast } from 'sonner';
+import supabase from '../lib/supabase';
 
 export function AppNavigation({ children }) {
-  const { user } = useAuth();
+  const { user, profiledata, setProfiledata } = useAuth();
   const location = useLocation();
   useIsMobile();
+  const [showReactivateDialog, setShowReactivateDialog] = useState(false);
+  const [isReactivating, setIsReactivating] = useState(false);
+
+  useEffect(() => {
+    if (user && profiledata?.userstate === 'inactive') {
+      setShowReactivateDialog(true);
+    }
+  }, [user, profiledata]);
+
+  const handleCancel = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.clear();
+      window.location.reload();
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force reload anyway
+      window.location.reload();
+    }
+  };
+
+  const handleReactivate = async () => {
+    setIsReactivating(true);
+    try {
+      const userstatedata = {
+        userstate: 'active',
+        onetimefeespaid: false
+      };
+      const res = await updateUserInfo(user?.id, userstatedata);
+      if (res.success) {
+        setProfiledata({ ...profiledata, ...userstatedata });
+        toast.success('Profile reactivated successfully!');
+        setShowReactivateDialog(false);
+      } else {
+        toast.error('Failed to reactivate profile. Please try again.');
+      }
+    } catch (error) {
+      console.error('Reactivation error:', error);
+      toast.error('An error occurred. Please try again.');
+    } finally {
+      setIsReactivating(false);
+    }
+  };
 
   const navigationItems = [
     {
@@ -74,6 +130,17 @@ export function AppNavigation({ children }) {
     },
   ];
 
+  // Add service fees button if required
+  if (profiledata?.onetimefeesrequired && !profiledata?.onetimefeespaid) {
+    navigationItems.splice(1, 0, {
+      href: '/servicefees',
+      label: 'Service Fees',
+      icon: CreditCard,
+      isActive: location.pathname === '/servicefees',
+      requireAuth: true,
+    });
+  }
+
   // Desktop sidebar navigation
   const DesktopSidebar = () => (
     <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
@@ -116,6 +183,32 @@ export function AppNavigation({ children }) {
 
   return (
     <>
+      <Dialog open={showReactivateDialog} modal={true}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reactivate Your Profile</DialogTitle>
+            <DialogDescription>
+              Your profile is currently inactive. To continue using our services, please reactivate your profile.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              disabled={isReactivating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleReactivate}
+              disabled={isReactivating}
+            >
+              {isReactivating ? 'Reactivating...' : 'Reactivate Profile'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {user ? (
         <>
           <SidebarProvider defaultOpen={true}>

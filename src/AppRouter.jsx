@@ -75,9 +75,6 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
 
           <Route path="/addons" element={<Addons />} />
 
-
-
-
           <Route path="/referrals" element={<Referrals />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/logout" element={<Logout />} />
