@@ -31,9 +31,9 @@ export function ForgotPassword() {
   const { user, profiledata, userSession } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [customerror, setCustomError] = useState('');
+  //const [customerror, setCustomError] = useState('');
   const [countdown, setCountdown] = useState(0);
-  const { setCode, setEmail } = useContext(SearchDataAndRecoveryContext);
+  //const { setCode, setEmail } = useContext(SearchDataAndRecoveryContext);
   const isOnline = useOnlineStatus();
 
   // Countdown timer effect

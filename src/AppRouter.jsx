@@ -30,6 +30,7 @@ import { Cancellation } from './pages/Cancellation';
 import { RegistrationSuccess } from '@/pages/auth/RegistrationSuccess';
 import { EmailVerification } from '@/pages/auth/EmailVerification';
 import { EmailNotVerified } from '@/pages/auth/EmailNotVerified';
+import AuthConfirm from '@/pages/auth/AuthConfirm';
 import { Maintenance } from '@/pages/Maintenance';
 
 export default function AppRouter({ openLogin, setOpenLogin }) {
@@ -52,6 +53,7 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
         <Route path="/registration-success" element={<RegistrationSuccess />} />
         <Route path="/verify-email" element={<EmailVerification />} />
         <Route path="/email-not-verified" element={<EmailNotVerified />} />
+        <Route path="/auth/confirm" element={<AuthConfirm />} />
         <Route path="/login" element={<LoginPage setOpenLogin={setOpenLogin} />} />
 
         <Route exact path="user/:shortid" element={<UserProfile />} />
@@ -81,7 +83,6 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
 
           <Route path="/delete" element={<Delete />} />
           <Route path="*" element={<PageNotFound />} />
-
 
         </Route>
       </Routes>

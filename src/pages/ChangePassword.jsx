@@ -1,13 +1,11 @@
-﻿import { useState, useContext, useEffect } from 'react';
-import { useFormik } from 'formik';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import * as Yup from 'yup';
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
-import usePasswordToggle from '../hooks/usePasswordToggle';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Eye, EyeOff, Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { updateUserInfo } from '../services/userService';
 import { updatePasswordRetryCount } from '../services/registerService';
@@ -24,423 +22,296 @@ function isObjEmpty(val) {
 }
 
 export function ChangePassword() {
-  const { user, userSession, profiledata } = useAuth();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const { user, userSession } = useAuth();
+  const { email } = useContext(SearchDataAndRecoveryContext);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [customerror, setCustomError] = useState('');
-  const [tokenValid, setTokenValid] = useState(false);
-  const [tokenError, setTokenError] = useState('');
-  const [PasswordInputType, ToggleIcon] = usePasswordToggle();
-  const [ConfirmPasswordInputType, ConfirmToggleIcon] = usePasswordToggle();
-  const { email, code } = useContext(SearchDataAndRecoveryContext);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
-  console.log('ChangePassword code::', code);
-
-  // Validate token on component mount
+  // Validate access - only allow access after successful AuthConfirm
   useEffect(() => {
-    const validateToken = async () => {
-      try {
-        // Check if there's a token in URL parameters
-        const token = searchParams.get('token');
-        const type = searchParams.get('type');
-
-        // For password recovery, Supabase should have automatically authenticated the user
-        // Check if we have a valid user session
-        if (!userSession || !user) {
-          setTokenError('Invalid or expired token. Please request a new password reset link.');
-          setTokenValid(false);
-          return;
-        }
-
-        // Check if this is a recovery type request
-        if (type !== 'recovery') {
-          setTokenError('Invalid request type. Please use the password reset link from your email.');
-          setTokenValid(false);
-          return;
-        }
-
-        // If we have a user session and it's a recovery type, token is valid
-        setTokenValid(true);
-        setTokenError('');
-
-      } catch (error) {
-        console.error('Token validation error:', error);
-        setTokenError('Token validation failed. Please try again.');
-        setTokenValid(false);
-      }
-    };
-
-    validateToken();
-  }, [user, userSession, searchParams]);
-
-  const formik = useFormik({
-    initialValues: {
-      code: '',
-      password: '',
-      passwordconfirm: '',
-    },
-    validationSchema: Yup.object({
-      // email: Yup.string().email().required("required"),
-      code: Yup.string()
-        .required('Code is Required')
-        .matches(/^[0-9]+$/, 'Must be only digits')
-        .min(5, 'Must be exactly 5 or 6 digits')
-        .max(6, 'Must be exactly 5 or 6 digits'),
-      password: Yup.string().min(6).required('required'),
-      passwordconfirm: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
-    }),
-  });
-
-  const handleChangePassSubmit = async e => {
-    e.preventDefault();
-    try {
-      //if (!isObjEmpty(code)) {
-        //if (formik.values.code != code) {
-        //  setCustomError('Invalid Code or Code Expired. Please check email for latest code');
-        //}
-        if (formik.values.code == code) {
-          setLoading(true);
-
-          const { data, error } = await supabase.auth.updateUser({
-            password: formik.values.password.trim(),
-          });
-
-          if (error) {
-            setLoading(false);
-            alert('Password reset failed. try again later');
-            setCustomError(String(error));
-          } else if (data?.user) {
-            // reset password_retry_count to '0'
-            if (!isObjEmpty(userSession)) {
-              const res1 = await updateUserInfo(user?.id, {
-                password_retry_count: 0,
-              });
-            } else {
-              const res2 = await updatePasswordRetryCount({
-                email: email.trim(),
-                count: 0,
-              });
-            }
-
-            setLoading(false);
-            alert('Password reset succesful!');
-
-            //
-            // logout
-            //
-            if (!isObjEmpty(userSession)) {
-              localStorage.removeItem('shortlistarray');
-              localStorage.removeItem('page');
-              localStorage.removeItem('shortlistarraylength');
-              localStorage.removeItem('userstate');
-              localStorage.clear();
-              secureLocalStorage.clear();
-              //dispatch(logout());
-            }
-            navigate('/login?msg=reset');
-          }
-        }
-      //}
-    } catch (error) {
-      alert('Something wrong. Try again later');
-      setLoading(false);
-      setCustomError('Password reset failed, try again');
-      navigate('/');
+    if (!userSession || !user) {
+      setMessage('Access denied. Please use the password reset link from your email.');
+      setMessageType('error');
+      setTimeout(() => {
+          navigate('/', { replace: true });
+      }, 5000);
+      return;
     }
+  }, [user, userSession, navigate]);
+
+  useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+  }, []);
+
+  const validatePassword = (password) => {
+    if (password.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+    return null;
   };
 
-  return (
-    <div className="mt-2 flex justify-center">
-      <Card className="bg-white w-[90%] sm:max-w-[525px] relative">
-        {loading && (
-          <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
-        )}
+  const handlePasswordUpdate = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setMessageType('');
 
-        {/* Show error if token is invalid */}
-        {!tokenValid ? (
-          <>
-            <CardHeader>
-              <CardTitle className="text-red-500">
-                {tokenError || 'Invalid or Expired Token'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-gray-600">
-                  The password reset link is invalid or has expired. Please request a new password reset link.
+    // Validate passwords
+    if (!password) {
+      setMessage('Please enter a new password');
+      setMessageType('error');
+      return;
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setMessage(passwordError);
+      setMessageType('error');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setMessage('Passwords do not match');
+      setMessageType('error');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // This is the core call that updates the user's password in the database
+      const { data, error } = await supabase.auth.updateUser({
+        password: password
+      });
+
+      if (error) {
+        setMessage(`Error: ${error.message}`);
+        setMessageType('error');
+      } else if (data?.user) {
+        // reset password_retry_count to '0'
+        if (!isObjEmpty(userSession)) {
+          const res1 = await updateUserInfo(user?.id, {
+            password_retry_count: 0,
+          });
+        } else {
+          const res2 = await updatePasswordRetryCount({
+            email: email.trim(),
+            count: 0,
+          });
+        }
+
+        setLoading(false);
+        setMessage('Password reset successful!');
+        setMessageType('success');
+
+        // Small delay so user sees success message before redirect
+        setTimeout(() => {
+          //
+          // logout
+          //
+          if (!isObjEmpty(userSession)) {
+            localStorage.removeItem('shortlistarray');
+            localStorage.removeItem('page');
+            localStorage.removeItem('shortlistarraylength');
+            localStorage.removeItem('userstate');
+            localStorage.clear();
+            secureLocalStorage.clear();
+            //dispatch(logout());
+          }
+          navigate('/login?msg=reset');
+        }, 2000);
+      }
+    } catch (err) {
+      setMessage('An unexpected error occurred. Please try again.');
+      setMessageType('error');
+    }
+
+    setLoading(false);
+  };
+
+  // If no valid session, show access denied message
+  if (!userSession || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-12">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto">
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="text-center pb-2">
+                <div className="flex justify-center mb-4">
+                  <div className="p-3 bg-red-100 rounded-full">
+                    <AlertCircle className="h-8 w-8 text-red-600" />
+                  </div>
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900">
+                  Access Denied
+                </CardTitle>
+                <p className="text-gray-600 text-sm mt-2">
+                  You can only access this page through a valid password reset link.
                 </p>
-                <div className="flex">
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate('/')}
-                    className="mr-2"
-                  >
-                    Go Home
-                  </Button>
-                  <Button
-                    onClick={() => navigate('/forgotpassword')}
-                    className="ml-auto"
-                  >
-                    Request New Link
-                  </Button>
+              </CardHeader>
+
+              <CardContent className="space-y-6">
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertCircle className="h-4 w-4 text-red-600" />
+                  <AlertDescription className="text-red-800">
+                    Please use the password reset link from your email to access this page.
+                    You will be redirected to the homepage shortly.
+                  </AlertDescription>
+                </Alert>
+
+                <Button
+                  onClick={() => navigate('/', { replace: true })}
+                  className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  Go to Homepage
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-12">
+      <div className="container mx-auto px-4">
+        <div className="max-w-md mx-auto relative">
+          {/* Loading Overlay */}
+          {loading && (
+            <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10 rounded-lg">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600 font-medium">Updating your password...</p>
+              </div>
+            </div>
+          )}
+
+          <Card className="border-0 shadow-xl">
+            <CardHeader className="text-center pb-2">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <Lock className="h-8 w-8 text-blue-600" />
                 </div>
               </div>
-            </CardContent>
-          </>
-        ) : (
-          <>
-            <CardHeader>
-              <CardTitle className="text-black">Set New Password</CardTitle>
+              <CardTitle className="text-2xl font-bold text-gray-900">
+                Set New Password
+              </CardTitle>
+              <p className="text-gray-600 text-sm mt-2">
+                Enter your new password below
+              </p>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleChangePassSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="code" className="mb-2">
-                Code
-              </Label>
-              <Input
-                id="code"
-                type="text"
-                placeholder=""
-                name="code"
-                value={formik.values.code}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                required
-              />
-              {formik.touched.code && formik.errors.code ? (
-                <p className="text-red-700">{formik.errors.code} </p>
-              ) : null}
-            </div>
 
-            <div>
-              <Label htmlFor="password" className="mb-2">
-                New Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={PasswordInputType}
-                  placeholder=""
-                  name="password"
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  required
-                />
-                <span
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500
-                                    hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 bg-background"
+            <CardContent className="space-y-6">
+              <form onSubmit={handlePasswordUpdate} className="space-y-4">
+                {/* New Password Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                    New Password
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter new password (min 6 characters)"
+                      className="pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm Password Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                    Confirm Password
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm your new password"
+                      className="pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {ToggleIcon}
-                </span>
-              </div>
-              {formik.touched.password && formik.errors.password ? (
-                <p className="text-red-700">{formik.errors.password} </p>
-              ) : null}
-            </div>
+                  {loading ? 'Updating Password...' : 'Update Password'}
+                </Button>
+              </form>
 
-            <div>
-              <Label htmlFor="passwordconfirm" className="mt-2 mb-2">
-                New Password (Confirm)
-              </Label>
-              <div className="relative">
-                <Input
-                  id="passwordconfirm"
-                  type={ConfirmPasswordInputType}
-                  placeholder=""
-                  name="passwordconfirm"
-                  value={formik.values.passwordconfirm}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  required
-                />
-                <span
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500
-                                    hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 bg-background"
-                >
-                  {ConfirmToggleIcon}
-                </span>
-              </div>
-              {formik.touched.passwordconfirm && formik.errors.passwordconfirm ? (
-                <p className="text-red-700">{formik.errors.passwordconfirm} </p>
-              ) : null}
-            </div>
+              {/* Message Display */}
+              {message && (
+                <Alert className={`${
+                  messageType === 'success'
+                    ? 'border-green-200 bg-green-50'
+                    : 'border-red-200 bg-red-50'
+                }`}>
+                  <div className="flex items-center">
+                    {messageType === 'success' ? (
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    ) : (
+                      <AlertCircle className="h-4 w-4 text-red-600 mr-2" />
+                    )}
+                    <AlertDescription className={
+                      messageType === 'success' ? 'text-green-800' : 'text-red-800'
+                    }>
+                      {message}
+                    </AlertDescription>
+                  </div>
+                </Alert>
+              )}
 
-            <div className="flex mt-3">
-              <Button
-                variant="outline"
-                onClick={e => {
-                  e.preventDefault();
-                  navigate('/myspace');
-                }}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" className="ms-auto">
-                Confirm New Password
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-          </>
-        )}
-      </Card>
+              {/* Password Requirements */}
+              <div className="text-xs text-gray-500 space-y-1">
+                <p className="font-medium">Password requirements:</p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>At least 6 characters long</li>
+                  <li>Both passwords must match</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
-
-/* OLD CODR - USE later when "SEND CODE" functionality is 
-                <Card className="bg-white w-[90%] sm:max-w-[525px] relative">
-        {loading && (
-          <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
-        )}
-        {isObjEmpty(userSession) ? (
-          <>
-            <CardHeader>
-              <CardTitle className="text-red-500">
-                Link expired. Click 'Forgot Password' below.
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex">
-                <button className="" onClick={() => navigate('/')}>
-                  Cancel
-                </button>
-                <Button
-                  variant="destructive"
-                  color="error"
-                  className="ms-auto"
-                  type="submit"
-                  onClick={() => navigate('/forgotpassword')}
-                >
-                  Forgot Password
-                </Button>
-              </div>
-            </CardContent>
-          </>
-        ) : (
-          <>
-            <CardHeader>
-              <CardTitle className="text-black">Set New Password</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleChangePassSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="email" className="mb-2">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder=""
-                    name="email"
-                    value={email ? email : profiledata?.email}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    disabled
-                  />
-                  {formik.touched.email && formik.errors.email ? (
-                    <p className="text-red-700">{formik.errors.email} </p>
-                  ) : null}
-                </div>
-
-                {!isObjEmpty(code) ? (
-                  <>
-                    <div
-                      style={{ cursor: 'pointer' }}
-                      className="border-2 rounded-sm mt-4 mb-3 p-3 rounded-3 bg-yellow-300"
-                    >
-                      <p className="fw-bold">
-                        Please leave this page open and go check your email for the one-time
-                        security code we just sent you. Enter it below, and enter your new password.
-                      </p>
-                      <p className="fw-bold">
-                        If you do not recieve the email, wait few minutes, check both inbox and spam
-                        folders and then contact us: contact@marrylocal.in (with the subject line
-                        "Reset password Issue").
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <></>
-                )}
-
-                <div>
-                  <Label htmlFor="code" className="mb-2">
-                    Code
-                  </Label>
-                  <Input
-                    id="code"
-                    type="text"
-                    placeholder=""
-                    name="code"
-                    value={formik.values.code}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    required
-                  />
-                  {formik.touched.code && formik.errors.code ? (
-                    <p className="text-red-700">{formik.errors.code} </p>
-                  ) : null}
-                </div>
-
-                <div>
-                  <Label htmlFor="password" className="mb-2">
-                    New Password
-                  </Label>
-                  <Input
-                    id="password"
-                    type="text"
-                    placeholder=""
-                    name="password"
-                    value={formik.values.password}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    required
-                  />
-                  {formik.touched.password && formik.errors.password ? (
-                    <p className="text-red-700">{formik.errors.password} </p>
-                  ) : null}
-                </div>
-
-                <div>
-                  <Label htmlFor="passwordconfirm" className="mt-2 mb-2">
-                    New Password (Confirm)
-                  </Label>
-                  <Input
-                    id="passwordconfirm"
-                    type="password"
-                    placeholder=""
-                    name="passwordconfirm"
-                    value={formik.values.passwordconfirm}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    required
-                  />
-                  {formik.touched.passwordconfirm && formik.errors.passwordconfirm ? (
-                    <p className="text-red-700">{formik.errors.passwordconfirm} </p>
-                  ) : null}
-                </div>
-
-                <div className="flex mt-3">
-                  <Button
-                    variant="outline"
-                    onClick={e => {
-                      e.preventDefault();
-                      navigate('/myspace');
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" className="ms-auto">
-                    Confirm New Password
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </>
-        )}
-      </Card>
-      */
