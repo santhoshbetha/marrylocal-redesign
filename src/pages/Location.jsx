@@ -19,7 +19,22 @@ import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 're
 import { useAuth } from '../context/AuthContext';
 import { updateUserInfo } from '../services/userService';
 import dayjs from 'dayjs';
+import L from 'leaflet';
+
+// 1. Import the CSS and images explicitly
 import 'leaflet/dist/leaflet.css';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// 2. Fix the icon issue by overriding the default icon prototype
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 
 function isObjEmpty(val) {
   return val == null ||
@@ -349,7 +364,8 @@ export function Location() {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                   <div className="text-sm font-medium text-foreground">
-                    Mark your exact location on below map and then click below "Save Coordinates"
+                    Mark your exact location on below map and then click below &nbsp;
+                    <span className='text-green-700 font-bold'>"Save Coordinates"</span> &nbsp;
                     button
                   </div>
                   <Button
