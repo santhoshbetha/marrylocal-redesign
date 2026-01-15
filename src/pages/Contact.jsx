@@ -46,7 +46,7 @@ export function Contact() {
           <div className="max-w-6xl mx-auto">
 
             {/* Contact Info Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
 
               {/* General Inquiries */}
               <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -91,7 +91,7 @@ export function Contact() {
               </Card>
 
               {/* Location */}
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300" hidden>
                 <CardContent className="p-8 text-center">
                   <div className="flex justify-center mb-4">
                     <div className="p-3 bg-red-100 rounded-full">
