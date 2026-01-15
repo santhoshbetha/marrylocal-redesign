@@ -403,7 +403,6 @@ export function UserProfile() {
                         <></>
                       )}
                     </div>
-                  </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mx-4 my-4">
                       <div className="space-y-4">
@@ -500,6 +499,7 @@ export function UserProfile() {
                           </div>
                         )}
                     </div>
+                  </div>
                   </div>
 
                   {/* Bio Section - Separate section after contact info */}

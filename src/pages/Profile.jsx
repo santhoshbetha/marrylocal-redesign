@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Phone, RefreshCw, Edit3, Check, X } from 'lucide-react';
+import { Mail, Phone, RefreshCw, Edit3, Check, X, CheckCircle, AlertTriangle } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { Spinner } from '@/components/ui/spinner';
 import { Editable } from '@/components/Editable';
@@ -53,10 +53,9 @@ export function Profile() {
 
   const handlesaveSocials = async e => {
     e.preventDefault();
-    setChange(false);
 
     var phoneregex = /^\d{10}$/;
-    if (phone.match(phoneregex)) {
+    if (phone.match(phoneregex) || phone === '') {
       setEditing(true);
       if (isOnline) {
         if (userSession) {
@@ -72,6 +71,7 @@ export function Profile() {
               facebook: facebook,
               instagram: instagram,
             });
+            setChange(false); // Reset change state after successful save
           } else {
             alert('Something wrong. Try later');
           }
@@ -84,14 +84,9 @@ export function Profile() {
         setEditing(false);
         alert('You are offline. check your internet connection.');
       }
-
-      setEditing(false);
     } else {
-      setEditing(false);
-      alert('invalid phonenumber! try again');
+      alert('Invalid phone number! Please enter a 10-digit number or leave empty');
     }
-
-    return;
   };
 
   async function addbiodata(editdata) {
@@ -140,6 +135,13 @@ export function Profile() {
       setEditing(false);
       alert('You are offline. check your internet connection.');
     }
+  };
+
+  const handleCancelSocials = () => {
+    setPhone(isObjEmpty(profiledata?.phonenumber) ? '' : profiledata?.phonenumber);
+    setFacebook(isObjEmpty(profiledata?.facebook) ? '' : profiledata?.facebook);
+    setInstagram(isObjEmpty(profiledata?.instagram) ? '' : profiledata?.instagram);
+    setChange(false);
   };
 
   const handleCancelBio = () => {
@@ -196,30 +198,119 @@ export function Profile() {
                 <Spinner className="absolute top-[50%] left-[50%] z-50 cursor-pointer size-10" />
               )}
               <div className="flex items-center gap-3">
-                <div className="flex flex-wrap items-center gap-3 md:flex-row">
-                  <div>
-                    <h2 className="text-xl md:text-2xl font-bold">
-                      {profiledata?.firstname}{' '}
-                      <span className="text-sm">({profiledata?.city}) </span>
-                      &nbsp;
-                      {!isObjEmpty(profiledata?.userhandle) ? (
-                        <>({profiledata?.userhandle.toLowerCase()})</>
-                      ) : (
-                        <></>
-                      )}
-                    </h2>
+                <div className="flex flex-col gap-2 w-full">
+                  {/* Enhanced Name Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="space-y-1">
+                      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+                        {profiledata?.firstname}
+                        {!isObjEmpty(profiledata?.age) && (
+                          <span className="text-lg md:text-xl text-muted-foreground font-normal ml-2">
+                            ({profiledata?.age})
+                          </span>
+                        )}
+                      </h1>
+                      <div className="flex flex-wrap items-center gap-3 text-sm md:text-base text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium text-foreground">📍</span>
+                          <span>{profiledata?.city}</span>
+                        </div>
+                        {!isObjEmpty(profiledata?.userhandle) && (
+                          <>
+                            <span className="text-muted-foreground/50">•</span>
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium text-foreground">@</span>
+                              <span className="font-medium">{profiledata?.userhandle.toLowerCase()}</span>
+                            </div>
+                          </>
+                        )}
+                        {profiledata?.gender && (
+                          <>
+                            <span className="text-muted-foreground/50">•</span>
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium text-foreground">
+                                {profiledata?.gender === 'Male' ? '👨' : '👩'}
+                              </span>
+                              <span>{profiledata?.gender}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      size="icon-sm" hidden
+                      variant="outline"
+                      onClick={() => {
+                        setChange(false);
+                        setReload(true);
+                      }}
+                      className="shrink-0 hover:bg-primary/10 hover:border-primary/30"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    size="icon-sm"
-                    onClick={() => {
-                      setChange(false);
-                      setReload(true);
-                    }}
-                  >
-                    <RefreshCw />
-                  </Button>
+
+                  {/* Profile Stats Bar */}
+                  <div className="flex flex-wrap gap-4 pt-2 border-t border-border/50" hidden>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="font-medium text-primary">📧</span>
+                      <span>{profiledata?.email}</span>
+                    </div>
+                    {profiledata?.phonenumber && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="font-medium text-green-600">📱</span>
+                        <span>{profiledata?.phonenumber}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="font-medium text-blue-600">🆔</span>
+                      <span>{profiledata?.shortid}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* Verification Status Card */}
+              <div className="mb-6">
+                {(profiledata?.aadharverified || profiledata?.passportverified || profiledata?.licenseverified) ? (
+                  <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg shadow-sm">
+                    <div className="p-2 bg-green-100 rounded-full">
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="text-green-800 font-semibold text-lg">Verified Profile</div>
+                      <div className="text-green-700 text-sm">
+                        {profiledata?.aadharverified && profiledata?.passportverified && profiledata?.licenseverified
+                          ? 'Verified with Aadhaar, Passport, and Driver License'
+                          : profiledata?.aadharverified && profiledata?.passportverified
+                          ? 'Verified with Aadhaar and Passport'
+                          : profiledata?.aadharverified && profiledata?.licenseverified
+                          ? 'Verified with Aadhaar and Driver License'
+                          : profiledata?.passportverified && profiledata?.licenseverified
+                          ? 'Verified with Passport and Driver License'
+                          : profiledata?.aadharverified
+                          ? 'Verified with Aadhaar'
+                          : profiledata?.passportverified
+                          ? 'Verified with Passport'
+                          : 'Verified with Driver License'}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
+                    <div className="p-2 bg-yellow-100 rounded-full">
+                      <AlertTriangle className="w-6 h-6 text-yellow-600" />
+                    </div>
+                    <div>
+                      <div className="text-yellow-800 font-semibold text-lg">Profile Not Verified</div>
+                      <div className="text-yellow-700 text-sm">
+                        Complete identity verification to build trust and increase visibility
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <form onSubmit={handlesaveSocials}>
                 <div>
                   <div className="space-y-4 md:space-y-0 pb-6">
@@ -298,6 +389,40 @@ export function Profile() {
                       </Editable>
                     </div>
                   </div>
+
+                  {/* Save/Cancel Buttons for Social Fields */}
+                  {change && (
+                    <div className="flex justify-end gap-3 pt-4 border-t border-border/50">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancelSocials}
+                        disabled={editing}
+                        className="px-6 py-2"
+                      >
+                        <X className="mr-2 size-4" />
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={editing}
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2"
+                      >
+                        {editing ? (
+                          <>
+                            <Spinner className="mr-2 size-4" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Check className="mr-2 size-4" />
+                            Save Changes
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="py-6 mx-3 border-t border-border">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
