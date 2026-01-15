@@ -365,8 +365,8 @@ export function Location() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                   <div className="text-sm font-medium text-foreground">
                     Mark your exact location on below map and then click below &nbsp;
-                    <span className='text-green-700 font-bold'>"Save Coordinates"</span> &nbsp;
-                    button
+                    <span className='text-green-700 font-bold'>"Save Coordinates"</span>&nbsp;
+                    button (<span className='text-orange-600 font-bold'>draggable marker/pin</span>).
                   </div>
                   <Button
                     hidden
