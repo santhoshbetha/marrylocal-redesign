@@ -22,6 +22,8 @@ import {
   BadgeCheck,
   MapPin,
   CreditCard,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -43,6 +45,27 @@ export function AppNavigation({ children }) {
   useIsMobile();
   const [showReactivateDialog, setShowReactivateDialog] = useState(false);
   const [isReactivating, setIsReactivating] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      toast.success('Connection restored!');
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast.error('Connection lost. Please check your internet connection.');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     if (user && profiledata?.userstate === 'inactive') {
@@ -149,6 +172,26 @@ export function AppNavigation({ children }) {
         <div className="h-10" />
       </SidebarHeader>
       <SidebarContent>
+        {/* Connection Status */}
+        <div className={cn(
+          "mx-4 mb-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-medium",
+          isOnline 
+            ? "bg-green-50 border-green-200 text-green-700" 
+            : "bg-red-50 border-red-200 text-red-700"
+        )}>
+          {isOnline ? (
+            <>
+              <Wifi className="h-4 w-4" />
+              Online
+            </>
+          ) : (
+            <>
+              <WifiOff className="h-4 w-4" />
+              Offline - Try later
+            </>
+          )}
+        </div>
+
         <SidebarMenu className="p-4 space-y-2">
           {navigationItems.map(item => {
             //if (item.requireAuth && !user) return null;
@@ -159,12 +202,24 @@ export function AppNavigation({ children }) {
                   asChild
                   isActive={item.isActive}
                   size="lg"
+                  disabled={!isOnline}
                   className={cn(
                     'rounded-2xl transition-all duration-200 hover:scale-105',
                     item.isActive && 'bg-primary/15 text-primary',
+                    !isOnline && 'opacity-50 cursor-not-allowed'
                   )}
                 >
-                  <Link to={item.href} onClick={item.onClick}>
+                  <Link 
+                    to={item.href} 
+                    onClick={(e) => {
+                      if (!isOnline) {
+                        e.preventDefault();
+                        toast.error('Please check your internet connection and try again.');
+                        return;
+                      }
+                      item.onClick?.(e);
+                    }}
+                  >
                     <item.icon
                       className={cn(
                         '!h-6 !w-6 !min-h-6 !min-w-6 transition-transform',
@@ -214,7 +269,26 @@ export function AppNavigation({ children }) {
         <>
           <SidebarProvider defaultOpen={true}>
             <DesktopSidebar />
-            <main className="container animate-slide-up">{children}</main>
+            <main className="container animate-slide-up relative">
+              {!isOnline && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm mx-4">
+                    <WifiOff className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Internet Connection</h3>
+                    <p className="text-gray-600 mb-4">
+                      Please check your internet connection and try again later.
+                    </p>
+                    <Button 
+                      onClick={() => window.location.reload()}
+                      className="w-full"
+                    >
+                      Retry
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {children}
+            </main>
           </SidebarProvider>
         </>
       ) : (
