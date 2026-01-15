@@ -58,11 +58,15 @@ export function UserProfile() {
     '/professional-headshot-of-a-young-man-with-brown-ha.jpg',
   ];
 
+
+
   useEffect(() => {
     if (!isObjEmpty(userinfo)) {
       setUser(userinfo);
     }
   }, [userinfo]);
+
+    console.log("userprofile user:;", user.bio);
 
   const nextImage = () => {
     setCurrentImageIndex(prev => (prev + 1) % images.length);
@@ -497,6 +501,23 @@ export function UserProfile() {
                         )}
                     </div>
                   </div>
+
+                  {/* Bio Section - Separate section after contact info */}
+                  {user?.bio && user?.bio.trim() && (
+                    <div className="mt-6 mx-2">
+                      <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200 shadow-lg">
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 bg-indigo-100 rounded-lg flex-shrink-0">
+                            <span className="text-indigo-700 font-bold text-xl">📝</span>
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-lg text-gray-700 font-medium mb-3">About Me</div>
+                            <div className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base">{user?.bio}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
