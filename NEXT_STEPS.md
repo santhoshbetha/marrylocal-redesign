@@ -344,3 +344,16 @@ For questions about the implementation, refer to:
 - Tailwind CSS: 4.1.14
 - Radix UI: Latest versions
 
+ORIGINAL SUPABASE TRIGGER:
+create function public.handle_verified_user()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  insert into public.users (userid, shortid, firstname, lastname, dateofbirth, age, gender, educationlevel, jobstatus, city, state, language, religion, community, economicstatus, phonenumber, email, dateofcreation, dateofactivation, dateoflocation, onetimefeesrequired, referral_code, referrer, latitude, longitude)
+  values (new.id, new.raw_user_meta_data ->> 'shortid', new.raw_user_meta_data ->> 'firstname', new.raw_user_meta_data ->> 'lastname', (new.raw_user_meta_data ->> 'dateofbirth')::date, (new.raw_user_meta_data ->> 'age')::integer, new.raw_user_meta_data ->> 'gender', new.raw_user_meta_data ->> 'educationlevel', (new.raw_user_meta_data ->> 'jobstatus')::bool, new.raw_user_meta_data ->> 'city', new.raw_user_meta_data ->> 'state', new.raw_user_meta_data ->> 'language', new.raw_user_meta_data ->> 'religion', new.raw_user_meta_data ->> 'community', new.raw_user_meta_data ->> 'economicstatus', new.raw_user_meta_data ->> 'phonenumber', new.raw_user_meta_data ->> 'email', (new.raw_user_meta_data ->> 'dateofcreation')::date, (new.raw_user_meta_data ->> 'dateofactivation')::date, (new.raw_user_meta_data ->> 'dateoflocation')::date, (new.raw_user_meta_data ->> 'onetimefeesrequired')::bool, new.raw_user_meta_data ->> 'referral_code', new.raw_user_meta_data ->> 'referrer', (new.raw_user_meta_data ->> 'latitude')::float8,  (new.raw_user_meta_data ->> 'longitude')::float8);
+  return new;
+end;
+$$;
+

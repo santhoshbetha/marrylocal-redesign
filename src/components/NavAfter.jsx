@@ -108,14 +108,18 @@ export function NavAfter() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => navigate('/profile')} className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => navigate('/settings')} className="cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
+              {profiledata?.role !== 'admin' && (
+                <DropdownMenuItem onSelect={() => navigate('/profile')} className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+              )}
+              {profiledata?.role !== 'admin' && (
+                <DropdownMenuItem onSelect={() => navigate('/settings')} className="cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onSelect={() => navigate('/forgotpassword')} className="cursor-pointer">
                 <Key className="mr-2 h-4 w-4" />
                 <span>Change Password</span>

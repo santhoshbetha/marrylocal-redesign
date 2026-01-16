@@ -24,6 +24,9 @@ import {
   CreditCard,
   Wifi,
   WifiOff,
+  Shield,
+  Trash2,
+  Lock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -109,7 +112,32 @@ export function AppNavigation({ children }) {
     }
   };
 
-  const navigationItems = [
+  // Check if user is admin
+  const isAdmin = profiledata?.role === 'admin';
+
+  const navigationItems = isAdmin ? [
+    {
+      href: '/admin',
+      label: 'Admin Panel',
+      icon: Shield,
+      isActive: location.pathname === '/admin',
+      requireAuth: true,
+    },
+    /*{
+      href: '/changepassword',
+      label: 'Change Password',
+      icon: Lock,
+      isActive: location.pathname === '/changepassword',
+      requireAuth: true,
+    },
+    {
+      href: '/delete',
+      label: 'Delete Account',
+      icon: Trash2,
+      isActive: location.pathname === '/delete',
+      requireAuth: true,
+    },*/
+  ] : [
     {
       href: '/search',
       label: 'Search',
@@ -154,8 +182,8 @@ export function AppNavigation({ children }) {
     },
   ];
 
-  // Add service fees button if required
-  if (profiledata?.onetimefeesrequired && !profiledata?.onetimefeespaid) {
+  // Add service fees button if required (only for non-admin users)
+  if (!isAdmin && profiledata?.onetimefeesrequired && !profiledata?.onetimefeespaid) {
     navigationItems.splice(1, 0, {
       href: '/servicefees',
       label: 'Service Fees',

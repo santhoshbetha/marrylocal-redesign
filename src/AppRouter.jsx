@@ -32,6 +32,9 @@ import { EmailVerification } from '@/pages/auth/EmailVerification';
 import { EmailNotVerified } from '@/pages/auth/EmailNotVerified';
 import AuthConfirm from '@/pages/auth/AuthConfirm';
 import { Maintenance } from '@/pages/Maintenance';
+import { Admin } from '@/pages/Admin';
+import { AdminRoute } from './components/AdminRoute';
+import { AdminRegister } from '@/pages/auth/AdminRegister';
 
 export default function AppRouter({ openLogin, setOpenLogin }) {
   // Check if maintenance mode is enabled
@@ -55,6 +58,7 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
         <Route path="/email-not-verified" element={<EmailNotVerified />} />
         <Route path="/auth/confirm" element={<AuthConfirm />} />
         <Route path="/login" element={<LoginPage setOpenLogin={setOpenLogin} />} />
+        <Route path="/admin/register" element={<AdminRegister />} />
 
         <Route exact path="user/:shortid" element={<UserProfile />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
@@ -82,6 +86,11 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
           <Route path="/logout" element={<Logout />} />
 
           <Route path="/delete" element={<Delete />} />
+
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<Admin />} />
+          </Route>
+
           <Route path="*" element={<PageNotFound />} />
 
         </Route>
@@ -92,4 +101,7 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
 
 /*
 https://dev.to/ra1nbow1/building-reliable-protected-routes-with-react-router-v7-1ka0
+         <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<Admin />} />
+          </Route>
 */

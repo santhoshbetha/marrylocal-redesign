@@ -140,6 +140,7 @@ const authRegister = async (userdata, signal) => {
             shortid: shortid,
             firstname: userdata?.firstname.trim(),
             lastname: userdata?.lastname.trim(),
+            //role: 'user',
             dateofbirth: dateofbirth,
             age: age,
             gender: userdata?.gender,

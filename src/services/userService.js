@@ -20,7 +20,37 @@ export const getProfileData = async (userid, signal) => {
     };
   }
 };
+export const adminSearchUser = async (searchtext) => {
+  try {
+    let query = supabase.from('users').select('*');
 
+    if (!isNaN(searchtext) && searchtext.length === 10) {
+      query = query.eq('phonenumber', searchtext);
+    } else if (!isNaN(searchtext)) {
+      query = query.eq('userid', searchtext);
+    } else {
+      query = query.ilike('email', `%${searchtext}%`);
+    }
+
+    const { data, error } = await query.single();
+
+    if (error) {
+      return {
+        success: false,
+        msg: error?.message,
+      };
+    }
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      msg: error.message,
+    };
+  }
+};
 export const updateUserInfo = async (userid, data) => {
   //console.log("updateUserInfo data::", data)
   try {

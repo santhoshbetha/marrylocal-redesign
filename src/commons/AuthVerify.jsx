@@ -4,6 +4,7 @@ import SimpleCrypto from 'simple-crypto-js';
 import { logout } from '../store/actions/authActions';
 import { useDispatch } from 'react-redux';
 import secureLocalStorage from 'react-secure-storage';
+import { toast } from 'sonner';
 
 const getToken = (token = '') => {
   const encryptInit = new SimpleCrypto(import.meta.env.VITE_TOKEN_KEY);
@@ -33,7 +34,9 @@ export function AuthVerify() {
     if (token) {
       const decodedJwt = parseJwt(token);
       if (decodedJwt.exp * 1000 < Date.now()) {
-        alert('Login Expired. login again..');
+        toast.error('Your session has expired. Please login again.', {
+          duration: 5000,
+        });
         localStorage.removeItem('shortlistarray');
         localStorage.removeItem('page');
         localStorage.removeItem('userstate');

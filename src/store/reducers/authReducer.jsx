@@ -52,7 +52,7 @@ const authReducer = (state = initialState, action) => {
           token: action.token, //this returned object goes and updates 'state.auth' variable
           firstname: userR.user_metadata.firstname,
           email: userR.email,
-          //role: userR.role //(authenticated)
+          role: userR.user_metadata.role || 'user',
         };
       } else {
         return {
@@ -93,6 +93,7 @@ const authReducer = (state = initialState, action) => {
         token: action.token, //this returned object goes and updates 'state.auth' variable
         firstname: userL.user_metadata.firstname,
         email: userL.email,
+        role: userL.user_metadata.role || 'user',
       };
 
     case 'LOGIN_FAILURE':
