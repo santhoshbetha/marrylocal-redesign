@@ -72,7 +72,7 @@ export function UserProfileDialog({ user, onClose }) {
     console.log('user handle::', user?.shortid);
     const profileUrl = `/user/${user?.shortid}`;
     localStorage.setItem('userstate', JSON.stringify({ backbutton: false }));
-    window.open(profileUrl, '_blank', 'noopener,noreferrer'); //san this
+    // window.open(profileUrl, '_blank', 'noopener,noreferrer'); //san this - removed to prevent opening new tab
   };
 
   const shortlistClick = async e => {
@@ -183,7 +183,7 @@ export function UserProfileDialog({ user, onClose }) {
                     }`}
                   >
                     <img
-                      src={`${CDNURL}/${user.shortid}/${image}}`}
+                      src={`${CDNURL}/${user.shortid}/${image}`}
                       alt={`${user.firstname} - Photo ${index + 1}`}
                       className="w-full h-full object-cover"
                     />

@@ -18,24 +18,35 @@ function isObjEmpty(val) {
 
 const CDNURL = 'https://gweikvxgqoptvyqiljhp.supabase.co/storage/v1/object/public/localm/images';
 export function UserCard({ setSelectedUser, profile, shortlisted }) {
+
   return (
     <Card
-      key={profile?.id}
+      key={profile?.userid}
       onClick={() => setSelectedUser(profile)}
-      className="bg-background rounded-2xl shadow-xl border border-border hover:shadow-2xl hover:border-primary/20 transition-all duration-300 hover:scale-[1.02] cursor-pointer overflow-hidden group"
+      className="relative bg-background rounded-2xl shadow-xl border border-border hover:shadow-2xl hover:border-primary/20 transition-all duration-300 hover:scale-[1.02] cursor-pointer overflow-hidden group"
     >
       {shortlisted && (
-        <div className="absolute top-4 right-4 z-10 animate-pulse">
-          <div className="bg-red-500 rounded-full p-2 shadow-lg">
-            <Heart className="text-white w-4 h-4" fill="white" />
+        <div className="absolute top-4 right-4 z-20 opacity-100">
+          <div className="rounded-full p-2 shadow-lg bg-red-500">
+            <Heart className="w-4 h-4 text-white" fill="white" />
           </div>
         </div>
       )}
 
-      <CardContent className="p-6">
-        <div className="flex gap-4 mb-4">
+      <div className="absolute top-4 right-4" hidden>
+        {/* Inner Heart (Filled) */}
+        <Heart
+          size={30}
+          strokeWidth={0} // No stroke for the filled part
+          fill="currentColor" // Uses parent's text color (red in this case)
+          className="text-red-500"
+        />
+      </div>
+
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
           {/* Enhanced Profile Image */}
-          <div className="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all duration-300">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all duration-300 mx-auto sm:mx-0">
             {profile?.images ? (
               <img
                 src={`${CDNURL}/${profile?.shortid}/${profile?.images[0]}`}
@@ -52,20 +63,20 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
               </div>
             )}
             {/* Online indicator */}
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-background shadow-sm"></div>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full border-2 border-background shadow-sm"></div>
           </div>
 
           {/* Enhanced Profile Info */}
-          <div className="flex-1 min-w-0 space-y-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
+          <div className="flex-1 min-w-0 space-y-2 sm:space-y-3 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2 flex-wrap justify-center sm:justify-start">
+              <h3 className="font-bold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors break-words">
                 {profile?.firstname}, {profile?.age}
               </h3>
               <TooltipProvider>
                 {(profile?.aadharverified || profile?.passportverified || profile?.licenseverified) ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 px-2 py-1">
+                      <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 px-2 py-1 text-xs">
                         <CheckCircle className="w-3 h-3 mr-1" />
                         Verified
                       </Badge>
@@ -77,7 +88,7 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
                 ) : (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400 px-2 py-1">
+                      <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400 px-2 py-1 text-xs">
                         <AlertTriangle className="w-3 h-3 mr-1" />
                         Unverified
                       </Badge>
@@ -91,13 +102,13 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm font-medium text-foreground">{profile?.educationlevel}</p>
-              <p className="text-sm text-muted-foreground">{profile?.community}</p>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
+              <p className="text-sm font-medium text-foreground break-words">{profile?.educationlevel}</p>
+              <p className="text-sm text-muted-foreground break-words">{profile?.community}</p>
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <Badge variant="outline" className="text-xs break-words">
                   {profile?.economicstatus}
                 </Badge>
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs break-words">
                   {profile?.language}
                 </Badge>
               </div>
@@ -106,27 +117,27 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
         </div>
 
         {/* Enhanced Footer with Last Login and Distance */}
-        <div className="pt-4 border-t border-border/50">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
+        <div className="pt-3 sm:pt-4 border-t border-border/50">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 justify-center sm:justify-start">
+              <Clock className="w-3 h-3 flex-shrink-0" />
               {!isObjEmpty(profile?.timeoflogin) ? (
-                <span className="text-green-600 dark:text-green-400 font-medium">
+                <span className="text-green-600 dark:text-green-400 font-medium break-words">
                   Active {dayjs(profile?.timeoflogin).fromNow()}
                 </span>
               ) : (
-                <span>Recently joined</span>
+                <span className="break-words">Recently joined</span>
               )}
             </div>
             {!isObjEmpty(profile?.distance) && profile?.distance > 5 ? (
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                <span className="font-medium">{Math.round(profile?.distance)} km away</span>
+              <div className="flex items-center gap-1 justify-center sm:justify-end">
+                <MapPin className="w-3 h-3 flex-shrink-0" />
+                <span className="font-medium break-words">{Math.round(profile?.distance)} km away</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                <span className="font-medium">Nearby</span>
+              <div className="flex items-center gap-1 justify-center sm:justify-end">
+                <MapPin className="w-3 h-3 flex-shrink-0" />
+                <span className="font-medium break-words">Nearby</span>
               </div>
             )}
           </div>

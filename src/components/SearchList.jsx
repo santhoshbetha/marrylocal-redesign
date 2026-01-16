@@ -1,9 +1,9 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { UserCard } from './UserCard';
 import { UserProfileDialog } from './UserProfileDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutGrid, Search } from 'lucide-react';
 
 function isObjEmpty(val) {
   return val == null ||
@@ -55,10 +55,13 @@ export function SearchList({
   );
   const itemsPerPage = 9;
   const resultsRef = useRef(null);
-  const totalPages = Math.ceil(searchProfiles?.length / itemsPerPage);
+  const totalPages = Math.ceil((searchProfiles?.length || 0) / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const [isLoading, setIsLoading] = useState(false);
+
+  // Memoize shortlist as a Set for efficient lookups
+  const shortlistSet = useMemo(() => new Set(shortlist || []), [shortlist]);
 
   let [dataclone, setDataclone] = useState(searchProfiles);
   let datasort = structuredClone(searchProfiles);
@@ -135,9 +138,12 @@ export function SearchList({
     const pages = [];
     const maxVisiblePages = 7;
 
-    if (totalPages <= maxVisiblePages) {
+    // Ensure totalPages is a valid number
+    const validTotalPages = Math.max(1, Math.floor(totalPages) || 1);
+
+    if (validTotalPages <= maxVisiblePages) {
       // Show all pages if total is small
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
+      return Array.from({ length: validTotalPages }, (_, i) => i + 1);
     }
 
     // Always show first page
@@ -147,17 +153,17 @@ export function SearchList({
       // Near the beginning: show 1, 2, 3, 4, ..., last
       pages.push(2, 3, 4);
       pages.push('ellipsis-end');
-      pages.push(totalPages);
-    } else if (currentPage >= totalPages - 2) {
+      pages.push(validTotalPages);
+    } else if (currentPage >= validTotalPages - 2) {
       // Near the end: show 1, ..., last-3, last-2, last-1, last
       pages.push('ellipsis-start');
-      pages.push(totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      pages.push(validTotalPages - 3, validTotalPages - 2, validTotalPages - 1, validTotalPages);
     } else {
       // In the middle: show 1, ..., current-1, current, current+1, ..., last
       pages.push('ellipsis-start');
       pages.push(currentPage - 1, currentPage, currentPage + 1);
       pages.push('ellipsis-end');
-      pages.push(totalPages);
+      pages.push(validTotalPages);
     }
 
     return pages;
@@ -233,22 +239,29 @@ export function SearchList({
       )}
 
       {currentProfiles?.length > 0 && (
-        <div className="flex items-center px-3 mb-2 mx-2">
-          <h6 className="pt-3 fw-bold text-info">
-            Count: {currentProfiles?.length}
-            {sortmsg != '' && <span className="ms-2 text-green-600">({sortmsg})</span>}
-          </h6>
+        <div className="flex items-center justify-between px-4 py-3 mb-4 mx-2 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span className="text-sm font-semibold text-primary">
+                {currentProfiles?.length} {currentProfiles?.length === 1 ? 'Profile' : 'Profiles'} Found
+              </span>
+            </div>
+            {sortmsg != '' && (
+              <span className="text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded-md border">
+                {sortmsg}
+              </span>
+            )}
+          </div>
           <button
-            className="btn btn-outline-secondary p-1 ms-auto"
-            data-toggle="tooltip"
-            title="Sort by logindate/age"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-all duration-200 border border-border hover:border-primary/30"
+            title="Sort by login date/age"
             onClick={e => {
               sortClick(e);
             }}
           >
-            <span className="">
-              <LayoutGrid size={28} />
-            </span>
+            <LayoutGrid size={16} />
+            <span className="hidden sm:inline">Sort</span>
           </button>
         </div>
       )}
@@ -264,7 +277,7 @@ export function SearchList({
             <UserCard
               setSelectedUser={setSelectedUser}
               profile={profile}
-              shortlisted={shortlist?.includes(profile?.shortid)}
+              shortlisted={shortlistSet.has(profile?.shortid)}
             />
           ))}
         </div>

@@ -16,7 +16,7 @@ function App() {
   const [shouldLoadTermsPopup, setShouldLoadTermsPopup] = useState(false);
 
   // Lazy load TermsPopup only when needed
-  const TermsPopup = lazy(() => import('./pages/TermsPopup'));
+  const TermsPopup = lazy(() => import('./pages/TermsPopup').then(module => ({ default: module.TermsPopup })));
 
   useEffect(() => {
     const root = window.document.documentElement;

@@ -275,7 +275,7 @@ export function SearchSection({
       agefrom: 21,
       ageto: '',
       educationlevel: '',
-      jobstatus: true,
+      jobstatus: profiledata?.gender === 'Female' ? true : false,
       city: '',
       community: '',
       economicstatus: 'All',
