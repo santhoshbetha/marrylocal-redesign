@@ -1,6 +1,5 @@
-import { useRef, useState, useEffect, useContext, useCallback } from 'react';
+import { useRef, useState, useEffect, useContext, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SearchSection } from './SearchSection';
 import { ShortlistSection } from './ShortlistSection';
 import { SearchUser } from './SearchUser';
 import { useAuth } from '../../context/AuthContext';
@@ -8,6 +7,9 @@ import { SearchDataAndRecoveryContext } from '../../context/SearchDataAndRecover
 import { current } from '@reduxjs/toolkit';
 import { updateUserInfo } from '../../services/userService';
 import { Search as SearchIcon, Heart, UserSearch } from 'lucide-react';
+
+// Lazy load heavy components
+const SearchSection = lazy(() => import('./SearchSection').then(module => ({ default: module.SearchSection })));
 
 function isObjEmpty(val) {
   return val == null ||
@@ -306,21 +308,30 @@ export function Search() {
       {/* Content Container */}
       <div className="flex-1">
         {activeTab === 'search' ? (
-          <SearchSection
-            gender={profiledata?.gender}
-            shortlist={profiledata?.shortlist}
-            addons={profiledata?.addons}
-            primarycity={profiledata?.city}
-            verified={verified}
-            active={active}
-            locationset={profiledata?.defaultcoordsset || profiledata?.usercoordsset}
-            onetimepaymentrequired={profiledata?.onetimefeesrequired && !profiledata?.onetimefeespaid}
-            maxsearchdistance={
-              isObjEmpty(profiledata?.maxsearchdistance) ? 100 : profiledata?.maxsearchdistance
-            }
-            profilereligion={isObjEmpty(profiledata?.religion) ? '' : profiledata?.religion}
-            profiledata={profiledata}
-          />
+          <Suspense fallback={
+            <div className="min-h-[400px] flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                <p className="text-muted-foreground text-sm">Loading search...</p>
+              </div>
+            </div>
+          }>
+            <SearchSection
+              gender={profiledata?.gender}
+              shortlist={profiledata?.shortlist}
+              addons={profiledata?.addons}
+              primarycity={profiledata?.city}
+              verified={verified}
+              active={active}
+              locationset={profiledata?.defaultcoordsset || profiledata?.usercoordsset}
+              onetimepaymentrequired={profiledata?.onetimefeesrequired && !profiledata?.onetimefeespaid}
+              maxsearchdistance={
+                isObjEmpty(profiledata?.maxsearchdistance) ? 100 : profiledata?.maxsearchdistance
+              }
+              profilereligion={isObjEmpty(profiledata?.religion) ? '' : profiledata?.religion}
+              profiledata={profiledata}
+            />
+          </Suspense>
         ) : activeTab === 'shortlist' ? (
           <ShortlistSection
             loggedInUser={profiledata?.userid}

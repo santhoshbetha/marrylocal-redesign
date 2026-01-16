@@ -1,56 +1,70 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Home } from '@/pages/Home';
-import { UserProfile } from '@/pages/UserProfile';
-import { About } from '@/pages/About';
-import { Contact } from './pages/Contact';
-import { Register } from '@/pages/auth/Register/Register';
-import { LoginPage } from '@/pages/auth/LoginPage';
-import { Logout } from '@/pages/auth/Logout';
-import { Location } from '@/pages/Location';
-import { PageNotFound } from './pages/404Page';
-import { Search } from '@/pages/Search/Search';
-import { Profile } from '@/pages/Profile';
-import { Verify } from '@/pages/Verify';
-import { ForgotPassword } from '@/pages/ForgotPassword';
-import { ChangePassword } from '@/pages/ChangePassword';
-import { Settings } from '@/pages/Settings';
-import { Photos } from '@/pages/Photos';
+import { lazy, Suspense } from 'react';
 
-import { Addons } from '@/pages/Addons';
-
-import { ServiceFeesPhonePePayPage } from '@/pages/ServiceFeesPhonePePayPage'
-import { ServiceFeesPhonePePaymentStatus } from '@/pages/ServiceFeesPhonePePaymentStatus'
-
-import { Terms } from '@/pages/Terms';
-import { Privacy } from '@/pages/Privacy';
-import { Delete } from '@/pages/Delete';
-import { Referrals } from '@/pages/Referrals';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { Cancellation } from './pages/Cancellation';
-import { RegistrationSuccess } from '@/pages/auth/RegistrationSuccess';
-import { EmailVerification } from '@/pages/auth/EmailVerification';
-import { EmailNotVerified } from '@/pages/auth/EmailNotVerified';
-import AuthConfirm from '@/pages/auth/AuthConfirm';
-import { Maintenance } from '@/pages/Maintenance';
-import { Admin } from '@/pages/Admin';
-import { AdminRoute } from './components/AdminRoute';
-import { AdminRegister } from '@/pages/auth/AdminRegister';
-import { AdminBulkOperations } from '@/pages/AdminBulkOperations';
-import { UserProfiles } from '@/pages/UserProfiles';
-import { AdminUserList } from '@/pages/AdminUserList';
-import { AdminEmailTemplates } from '@/pages/AdminEmailTemplates';
+// Lazy load components for code splitting
+const Home = lazy(() => import('@/pages/Home').then(module => ({ default: module.Home })));
+const UserProfile = lazy(() => import('@/pages/UserProfile'));
+const About = lazy(() => import('@/pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Register = lazy(() => import('@/pages/auth/Register/Register'));
+const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
+const Logout = lazy(() => import('@/pages/auth/Logout'));
+const Location = lazy(() => import('@/pages/Location'));
+const PageNotFound = lazy(() => import('./pages/404Page'));
+const Search = lazy(() => import('@/pages/Search/Search'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const Verify = lazy(() => import('@/pages/Verify'));
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
+const ChangePassword = lazy(() => import('@/pages/ChangePassword'));
+const Settings = lazy(() => import('@/pages/Settings'));
+const Photos = lazy(() => import('@/pages/Photos'));
+const Addons = lazy(() => import('@/pages/Addons'));
+const ServiceFeesPhonePePayPage = lazy(() => import('@/pages/ServiceFeesPhonePePayPage'));
+const ServiceFeesPhonePePaymentStatus = lazy(() => import('@/pages/ServiceFeesPhonePePaymentStatus'));
+const Terms = lazy(() => import('@/pages/Terms'));
+const Privacy = lazy(() => import('@/pages/Privacy'));
+const Delete = lazy(() => import('@/pages/Delete'));
+const Referrals = lazy(() => import('@/pages/Referrals'));
+const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'));
+const Cancellation = lazy(() => import('./pages/Cancellation'));
+const RegistrationSuccess = lazy(() => import('@/pages/auth/RegistrationSuccess'));
+const EmailVerification = lazy(() => import('@/pages/auth/EmailVerification'));
+const EmailNotVerified = lazy(() => import('@/pages/auth/EmailNotVerified'));
+const AuthConfirm = lazy(() => import('@/pages/auth/AuthConfirm'));
+const Maintenance = lazy(() => import('@/pages/Maintenance'));
+const Admin = lazy(() => import('@/pages/Admin'));
+const AdminRoute = lazy(() => import('./components/AdminRoute'));
+const AdminRegister = lazy(() => import('@/pages/auth/AdminRegister'));
+const AdminBulkOperations = lazy(() => import('@/pages/AdminBulkOperations'));
+const UserProfiles = lazy(() => import('@/pages/UserProfiles'));
+const AdminUserList = lazy(() => import('@/pages/AdminUserList'));
+const AdminEmailTemplates = lazy(() => import('@/pages/AdminEmailTemplates'));
 
 export default function AppRouter({ openLogin, setOpenLogin }) {
   // Check if maintenance mode is enabled
   const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
 
+  // Loading fallback component
+  const LoadingFallback = () => (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    </div>
+  );
+
   // If maintenance mode is enabled, show maintenance page
   if (isMaintenanceMode) {
-    return <Maintenance />;
+    return (
+      <Suspense fallback={<LoadingFallback />}>
+        <Maintenance />
+      </Suspense>
+    );
   }
 
   return (
-    <>
+    <Suspense fallback={<LoadingFallback />}>
       <Routes>
         <Route path="/" element={<Home openLogin={openLogin} setOpenLogin={setOpenLogin} />} />
         <Route path="/about" element={<About />} />
@@ -103,7 +117,7 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
 
         </Route>
       </Routes>
-    </>
+    </Suspense>
   );
 }
 
