@@ -279,7 +279,7 @@ export function Location() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background pb-20 md:pb-4">
       <div className="container mx-auto px-4 py-4 max-w-7xl">
         <Card className="bg-background rounded-2xl shadow-xl border border-border">
           {loading && (
@@ -403,12 +403,13 @@ export function Location() {
               </div>
 
               <div className="relative rounded-xl overflow-hidden border border-border shadow-lg bg-card">
-                <div id="coordinates-map1" className="w-full h-[650px] sm:h-[750px]">
+                <div id="coordinates-map1" className="w-full h-[650px] sm:h-[750px] relative z-0 overflow-hidden">
                   <MapContainer
                     center={[coordinates?.lat, coordinates?.lng]}
                     zoom={14}
                     ref={mapRef}
-                    style={{ height: '100%', width: '100%' }}
+                    style={{ height: '100%', width: '100%', position: 'relative' }}
+                    className="z-0"
                   >
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
