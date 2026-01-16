@@ -436,7 +436,7 @@ export function Settings() {
                     ) : (
                       <>
                         <span className="mr-2">⏰</span>
-                        Available in {30 - Math.floor(Math.abs(new Date(Date.now()) - new Date(profiledata?.dateoflocation)) / (1000 * 3600 * 24))} days
+                        Location change allowed in {30 - Math.floor(Math.abs(new Date(Date.now()) - new Date(profiledata?.dateoflocation)) / (1000 * 3600 * 24))} days
                       </>
                     )}
                   </Button>
