@@ -50,7 +50,7 @@ export const registerAdmin = async (userData) => {
     // Create auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: userData.email,
-      password: Math.random().toString(36) + 'AdminPass123!', // Generate a random password
+      password: userData.password, // Use provided password
       options: {
         data: {
           firstname: userData.firstname,
@@ -77,6 +77,7 @@ export const registerAdmin = async (userData) => {
         email: userData.email,
         phonenumber: userData.phonenumber,
         dateofbirth: userData.dateofbirth,
+        gender: userData.gender,
         age: age,
         role: 'admin',
         userstate: 'inactive', // Admin needs to verify email first
@@ -100,7 +101,7 @@ export const registerAdmin = async (userData) => {
       user: authData.user
     };
 
-  } catch (error) {
+  } catch {
     return {
       success: false,
       message: 'An unexpected error occurred. Please try again.'

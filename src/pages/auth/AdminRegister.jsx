@@ -5,37 +5,117 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Spinner } from '@/components/ui/spinner';
-import { Loader2, UserPlus, ArrowLeft } from 'lucide-react';
+import { Loader2, UserPlus, ArrowLeft, Eye, EyeOff, ChevronDownIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { registerAdmin } from '../../services/authService';
+import usePasswordToggle from '@/hooks/usePasswordToggle';
+import { useEffect } from 'react';
 
 export function AdminRegister() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [PasswordInputType, ToggleIcon] = usePasswordToggle();
+  const [ConfirmPasswordInputType, ConfirmToggleIcon] = usePasswordToggle();
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    email: '',
+    phonenumber: ''
+  });
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
     dateofbirth: '',
+    gender: '',
     email: '',
     phonenumber: '',
+    password: '',
+    confirmPassword: '',
     inviteCode: '',
   });
+
+  // Calculate max date (18 years ago from today for admin registration)
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() - 18);
+
+  const currentYear = new Date().getFullYear();
+  const fromYear = 1900;
+  const toYear = currentYear - 18;
+
+  // Sync selectedDate with formData.dateofbirth
+  useEffect(() => {
+    if (formData.dateofbirth && !selectedDate) {
+      setSelectedDate(new Date(formData.dateofbirth));
+    } else if (!formData.dateofbirth && selectedDate) {
+      setSelectedDate(null);
+    }
+  }, [formData.dateofbirth, selectedDate]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (error) setError('');
+    // Clear field-specific errors when user starts typing
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const validateEmail = (email) => {
+    if (!email.trim()) {
+      return 'Email is required';
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return 'Invalid email format';
+    }
+    return '';
+  };
+
+  const validatePhoneNumber = (phone) => {
+    if (!phone.trim()) {
+      return 'Phone number is required';
+    }
+    if (!/^\d{10}$/.test(phone)) {
+      return 'Phone number must be 10 digits';
+    }
+    return '';
+  };
+
+  const handleEmailBlur = () => {
+    const emailError = validateEmail(formData.email);
+    setFieldErrors(prev => ({ ...prev, email: emailError }));
+  };
+
+  const handlePhoneBlur = () => {
+    const phoneError = validatePhoneNumber(formData.phonenumber);
+    setFieldErrors(prev => ({ ...prev, phonenumber: phoneError }));
   };
 
   const validateForm = () => {
+    // Check field-specific errors first
+    const emailError = validateEmail(formData.email);
+    const phoneError = validatePhoneNumber(formData.phonenumber);
+
+    if (emailError || phoneError) {
+      setFieldErrors({
+        email: emailError,
+        phonenumber: phoneError
+      });
+      return emailError || phoneError;
+    }
+
     if (!formData.firstname.trim()) return 'First name is required';
     if (!formData.lastname.trim()) return 'Last name is required';
     if (!formData.dateofbirth) return 'Date of birth is required';
-    if (!formData.email.trim()) return 'Email is required';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return 'Invalid email format';
-    if (!formData.phonenumber.trim()) return 'Phone number is required';
-    if (!/^\d{10}$/.test(formData.phonenumber)) return 'Phone number must be 10 digits';
+    if (!formData.gender) return 'Gender is required';
+    if (!formData.password) return 'Password is required';
+    if (formData.password.length < 8) return 'Password must be at least 8 characters long';
+    if (!formData.confirmPassword) return 'Please confirm your password';
+    if (formData.password !== formData.confirmPassword) return 'Passwords do not match';
     if (!formData.inviteCode.trim()) return 'Invite code is required';
 
     // Check if user is 18 or older
@@ -72,7 +152,7 @@ export function AdminRegister() {
       } else {
         setError(result.message || 'Registration failed. Please try again.');
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -139,14 +219,44 @@ export function AdminRegister() {
 
             <div className="space-y-2">
               <Label htmlFor="dateofbirth">Date of Birth *</Label>
-              <Input
-                id="dateofbirth"
-                type="date"
-                value={formData.dateofbirth}
-                onChange={(e) => handleInputChange('dateofbirth', e.target.value)}
-                max={new Date().toISOString().split('T')[0]}
-                required
-              />
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between font-normal">
+                    {selectedDate ? selectedDate.toLocaleDateString() : 'Select date of birth'}
+                    <ChevronDownIcon className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    captionLayout="dropdown"
+                    toDate={maxDate}
+                    fromYear={fromYear}
+                    toYear={toYear}
+                    onSelect={date => {
+                      setSelectedDate(date);
+                      const formattedDate = date ? date.toISOString().split('T')[0] : '';
+                      handleInputChange('dateofbirth', formattedDate);
+                      setCalendarOpen(false);
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="gender">Gender *</Label>
+              <Select value={formData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -156,9 +266,13 @@ export function AdminRegister() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
+                onBlur={handleEmailBlur}
                 placeholder="admin@example.com"
                 required
               />
+              {fieldErrors.email && (
+                <p className="text-red-500 text-sm">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -168,10 +282,57 @@ export function AdminRegister() {
                 type="tel"
                 value={formData.phonenumber}
                 onChange={(e) => handleInputChange('phonenumber', e.target.value)}
+                onBlur={handlePhoneBlur}
                 placeholder="1234567890"
                 maxLength="10"
                 required
               />
+              {fieldErrors.phonenumber && (
+                <p className="text-red-500 text-sm">{fieldErrors.phonenumber}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password *</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={PasswordInputType}
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  placeholder="Enter your password"
+                  required
+                />
+                <span
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500
+                                hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 bg-background"
+                >
+                  {ToggleIcon}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500">
+                Password must be at least 8 characters long
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password *</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={ConfirmPasswordInputType}
+                  value={formData.confirmPassword}
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  placeholder="Confirm your password"
+                  required
+                />
+                <span
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500
+                                hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 bg-background"
+                >
+                  {ConfirmToggleIcon}
+                </span>
+              </div>
             </div>
 
             <div className="space-y-2">

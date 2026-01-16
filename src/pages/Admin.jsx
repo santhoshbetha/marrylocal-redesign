@@ -1,19 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
 import { adminSearchUser } from '../services/userService';
 import { updateUserInfo } from '../services/userService';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { ChevronDownIcon } from 'lucide-react';
+
+// Calculate date range for calendar (similar to register page)
+const maxDate = new Date();
+maxDate.setFullYear(maxDate.getFullYear() - 20);
+const fromYear = 1900;
+const toYear = new Date().getFullYear();
 
 export function Admin() {
   const [searchText, setSearchText] = useState('');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [formData, setFormData] = useState({
     city: '',
     state: '',
@@ -35,6 +45,50 @@ export function Admin() {
   });
 
   const isOnline = useOnlineStatus();
+
+  // Load saved state from localStorage on component mount
+  useEffect(() => {
+    const savedSearchText = localStorage.getItem('adminSearchText');
+    const savedUser = localStorage.getItem('adminUser');
+    const savedFormData = localStorage.getItem('adminFormData');
+
+    if (savedSearchText) {
+      setSearchText(savedSearchText);
+    }
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error('Error parsing saved user data:', error);
+      }
+    }
+    if (savedFormData) {
+      try {
+        setFormData(JSON.parse(savedFormData));
+      } catch (error) {
+        console.error('Error parsing saved form data:', error);
+      }
+    }
+  }, []);
+
+  // Save search text to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('adminSearchText', searchText);
+  }, [searchText]);
+
+  // Save user data to localStorage whenever it changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('adminUser', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('adminUser');
+    }
+  }, [user]);
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('adminFormData', JSON.stringify(formData));
+  }, [formData]);
 
   const handleSearch = async () => {
     if (!searchText.trim()) {
@@ -71,7 +125,7 @@ export function Admin() {
         toast.error(res.msg || 'User not found');
         setUser(null);
       }
-    } catch (error) {
+    } catch {
       toast.error('Error searching user');
     }
     setLoading(false);
@@ -91,10 +145,38 @@ export function Admin() {
       } else {
         toast.error(res.msg || 'Failed to update user data');
       }
-    } catch (error) {
+    } catch {
       toast.error('Error updating user data');
     }
     setSaving(false);
+  };
+
+  const handleClear = () => {
+    setSearchText('');
+    setUser(null);
+    setFormData({
+      city: '',
+      state: '',
+      email: '',
+      phonenumber: '',
+      latitude: '',
+      longitude: '',
+      dateofbirth: '',
+      age: '',
+      emailverified: false,
+      aadharverified: false,
+      passportverified: false,
+      licenseverified: false,
+      termsaccepted: false,
+      onetimefeespaid: false,
+      onetimefeesrequired: false,
+      acceptedonetimefeesamount: '',
+      maxsearchdistance: '',
+    });
+    localStorage.removeItem('adminSearchText');
+    localStorage.removeItem('adminUser');
+    localStorage.removeItem('adminFormData');
+    toast.success('Search data cleared');
   };
 
   const handleInputChange = (field, value) => {
@@ -103,7 +185,7 @@ export function Admin() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
+      <h1 className="text-2xl font-bold mb-4">User Management</h1>
 
       <Card className="mb-4">
         <CardHeader>
@@ -119,6 +201,9 @@ export function Admin() {
             />
             <Button onClick={handleSearch} disabled={loading}>
               {loading ? 'Searching...' : 'Search'}
+            </Button>
+            <Button variant="outline" onClick={handleClear}>
+              Clear
             </Button>
           </div>
         </CardContent>
@@ -197,12 +282,39 @@ export function Admin() {
               </div>
               <div>
                 <Label htmlFor="dateofbirth">Date of Birth</Label>
-                <Input
-                  id="dateofbirth"
-                  type="date"
-                  value={formData.dateofbirth}
-                  onChange={(e) => handleInputChange('dateofbirth', e.target.value)}
-                />
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" id="dateofbirth" className="w-full justify-between font-normal">
+                      {formData.dateofbirth ? new Date(formData.dateofbirth).toLocaleDateString() : 'Select date'}
+                      <ChevronDownIcon />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.dateofbirth ? new Date(formData.dateofbirth) : undefined}
+                      captionLayout="dropdown"
+                      toDate={maxDate}
+                      fromYear={fromYear}
+                      toYear={toYear}
+                      onSelect={date => {
+                        const dateString = date ? date.toISOString().split('T')[0] : '';
+                        handleInputChange('dateofbirth', dateString);
+                        // Calculate age if date is selected
+                        if (date) {
+                          const today = new Date();
+                          let age = today.getFullYear() - date.getFullYear();
+                          const monthDiff = today.getMonth() - date.getMonth();
+                          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+                            age--;
+                          }
+                          handleInputChange('age', age.toString());
+                        }
+                        setCalendarOpen(false);
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
               <div>
                 <Label htmlFor="age">Age</Label>

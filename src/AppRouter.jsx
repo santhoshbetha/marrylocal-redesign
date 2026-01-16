@@ -35,6 +35,10 @@ import { Maintenance } from '@/pages/Maintenance';
 import { Admin } from '@/pages/Admin';
 import { AdminRoute } from './components/AdminRoute';
 import { AdminRegister } from '@/pages/auth/AdminRegister';
+import { AdminBulkOperations } from '@/pages/AdminBulkOperations';
+import { UserProfiles } from '@/pages/UserProfiles';
+import { AdminUserList } from '@/pages/AdminUserList';
+import { AdminEmailTemplates } from '@/pages/AdminEmailTemplates';
 
 export default function AppRouter({ openLogin, setOpenLogin }) {
   // Check if maintenance mode is enabled
@@ -89,6 +93,10 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
 
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/bulk" element={<AdminBulkOperations />} />
+            <Route path="/admin/profiles" element={<UserProfiles />} />
+            <Route path="/admin/userlist" element={<AdminUserList />} />
+            <Route path="/admin/emails" element={<AdminEmailTemplates />} />
           </Route>
 
           <Route path="*" element={<PageNotFound />} />

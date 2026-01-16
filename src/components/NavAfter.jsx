@@ -38,7 +38,7 @@ export function NavAfter() {
     <header className={`sticky top-0 z-50 w-full border-b border-border/40 bg-gradient-to-r ${gradient} backdrop-blur supports-[backdrop-filter]:bg-blue-600/90 shadow-lg`}>
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/myspace" className="flex items-center gap-2">
+        <Link to={profiledata?.role === 'admin' ? '/admin' : '/myspace'} className="flex items-center gap-2">
           <img src="/logo.png" alt="Logo" className="h-8 w-8" />
           <span className="font-custom text-white">MarryLocal</span>
         </Link>
@@ -46,7 +46,7 @@ export function NavAfter() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           <Link
-            to="/myspace"
+            to={profiledata?.role === 'admin' ? '/admin' : '/myspace'}
             className="flex items-center space-x-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200"
           >
             <Home className="h-4 w-4" />
@@ -59,13 +59,15 @@ export function NavAfter() {
             <Users className="h-4 w-4" />
             <span>About</span>
           </Link>
-          <Link
-            to="/search"
-            className="flex items-center space-x-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200"
-          >
-            <Search className="h-4 w-4" />
-            <span>Search</span>
-          </Link>
+          {profiledata?.role !== 'admin' && (
+            <Link
+              to="/search"
+              className="flex items-center space-x-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200"
+            >
+              <Search className="h-4 w-4" />
+              <span>Search</span>
+            </Link>
+          )}
           <Link
             to="/contact"
             className="flex items-center space-x-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200"
@@ -73,13 +75,15 @@ export function NavAfter() {
             <MessageCircle className="h-4 w-4" />
             <span>Contact</span>
           </Link>
-          <Link
-            to="/referrals"
-            className="flex items-center space-x-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200"
-          >
-            <Users className="h-4 w-4" />
-            <span>Referrals</span>
-          </Link>
+          {profiledata?.role !== 'admin' && (
+            <Link
+              to="/referrals"
+              className="flex items-center space-x-2 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200"
+            >
+              <Users className="h-4 w-4" />
+              <span>Referrals</span>
+            </Link>
+          )}
         </nav>
 
         {/* Right Actions */}
@@ -153,7 +157,7 @@ export function NavAfter() {
               </SheetHeader>
               <nav className="flex flex-col space-y-4 mt-8">
                 <Link
-                  to="/myspace"
+                  to={profiledata?.role === 'admin' ? '/admin' : '/myspace'}
                   className="flex items-center space-x-3 text-lg font-medium text-white/90 hover:text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-all duration-200"
                   onClick={() => setIsOpen(false)}
                 >

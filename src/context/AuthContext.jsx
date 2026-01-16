@@ -10,12 +10,20 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [profiledata, setProfiledata] = useState(null);
   const [userSession, setUserSession] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const setAuth = authUser => {
     setUser(authUser);
   };
 
   const updateUserData = async user => {
+    if (!user) {
+      setProfiledata(null);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
     let res = await getProfileData(user?.id);
     if (res.success == true) {
       // Check if this is an admin user who just verified their email
@@ -32,13 +40,21 @@ export const AuthProvider = ({ children }) => {
         }
       }
       setProfiledata({ ...res.data });
+    } else {
+      setProfiledata(null);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        updateUserData(session?.user);
+      } else {
+        setLoading(false);
+      }
     });
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -49,6 +65,8 @@ export const AuthProvider = ({ children }) => {
       } else {
         setAuth(null);
         setUserSession(null);
+        setProfiledata(null);
+        setLoading(false);
       }
     });
 
@@ -65,6 +83,7 @@ export const AuthProvider = ({ children }) => {
         setAuth,
         userSession,
         setProfiledata,
+        loading,
       }}
     >
       {children}

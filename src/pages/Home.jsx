@@ -8,14 +8,19 @@ import { HeroSection } from '../components/HeroSection';
 import { useAuth } from '../context/AuthContext';
 
 export function Home({ openLogin, setOpenLogin }) {
-  const { user } = useAuth();
+  const { user, profiledata } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate('/myspace');
+    if (user && profiledata) {
+      // Redirect admin users to admin panel, others to search
+      if (profiledata.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/myspace');
+      }
     }
-  });
+  }, [user, profiledata, navigate]);
 
   return (
     <div className="min-h-screen bg-background">

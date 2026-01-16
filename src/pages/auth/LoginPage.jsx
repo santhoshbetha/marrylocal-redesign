@@ -41,7 +41,10 @@ export function LoginPage({ setOpenLogin }) {
         setOpenLogin(false);
         dispatch(loginSuccess(data?.session));
         secureLocalStorage.setItem('reloadshortlistdata', true);
-        navigate('/myspace');
+        
+        // Check if user is admin and redirect accordingly
+        const isAdmin = data?.user?.user_metadata?.role === 'admin';
+        navigate(isAdmin ? '/admin' : '/myspace');
       }
 
       if (error) {

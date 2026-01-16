@@ -27,6 +27,8 @@ import {
   Shield,
   Trash2,
   Lock,
+  Users,
+  Mail,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -118,9 +120,37 @@ export function AppNavigation({ children }) {
   const navigationItems = isAdmin ? [
     {
       href: '/admin',
-      label: 'Admin Panel',
+      label: 'User Management',
       icon: Shield,
       isActive: location.pathname === '/admin',
+      requireAuth: true,
+    },
+    {
+      href: '/admin/bulk',
+      label: 'Bulk Operations',
+      icon: Users,
+      isActive: location.pathname === '/admin/bulk',
+      requireAuth: true,
+    },
+    {
+      href: '/admin/profiles',
+      label: 'User Profiles',
+      icon: User,
+      isActive: location.pathname === '/admin/profiles',
+      requireAuth: true,
+    },
+    {
+      href: '/admin/userlist',
+      label: 'User List by Location',
+      icon: MapPin,
+      isActive: location.pathname === '/admin/userlist',
+      requireAuth: true,
+    },
+    {
+      href: '/admin/emails',
+      label: 'Email Templates',
+      icon: Mail,
+      isActive: location.pathname === '/admin/emails',
       requireAuth: true,
     },
     /*{
