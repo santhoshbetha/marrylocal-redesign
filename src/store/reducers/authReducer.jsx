@@ -1,5 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 import { toast } from 'sonner';
+import { X } from 'lucide-react';
 import SimpleCrypto from 'simple-crypto-js';
 
 const getToken = (token = '') => {
@@ -81,7 +82,7 @@ const authReducer = (state = initialState, action) => {
       toast('Login Successful...', {
         position: 'top-right',
         cancel: {
-          label: 'X',
+          label: <X className="w-4 h-4" />,
           onClick: () => console.log('Close!'),
         },
       });
