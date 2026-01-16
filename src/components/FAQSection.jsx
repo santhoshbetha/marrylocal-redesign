@@ -10,7 +10,7 @@ export function FAQSection() {
     <section className="py-12 sm:py-16 lg:py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center space-y-4 mb-12 lg:mb-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold">
             Frequently Asked Questions
           </h2>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -21,11 +21,11 @@ export function FAQSection() {
         <div className="max-w-3xl mx-auto">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-left">
+              <AccordionTrigger className="text-left text-lg sm:text-xl">
                 How does GPS location matching work?
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
                   Our GPS location matching uses your device's location services to find potential
                   matches within your specified radius. You can set your preferred distance range
                   (10-200 km) and we'll show you profiles of verified users in that area. Your exact
@@ -36,11 +36,11 @@ export function FAQSection() {
             </AccordionItem>
 
             <AccordionItem value="item-2">
-              <AccordionTrigger className="text-left">
+              <AccordionTrigger className="text-left text-lg sm:text-xl">
                 What verification documents are required?
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
                   To ensure authenticity and safety, we require one government-issued ID for
                   verification: <span hidden>Aadhaar Card, </span>Passport, or Driver's License. All documents are
                   securely processed and stored with bank-level encryption. Your personal
@@ -50,11 +50,11 @@ export function FAQSection() {
             </AccordionItem>
 
             <AccordionItem value="item-3">
-              <AccordionTrigger className="text-left">
+              <AccordionTrigger className="text-left text-lg sm:text-xl">
                 How do I search for matches in my city?
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
                   After creating your profile, use search filters to find matches by city, age
                   range, education etc.
                 </p>
@@ -62,9 +62,9 @@ export function FAQSection() {
             </AccordionItem>
 
             <AccordionItem value="item-4">
-              <AccordionTrigger className="text-left">Is MarryLocal free to use?</AccordionTrigger>
+              <AccordionTrigger className="text-left text-lg sm:text-xl">Is MarryLocal free to use?</AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
                   MarryLocal curently free. You can create a profile, browse matches, and contact
                   matches.
                 </p>
@@ -72,11 +72,11 @@ export function FAQSection() {
             </AccordionItem>
 
             <AccordionItem value="item-5">
-              <AccordionTrigger className="text-left">
+              <AccordionTrigger className="text-left text-lg sm:text-xl">
                 How do you ensure user safety and privacy?
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
                   Safety is our top priority. All profiles are manually reviewed and verified. Your
                   personal contact information is never shared without your consent.{' '}
                 </p>
