@@ -99,7 +99,7 @@ const authRegister = async (userdata, signal) => {
     
     if (!userExists) {
       const dateofbirth = userdata?.dob == '' ? (new Date('2002-01-01')).toISOString()
-                                              : (new Date(`${userdata.dob}`)).toISOString()
+                                              : (new Date(`${userdata?.dob}`)).toISOString()
       const age = calcAge(dateofbirth.toString());
       const dateofcreation = (new Date()).toISOString();
       const short_uid = new ShortUniqueId({ length: 9 });
@@ -115,8 +115,8 @@ const authRegister = async (userdata, signal) => {
       let onetimefeesrequired = false;
 
       const res2 = await getCityUsercount({
-        city: userdata.city,
-        gender: userdata.gender
+        city: userdata?.city,
+        gender: userdata?.gender
       }, controller.signal);
 
       if (res2.success) {
@@ -129,8 +129,8 @@ const authRegister = async (userdata, signal) => {
         onetimefeesrequired = false;
       }
 
-      let email = userdata.email.trim();
-      let password = userdata.password.trim();
+      let email = userdata?.email.trim();
+      let password = userdata?.password.trim();
 
       const {data, error} = await supabase.auth.signUp({
         email: email,
@@ -138,29 +138,29 @@ const authRegister = async (userdata, signal) => {
         options: {
           data: {
             shortid: shortid,
-            firstname: userdata.firstname.trim(),
-            lastname: userdata.lastname.trim(),
+            firstname: userdata?.firstname.trim(),
+            lastname: userdata?.lastname.trim(),
             dateofbirth: dateofbirth,
             age: age,
-            gender: userdata.gender,
-            educationlevel: userdata.educationlevel,
-            jobstatus: userdata.jobstatus,
-            city: userdata.city,
-            state: userdata.state,
-            language: userdata.language,
-            religion: userdata.language,
-            community: userdata.community,
-            economicstatus: userdata.economicstatus,
-            phonenumber: userdata.phonenumber,
-            email: userdata.email.toLowerCase(),
+            gender: userdata?.gender,
+            educationlevel: userdata?.educationlevel,
+            jobstatus: userdata?.jobstatus,
+            city: userdata?.city,
+            state: userdata?.state,
+            language: userdata?.language,
+            religion: userdata?.religion,
+            community: userdata?.community,
+            economicstatus: userdata?.economicstatus,
+            phonenumber: userdata?.phonenumber,
+            email: userdata?.email.toLowerCase(),
             dateofcreation: dateofcreation,
             dateofactivation: dateofcreation, 
             dateoflocation: dateofcreation,   
             onetimefeesrequired: onetimefeesrequired,
             referral_code: referrer_code,
             referrer: referrer,
-            latitude: getcoords(userdata.city).lat,
-            longitude: getcoords(userdata.city).lng
+            latitude: getcoords(userdata?.city).lat,
+            longitude: getcoords(userdata?.city).lng
           },
           emailRedirectTo: `${BASE_URL}/login`
         }
@@ -182,8 +182,8 @@ const authRegister = async (userdata, signal) => {
         // add this email to the user who referred
         //
         const res3 = await appendToRefereeEmails({
-          referrer_code: userdata.referrer,
-          emailtoadd: userdata.email.toLowerCase()
+          referrer_code: userdata?.referrer,
+          emailtoadd: userdata?.email.toLowerCase()
         }, controller.signal);
 
         //if (res3.success) {
