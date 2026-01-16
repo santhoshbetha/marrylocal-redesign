@@ -58,7 +58,13 @@ export function Login({ openLogin, setOpenLogin }) {
           return;
         }
 
-        setError(String(error));
+        // Replace Supabase's default error message with a more user-friendly one
+        let errorMessage = String(error);
+        if (errorMessage.includes('Invalid login credentials') || errorMessage.includes('AuthApiError')) {
+          errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+        }
+
+        setError(errorMessage);
         throw error;
       }
     } catch (error) {
