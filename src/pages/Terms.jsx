@@ -1,7 +1,12 @@
+import { useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { FileText, Clock, Shield, AlertTriangle, Mail } from 'lucide-react';
 
 export function Terms() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       <Card className="bg-background rounded-2xl shadow-xl border border-border overflow-hidden">
