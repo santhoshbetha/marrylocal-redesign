@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +23,7 @@ const CDNURL = 'https://gweikvxgqoptvyqiljhp.supabase.co/storage/v1/object/publi
 
 export function Profile() {
   const { user, userSession, profiledata, setProfiledata } = useAuth();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [phone, setPhone] = useState(
     isObjEmpty(profiledata?.phonenumber) ? '' : profiledata?.phonenumber,
@@ -149,6 +151,10 @@ export function Profile() {
     setIsEditingBio(false);
   };
 
+  const handleProfilePictureClick = () => {
+    navigate('/photos');
+  };
+
   const addDefaultImg = ev => {
     if (profiledata?.gender == 'Male') {
       ev.target.src = '/male-default-4.png';
@@ -166,12 +172,15 @@ export function Profile() {
         <CardContent className="flex flex-col items-center justify-center w-[100%]">
           <div className="grid sm:grid-cols-1 w-full lg:grid-cols-3 gap-2 md:gap-4">
             <Card className="p-6 md:p-8 shadow-lg border-border/50 w-full h-full md:h-[100%]">
-              <div className="w-full max-w-[280px] aspect-square mx-auto overflow-hidden rounded-none">
+              <div 
+                className="w-full max-w-[280px] aspect-square mx-auto overflow-hidden rounded-2xl cursor-pointer bg-gradient-to-br from-primary/30 via-primary/15 via-primary/10 to-primary/5 ring-2 ring-primary/20 hover:ring-primary/40 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm hover:scale-[1.02]"
+                onClick={handleProfilePictureClick}
+              >
                 {!isObjEmpty(profiledata?.images) ? (
                   <img
                     src={`${CDNURL}/${profiledata?.shortid}/${profiledata?.images[1]}`}
                     alt="Profile picture"
-                    className="object-scale-down md:object-cover"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                     onError={addDefaultImg}
                   />
                 ) : (
@@ -180,13 +189,13 @@ export function Profile() {
                       <img
                         src="/male-default-4.png"
                         alt="Profile picture"
-                        className="object-scale-down md:object-cover"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
                       <img
                         src="/female-default-2.png"
                         alt="Profile picture"
-                        className="object-scale-down md:object-cover"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                       />
                     )}
                   </>

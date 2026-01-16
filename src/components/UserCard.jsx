@@ -46,7 +46,7 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
           {/* Enhanced Profile Image */}
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all duration-300 mx-auto sm:mx-0">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-primary/30 via-primary/15 via-primary/10 to-primary/5 ring-2 ring-primary/20 group-hover:ring-primary/40 shadow-lg group-hover:shadow-xl transition-all duration-500 mx-auto sm:mx-0 backdrop-blur-sm">
             {profile?.images ? (
               <img
                 src={`${CDNURL}/${profile?.shortid}/${profile?.images[0]}`}

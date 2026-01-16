@@ -370,7 +370,7 @@ export function Location() {
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-4 shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
             >
               <Navigation className="w-5 h-5 mr-3" />
-              {isGettingLocation ? 'Getting Location...' : 'GET MY COORDINATES AND SET'}
+              {isGettingLocation ? 'Getting Location...' : 'GET MY COORDINATES AND SET (Refresh page if it does not work)'}
             </Button>
           )}
 
