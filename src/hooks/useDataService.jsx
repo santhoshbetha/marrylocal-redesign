@@ -65,7 +65,6 @@ export function useGetUserProfile(dataIn) {
 }
 
 export function useShortlistData(dataIn) {
-  console.log('useShortlistData...1::');
   return useQuery({
     queryKey: shortlistDataQueryKey(),
     queryFn: async ({ signal }) => {

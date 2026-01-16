@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Home, ArrowLeft, Search } from 'lucide-react';
 
-export function PageNotFound() {
+function PageNotFound() {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,3 +49,5 @@ export function PageNotFound() {
     </div>
   );
 }
+
+export default PageNotFound;

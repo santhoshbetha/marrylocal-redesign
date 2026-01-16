@@ -16,7 +16,7 @@ function isObjEmpty(val){
            ) ? true : false;
 };
 
-export function ServiceFeesPhonePePaymentStatus() {
+function ServiceFeesPhonePePaymentStatus() {
     const {user, setAuth, profiledata, setProfiledata} = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -132,3 +132,5 @@ export function ServiceFeesPhonePePaymentStatus() {
         </div>
     );
 }
+
+export default ServiceFeesPhonePePaymentStatus;

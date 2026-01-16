@@ -1,7 +1,7 @@
 import { useAuth } from '../context/AuthContext';
 import { Outlet, Navigate } from 'react-router-dom';
 
-export function AdminRoute() {
+function AdminRoute() {
   const { user, profiledata, loading } = useAuth();
 
   // Show loading state while profile data is being fetched
@@ -26,3 +26,5 @@ export function AdminRoute() {
 
   return <Outlet />;
 }
+
+export default AdminRoute;

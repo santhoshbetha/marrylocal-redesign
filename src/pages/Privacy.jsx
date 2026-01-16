@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Shield, Clock, Eye, Database, Users, Lock, Mail, AlertTriangle } from 'lucide-react';
 
-export function Privacy() {
+function Privacy() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -279,3 +279,5 @@ export function Privacy() {
     </div>
   );
 }
+
+export default Privacy;

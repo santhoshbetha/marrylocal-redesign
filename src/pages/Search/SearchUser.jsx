@@ -53,8 +53,6 @@ export function SearchUser() {
     setSearchtext('');
   };
 
-  console.log("useractive:", useractive);
-
   return (
     <div className="mt-2 flex flex-col justify-center items-center">
       <Card className="bg-white dark:bg-background dark:border-3 w-[90%] sm:max-w-[525px] mb-3 relative">

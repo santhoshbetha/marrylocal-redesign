@@ -14,7 +14,7 @@ import { cities } from '../lib/cities';
 import axios from 'axios';
 import { url } from '../api';
 
-export function AdminEmailTemplates() {
+function AdminEmailTemplates() {
   const [activeTab, setActiveTab] = useState('manual-emails');
   const [manualEmails, setManualEmails] = useState('');
   const [locationEmails, setLocationEmails] = useState('');
@@ -439,3 +439,5 @@ export function AdminEmailTemplates() {
     </div>
   );
 }
+
+export default AdminEmailTemplates;

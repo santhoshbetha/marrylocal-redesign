@@ -9,7 +9,7 @@ import { updateUserInfo } from '../../services/userService';
 import { Search as SearchIcon, Heart, UserSearch } from 'lucide-react';
 
 // Lazy load heavy components
-const SearchSection = lazy(() => import('./SearchSection').then(module => ({ default: module.SearchSection })));
+const SearchSection = lazy(() => import('./SearchSection'));
 
 function isObjEmpty(val) {
   return val == null ||
@@ -19,7 +19,7 @@ function isObjEmpty(val) {
     : false;
 }
 
-export function Search() {
+function Search() {
   const { user, setAuth, profiledata, setProfiledata } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(
@@ -362,3 +362,5 @@ export function Search() {
     </div>
   );
 }
+
+export default Search;

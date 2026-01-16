@@ -7,7 +7,7 @@ import { Footer } from '../components/Footer';
 import { HeroSection } from '../components/HeroSection';
 import { useAuth } from '../context/AuthContext';
 
-export function Home({ openLogin, setOpenLogin }) {
+function Home({ openLogin, setOpenLogin }) {
   const { user, profiledata } = useAuth();
   const navigate = useNavigate();
 
@@ -34,3 +34,5 @@ export function Home({ openLogin, setOpenLogin }) {
     </div>
   );
 }
+
+export default Home;

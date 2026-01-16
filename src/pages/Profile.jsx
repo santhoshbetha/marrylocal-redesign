@@ -21,7 +21,7 @@ function isObjEmpty(val) {
 }
 const CDNURL = 'https://gweikvxgqoptvyqiljhp.supabase.co/storage/v1/object/public/localm/images';
 
-export function Profile() {
+function Profile() {
   const { user, userSession, profiledata, setProfiledata } = useAuth();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
@@ -498,3 +498,5 @@ export function Profile() {
     </div>
   );
 }
+
+export default Profile;

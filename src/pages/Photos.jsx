@@ -30,7 +30,7 @@ function isObjEmpty(val) {
     : false;
 }
 
-export function Photos() {
+function Photos() {
   const { user, profiledata, setProfiledata } = useAuth();
   const [images, setImages] = useState(Array(10).fill(null));
   const [visibleSlots, setVisibleSlots] = useState(3); // Start with 3 slots
@@ -42,7 +42,6 @@ export function Photos() {
   useEffect(() => {
     const loadImages = async () => {
       if (!isObjEmpty(profiledata?.images)) {
-        console.log('Loading images...profiledata?.images::', profiledata?.images);
         const newImages = Array(10).fill(null);
         let maxIndexWithImage = 2; // Start with minimum 3 slots (index 0, 1, 2)
 
@@ -288,3 +287,5 @@ export function Photos() {
     </div>
   );
 }
+
+export default Photos;

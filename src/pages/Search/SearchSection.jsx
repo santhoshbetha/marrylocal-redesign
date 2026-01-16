@@ -69,7 +69,7 @@ function isObjEmpty(val) {
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
 let searchinput;
-export function SearchSection({
+function SearchSection({
   gender,
   shortlist,
   addons,
@@ -271,7 +271,7 @@ export function SearchSection({
     initialValues: {
       religion: '',
       language: '',
-      searchdistance: 0,
+      searchdistance: '',
       agefrom: 21,
       ageto: '',
       educationlevel: '',
@@ -297,7 +297,7 @@ export function SearchSection({
           ? profiledata?.community
           : formik.values.community,
         economicstatus: formik.values.economicstatus,
-        searchdistance: distanceMap.get(formik.values.searchdistance),
+        searchdistance: distanceMap.get(formik.values.searchdistance) || 10000,
         agefrom: formik.values.agefrom,
         ageto: formik.values.ageto,
         addons: profiledata?.addons,
@@ -374,7 +374,7 @@ export function SearchSection({
                           required
                           name="religion"
                           onValueChange={value => {
-                            formik.values.religion = value;
+                            formik.setFieldValue('religion', value);
                           }}
                         >
                           <SelectTrigger className="w-full">
@@ -402,7 +402,7 @@ export function SearchSection({
                           required
                           name="language"
                           onValueChange={value => {
-                            formik.values.language = value;
+                            formik.setFieldValue('language', value);
                           }}
                         >
                           <SelectTrigger className="w-full">
@@ -424,7 +424,7 @@ export function SearchSection({
                             required
                             name="community"
                             onValueChange={value => {
-                              formik.values.searchdistance = value;
+                              formik.setFieldValue('community', value);
                             }}
                           >
                             <SelectTrigger className="w-full">
@@ -446,7 +446,7 @@ export function SearchSection({
                           required
                           name="economicstatus"
                           onValueChange={value => {
-                            formik.values.economicstatus = value;
+                            formik.setFieldValue('economicstatus', value);
                           }}
                         >
                           <SelectTrigger className="w-full">
@@ -469,7 +469,7 @@ export function SearchSection({
                           required
                           name="searchdistance"
                           onValueChange={value => {
-                            formik.values.searchdistance = value;
+                            formik.setFieldValue('searchdistance', value);
                           }}
                         >
                           <SelectTrigger className="w-full">
@@ -505,7 +505,7 @@ export function SearchSection({
                           required
                           name="city"
                           onValueChange={value => {
-                            formik.values.city = value;
+                            formik.setFieldValue('city', value);
                           }}
                         >
                           <SelectTrigger className="w-full">
@@ -533,9 +533,9 @@ export function SearchSection({
                         <Label className="text-sm font-semibold text-foreground">Education Level</Label>
                         <Select
                           required
-                          name="economicstatus"
+                          name="educationlevel"
                           onValueChange={value => {
-                            formik.values.educationlevel = value;
+                            formik.setFieldValue('educationlevel', value);
                           }}
                         >
                           <SelectTrigger className="w-full">
@@ -646,3 +646,5 @@ export function SearchSection({
     </div>
   );
 }
+
+export default SearchSection;

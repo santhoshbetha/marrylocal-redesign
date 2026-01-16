@@ -15,7 +15,7 @@ function isObjEmpty(val) {
     : false;
 }
 
-export function Referrals() {
+function Referrals() {
   const { profiledata } = useAuth();
   const textRef = useRef();
 
@@ -161,3 +161,5 @@ export function Referrals() {
     </div>
   );
 }
+
+export default Referrals;

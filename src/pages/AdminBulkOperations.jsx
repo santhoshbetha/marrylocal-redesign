@@ -13,7 +13,7 @@ import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { states } from '../lib/states';
 import { cities } from '../lib/cities';
 
-export function AdminBulkOperations() {
+function AdminBulkOperations() {
   const [activeTab, setActiveTab] = useState('text-search');
   const [searchText, setSearchText] = useState('');
   const [selectedState, setSelectedState] = useState('');
@@ -691,3 +691,5 @@ export function AdminBulkOperations() {
     </div>
   );
 }
+
+export default AdminBulkOperations;

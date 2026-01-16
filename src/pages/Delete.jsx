@@ -21,7 +21,7 @@ import { logout } from '../store/actions/authActions';
 import { useDispatch } from 'react-redux';
 import { AlertTriangle, Trash2, Shield } from 'lucide-react';
 
-export function Delete() {
+function Delete() {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const [deleting, setDeleting] = useState(false);
@@ -195,3 +195,5 @@ export function Delete() {
     </div>
   );
 }
+
+export default Delete;

@@ -27,7 +27,7 @@ function isObjEmpty(val) {
     : false;
 }
 
-export function ForgotPassword() {
+function ForgotPassword() {
   const { user, profiledata, userSession } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -268,3 +268,5 @@ export function ForgotPassword() {
 /*
  {!isObjEmpty(userSession) ? <>Send Code</> : <>Send password reset email</>}
 */
+
+export default ForgotPassword;

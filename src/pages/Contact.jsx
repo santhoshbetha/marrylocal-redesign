@@ -14,7 +14,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 
-export function Contact() {
+function Contact() {
   const { user } = useAuth();
 
   useEffect(() => {
@@ -240,3 +240,5 @@ export function Contact() {
     </>
   );
 }
+
+export default Contact;

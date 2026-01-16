@@ -21,7 +21,7 @@ function isObjEmpty(val) {
     : false;
 }
 
-export function ChangePassword() {
+function ChangePassword() {
   const { user, userSession } = useAuth();
   const { email } = useContext(SearchDataAndRecoveryContext);
   const [password, setPassword] = useState('');
@@ -315,3 +315,5 @@ export function ChangePassword() {
     </div>
   );
 }
+
+export default ChangePassword;

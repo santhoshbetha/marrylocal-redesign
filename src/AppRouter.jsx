@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
 // Lazy load components for code splitting
-const Home = lazy(() => import('@/pages/Home').then(module => ({ default: module.Home })));
+const Home = lazy(() => import('@/pages/Home'));
 const UserProfile = lazy(() => import('@/pages/UserProfile'));
 const About = lazy(() => import('@/pages/About'));
 const Contact = lazy(() => import('./pages/Contact'));

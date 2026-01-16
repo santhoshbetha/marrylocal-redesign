@@ -13,7 +13,7 @@ import usePasswordToggle from '@/hooks/usePasswordToggle';
 import supabase from '@/lib/supabase';
 import { loginSuccess } from '../../store/actions/authActions';
 
-export function LoginPage({ setOpenLogin }) {
+function LoginPage({ setOpenLogin }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -186,3 +186,5 @@ export function LoginPage({ setOpenLogin }) {
     </div>
   );
 }
+
+export default LoginPage;

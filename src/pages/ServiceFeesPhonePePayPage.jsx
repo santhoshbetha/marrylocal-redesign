@@ -13,7 +13,7 @@ function isObjEmpty(val){
            ) ? true : false;
 };
 
-export function ServiceFeesPhonePePayPage() {
+function ServiceFeesPhonePePayPage() {
   const { profiledata } = useAuth();
   const [servicefees, setServiceFees] = useState(null);
   const [phonepeUrl, setPhonepeUrl] = useState('');
@@ -192,4 +192,6 @@ export function ServiceFeesPhonePePayPage() {
     </div>
   );
 }
+
+export default ServiceFeesPhonePePayPage;
 

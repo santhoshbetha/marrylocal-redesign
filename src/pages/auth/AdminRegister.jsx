@@ -15,7 +15,7 @@ import { registerAdmin } from '../../services/authService';
 import usePasswordToggle from '@/hooks/usePasswordToggle';
 import { useEffect } from 'react';
 
-export function AdminRegister() {
+function AdminRegister() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -385,3 +385,5 @@ export function AdminRegister() {
     </div>
   );
 }
+
+export default AdminRegister;

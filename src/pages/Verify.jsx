@@ -104,7 +104,7 @@ function validate_adhar(adhar) {
   }
 }
 
-export function Verify() {
+function Verify() {
   const { user, profiledata, setProfiledata } = useAuth();
   const [aadharNum, setAadharNum] = useState('');
   const [_file1, setFile1] = useState(null);
@@ -1280,3 +1280,5 @@ export function Verify() {
     </div>
   );
 }
+
+export default Verify;

@@ -10,7 +10,7 @@ import { states } from '../lib/states';
 import { cities } from '../lib/cities';
 import { MapPin, Users, Mail, Phone, User, ChevronLeft, ChevronRight } from 'lucide-react';
 
-export function AdminUserList() {
+function AdminUserList() {
   const [selectedState, setSelectedState] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [availableCities, setAvailableCities] = useState([]);
@@ -371,3 +371,5 @@ export function AdminUserList() {
     </div>
   );
 }
+
+export default AdminUserList;

@@ -92,11 +92,12 @@ export function SearchList({
       lng = profiledata?.longitude;
     }
 
-    if (!isObjEmpty(searchProfiles)) {
+    if (!isObjEmpty(searchProfiles) && !isObjEmpty(dataclone)) {
       for (const eachuser of dataclone) {
-        const distance = haversine(lat, lng, eachuser.latitude, eachuser.longitude);
-        //console.log("useEffect distance::", distance)
-        eachuser.distance = distance;
+        if (eachuser && typeof eachuser.latitude === 'number' && typeof eachuser.longitude === 'number') {
+          const distance = haversine(lat, lng, eachuser.latitude, eachuser.longitude);
+          eachuser.distance = distance;
+        }
       }
     }
   }, [dataclone]);

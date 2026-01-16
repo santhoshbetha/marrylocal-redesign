@@ -1,7 +1,7 @@
 import React from 'react';
 import { Wrench, Clock, RefreshCw } from 'lucide-react';
 
-export function Maintenance() {
+function Maintenance() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
       <div className="max-w-2xl mx-auto text-center">
@@ -113,3 +113,5 @@ export function Maintenance() {
     </div>
   );
 }
+
+export default Maintenance;

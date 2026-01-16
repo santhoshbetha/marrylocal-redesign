@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { adminSearchUsers } from '../services/userService';
 import { MapPin, Calendar, Phone, Mail, User, Shield, CreditCard, CheckCircle, XCircle } from 'lucide-react';
 
-export function UserProfiles() {
+function UserProfiles() {
   const [searchText, setSearchText] = useState('');
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -446,3 +446,5 @@ export function UserProfiles() {
     </div>
   );
 }
+
+export default UserProfiles;

@@ -53,7 +53,7 @@ function isObjEmpty(val) {
     : false;
 }
 
-export function Settings() {
+function Settings() {
   const { user, userSession, profiledata, setProfiledata } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showphone, setShowphone] = useState(profiledata?.showphone);
@@ -586,3 +586,5 @@ export function Settings() {
 /*
 w-[95%] max-w-7xl
 */
+
+export default Settings;

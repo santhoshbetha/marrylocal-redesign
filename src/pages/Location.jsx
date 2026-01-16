@@ -77,7 +77,7 @@ var toKilometers = function (miles) {
 };
 
 // https://medium.com/@timndichu/getting-started-with-leaflet-js-and-react-rendering-a-simple-map-ef9ee0498202
-export function Location() {
+function Location() {
   const { user, profiledata, setProfiledata } = useAuth();
   const mapRef = useRef(null);
   const latitude = profiledata?.latitude;
@@ -569,3 +569,5 @@ export function Location() {
 sm:w-[95%] md:w-4/5 max-w-7xlx shadow-2xl border-border/50 animate-in zoom-in-95 duration-200 me-4 rounded-none
 style={{height: "100vh", width: "100vw"}}
 */
+
+export default Location;

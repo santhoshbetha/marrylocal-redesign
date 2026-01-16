@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { FileText, Clock, Shield, AlertTriangle, Mail } from 'lucide-react';
 
-export function Terms() {
+function Terms() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -177,3 +177,5 @@ export function Terms() {
     </div>
   );
 }
+
+export default Terms;

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Mail, ArrowRight } from 'lucide-react';
 
-export function RegistrationSuccess() {
+function RegistrationSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const userEmail = location.state?.email || '';
@@ -88,3 +88,5 @@ export function RegistrationSuccess() {
     </div>
   );
 }
+
+export default RegistrationSuccess;

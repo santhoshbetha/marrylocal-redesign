@@ -53,7 +53,7 @@ let addonsdata = {};
 let subscriptiondata = {};
 let newProfiledata;
 
-export function Addons() {
+function Addons() {
   const { user, setAuth: _setAuth, profiledata, setProfiledata } = useAuth();
   const [communitySearch, setCommunitySearch] = useState(false);
   const [fullcitySearch, setFullcitySearch] = useState(false);
@@ -754,3 +754,5 @@ export function Addons() {
     </div>
   );
 }
+
+export default Addons;

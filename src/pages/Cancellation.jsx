@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Shield, Clock, CreditCard, RefreshCw } from 'lucide-react';
 
-export function Cancellation() {
+function Cancellation() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -100,3 +100,5 @@ export function Cancellation() {
     </div>
   );
 }
+
+export default Cancellation;

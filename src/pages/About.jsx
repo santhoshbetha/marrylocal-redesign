@@ -18,7 +18,7 @@ import {
   Lock
 } from 'lucide-react';
 
-export function About() {
+function About() {
   const { user } = useAuth();
 
   useEffect(() => {
@@ -214,3 +214,5 @@ export function About() {
     </>
   );
 }
+
+export default About;

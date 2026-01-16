@@ -57,7 +57,7 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
               <div className="w-full h-full flex items-center justify-center">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
                   <span className="text-white font-bold text-lg">
-                    {profile?.firstname?.charAt(0)?.toUpperCase()}
+                      {typeof profile?.firstname === 'string' ? profile.firstname.charAt(0).toUpperCase() : '?'}
                   </span>
                 </div>
               </div>
@@ -70,7 +70,7 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
           <div className="flex-1 min-w-0 space-y-2 sm:space-y-3 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2 flex-wrap justify-center sm:justify-start">
               <h3 className="font-bold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors break-words">
-                {profile?.firstname}, {profile?.age}
+                {profile?.firstname || 'Unknown'}, {profile?.age || 'N/A'}
               </h3>
               <TooltipProvider>
                 {(profile?.aadharverified || profile?.passportverified || profile?.licenseverified) ? (
@@ -102,14 +102,14 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm font-medium text-foreground break-words">{profile?.educationlevel}</p>
-              <p className="text-sm text-muted-foreground break-words">{profile?.community}</p>
+              <p className="text-sm font-medium text-foreground break-words">{profile?.educationlevel || 'Not specified'}</p>
+              <p className="text-sm text-muted-foreground break-words">{profile?.community || 'Not specified'}</p>
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                 <Badge variant="outline" className="text-xs break-words">
-                  {profile?.economicstatus}
+                  {profile?.economicstatus || 'Not specified'}
                 </Badge>
                 <Badge variant="outline" className="text-xs break-words">
-                  {profile?.language}
+                  {profile?.language || 'Not specified'}
                 </Badge>
               </div>
             </div>
@@ -129,7 +129,7 @@ export function UserCard({ setSelectedUser, profile, shortlisted }) {
                 <span className="break-words">Recently joined</span>
               )}
             </div>
-            {!isObjEmpty(profile?.distance) && profile?.distance > 5 ? (
+            {!isObjEmpty(profile?.distance) && typeof profile?.distance === 'number' && profile?.distance > 5 ? (
               <div className="flex items-center gap-1 justify-center sm:justify-end">
                 <MapPin className="w-3 h-3 flex-shrink-0" />
                 <span className="font-medium break-words">{Math.round(profile?.distance)} km away</span>

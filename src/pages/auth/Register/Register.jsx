@@ -214,7 +214,7 @@ const authRegister = async (userdata, signal) => {
   }
 }
 
-export function Register() {
+function Register() {
   const dispatch = useDispatch();
   const [data, setData] = useState(INITIAL_DATA);
   const navigate = useNavigate();
@@ -512,3 +512,5 @@ export function Register() {
     </div>
   );
 }
+
+export default Register;

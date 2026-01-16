@@ -32,7 +32,7 @@ function isObjEmpty(val) {
 
 const CDNURL = 'https://gweikvxgqoptvyqiljhp.supabase.co/storage/v1/object/public/localm/images';
 
-export function UserProfile() {
+function UserProfile() {
   const { user: loggedInUser, profiledata, setProfiledata } = useAuth();
   let [shortlisttext, setShortListtext] = useState('ADD TO SHORTLIST');
   const params = useParams();
@@ -527,3 +527,5 @@ export function UserProfile() {
     </div>
   );
 }
+
+export default UserProfile;

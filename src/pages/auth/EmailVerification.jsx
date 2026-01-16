@@ -8,7 +8,7 @@ import { Mail, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import supabase from '../../lib/supabase';
 
-export function EmailVerification() {
+function EmailVerification() {
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState(location.state?.email || '');
@@ -216,3 +216,5 @@ export function EmailVerification() {
     </div>
   );
 }
+
+export default EmailVerification;

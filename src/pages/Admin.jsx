@@ -18,7 +18,7 @@ maxDate.setFullYear(maxDate.getFullYear() - 20);
 const fromYear = 1900;
 const toYear = new Date().getFullYear();
 
-export function Admin() {
+function Admin() {
   const [searchText, setSearchText] = useState('');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -407,3 +407,5 @@ export function Admin() {
     </div>
   );
 }
+
+export default Admin;

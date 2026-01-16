@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import secureLocalStorage from 'react-secure-storage';
 import supabase from '../../lib/supabase';
 
-export function Logout() {
+function Logout() {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -30,3 +30,5 @@ export function Logout() {
 
   return <div className="mt-4">Logging out ...</div>;
 }
+
+export default Logout;
