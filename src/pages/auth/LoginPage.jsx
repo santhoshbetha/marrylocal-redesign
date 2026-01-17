@@ -128,6 +128,7 @@ function LoginPage({ setOpenLogin }) {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.email}
+                      autoFocus={false}
                       required
                     />
                     <p className="text-red-700">{errors.email && touched.email && errors.email}</p>
