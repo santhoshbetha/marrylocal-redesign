@@ -71,6 +71,7 @@ function Search() {
           //7 days
           if (!isObjEmpty(profiledata?.arounduserscount)) {
             if (dayssincecreation > 7 && profiledata?.arounduserscount > 100) {
+              //verification is required if more than 100 users around
               setVerified(false);
             }
           } else {

@@ -1,7 +1,9 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import supabase from '../lib/supabase.js';
-import { getProfileData } from '../services/userService';
+import supabase, { supabaseUrl, supabaseAnonKey } from '../lib/supabase.js';
+import { getProfileData, updateUserInfo } from '../services/userService';
 import { toast } from 'sonner';
+import { useWorker } from '@koale/useworker';
+import aroundUsersWorker from '../workers/aroundUsersWorker';
 
 const AuthContext = createContext();
 
@@ -13,6 +15,8 @@ export const AuthProvider = ({ children }) => {
   const [userSession, setUserSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const runWorker = useWorker(aroundUsersWorker);
 
   const setAuth = authUser => {
     setUser(authUser);
@@ -55,6 +59,23 @@ export const AuthProvider = ({ children }) => {
         }
       }
       setProfiledata({ ...res.data });
+
+      // Run worker to update arounduserscount if needed
+      if (res.data.arounduserscount == null || res.data.arounduserscount <= 100) {
+        runWorker({
+          supabaseUrl,
+          supabaseAnonKey,
+          userLat: res.data.lat,
+          userLng: res.data.lng,
+          userGender: res.data.gender,
+          searchdistance: 50 // assuming km or whatever unit
+        }).then(async (count) => {
+          await updateUserInfo(user.id, { arounduserscount: count });
+          setProfiledata(prev => ({ ...prev, arounduserscount: count }));
+        }).catch(error => {
+          console.error('Error updating arounduserscount:', error);
+        });
+      }
     } else {
       setProfiledata(null);
     }

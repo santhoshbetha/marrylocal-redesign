@@ -208,7 +208,7 @@ function SearchSection({
     } else if (!verified) {
       setOpacity('opacity-50');
       setError(
-        "Your account is not verified, please click on 'VERIFY PROFILE' button or Email us Aadhar copy",
+        "Your account is not verified, please click on 'VERIFY' button or Email us Passport or Driving License copy",
       );
     } else if (!locationset) {
       setOpacity('opacity-50');
