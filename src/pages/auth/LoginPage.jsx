@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,14 @@ function LoginPage({ setOpenLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [PasswordInputType, ToggleIcon] = usePasswordToggle();
+  const emailInputRef = useRef(null);
+
+  // Prevent auto-focus on email input
+  useEffect(() => {
+    if (emailInputRef.current) {
+      emailInputRef.current.blur();
+    }
+  }, []);
 
   const forgotPassword = e => {
     setOpenLogin(false);
@@ -122,13 +130,13 @@ function LoginPage({ setOpenLogin }) {
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
+                      ref={emailInputRef}
                       id="email"
                       type="email"
                       placeholder="m@example.com"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.email}
-                      autoFocus={false}
                       required
                     />
                     <p className="text-red-700">{errors.email && touched.email && errors.email}</p>

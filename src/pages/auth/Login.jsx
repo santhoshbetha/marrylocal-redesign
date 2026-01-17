@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +20,14 @@ export function Login({ openLogin, setOpenLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [PasswordInputType, ToggleIcon] = usePasswordToggle();
+  const emailInputRef = useRef(null);
+
+  // Prevent auto-focus on email input
+  useEffect(() => {
+    if (emailInputRef.current) {
+      emailInputRef.current.blur();
+    }
+  }, []);
 
   const forgotPassword = e => {
     setOpenLogin(false);
