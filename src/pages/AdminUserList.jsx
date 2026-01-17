@@ -202,7 +202,7 @@ function AdminUserList() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="min-h-screen p-4">
       <div className="flex items-center gap-2 mb-4">
         <Users className="h-6 w-6" />
         <h1 className="text-2xl font-bold">User List by Location</h1>
@@ -214,11 +214,11 @@ function AdminUserList() {
           <CardTitle>Select Location</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="flex-1">
               <Label htmlFor="state-select">State</Label>
               <Select value={selectedState} onValueChange={handleStateChange}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a state" />
                 </SelectTrigger>
                 <SelectContent>
@@ -232,10 +232,10 @@ function AdminUserList() {
               </Select>
             </div>
 
-            <div>
+            <div className="flex-1">
               <Label htmlFor="city-select">{selectedState === 'All' ? 'Cities' : 'City'}</Label>
               <Select value={selectedCity} onValueChange={handleCityChange} disabled={!selectedState}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={selectedState === 'All' ? "All Cities" : "Select a city"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -368,8 +368,9 @@ function AdminUserList() {
           </CardContent>
         </Card>
       )}
-    </div>
-  );
+
+  </div>
+);
 }
 
 export default AdminUserList;

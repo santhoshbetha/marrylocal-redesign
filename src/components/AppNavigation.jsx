@@ -227,7 +227,16 @@ export function AppNavigation({ children }) {
   const DesktopSidebar = () => (
     <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
       <SidebarHeader className="border-b border-border/50">
-        <div className="h-10" />
+        {isAdmin && (
+          <div className="px-2 py-2 mt-18 text-center">
+                <h2 className="text-lg font-semibold text-foreground">
+                  Admin Panel
+                </h2>
+          </div>
+        )}
+        {!isAdmin && (
+          <div className="h-10" />
+        )}
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu className="p-4 space-y-2">

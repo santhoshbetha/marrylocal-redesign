@@ -356,11 +356,11 @@ function AdminEmailTemplates() {
             </TabsContent>
 
             <TabsContent value="location-based" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="state-select">State</Label>
                   <Select value={selectedState} onValueChange={handleStateChange}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select State" />
                     </SelectTrigger>
                     <SelectContent>
@@ -377,7 +377,7 @@ function AdminEmailTemplates() {
                 <div>
                   <Label htmlFor="city-select">City</Label>
                   <Select value={selectedCity} onValueChange={handleCityChange} disabled={!selectedState}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select City" />
                     </SelectTrigger>
                     <SelectContent>
