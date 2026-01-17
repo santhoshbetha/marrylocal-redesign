@@ -35,7 +35,8 @@ function ChangePassword() {
 
   // Validate access - allow access for password reset even when logged out
   useEffect(() => {
-    // Allow access if user is logged in OR if there's an email (password reset flow)
+    // For password reset flow, we don't need authentication since user was just verified and signed out
+    // The email context will be available from the forgot password flow
     if (!userSession || !user) {
       if (!email) {
         setMessage('Access denied. Please use the password reset link from your email.');
@@ -46,6 +47,7 @@ function ChangePassword() {
         return;
       }
       // If there's an email but no user session, this is a valid password reset flow
+      // No authentication required since verifyOtp already validated the token
     }
   }, [user, userSession, email, navigate]);
 
@@ -134,8 +136,8 @@ function ChangePassword() {
     setLoading(false);
   };
 
-  // If no valid session, show access denied message
-  if (!userSession || !user) {
+  // If no valid session and no email for password reset, show access denied message
+  if ((!userSession || !user) && !email) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-12">
         <div className="container mx-auto px-4">
