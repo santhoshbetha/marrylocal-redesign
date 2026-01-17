@@ -12,7 +12,7 @@ import { updateUserInfo } from '../services/userService';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { ImageUploader } from '@/components/ImageUploader';
 import { ImageLoader } from '@/components/ImageLoader';
-import { Camera, ImageIcon, Upload, Plus, Grid3X3, X } from 'lucide-react';
+import { Camera, ImageIcon, Upload, Plus, Grid3X3, X, Loader2 } from 'lucide-react';
 
 const ID = 'e9657b2174cfd94d867005431c056ae9';
 const SECRET = 'fb0d1c76b8cab0a6e196554419a72cd23b5129718d865213cc5a56bb9b30256d';
@@ -33,7 +33,13 @@ function isObjEmpty(val) {
 function Photos() {
   const { user, profiledata, setProfiledata } = useAuth();
   const [images, setImages] = useState(Array(10).fill(null));
-  const [visibleSlots, setVisibleSlots] = useState(3); // Start with 3 slots
+  const [visibleSlots, setVisibleSlots] = useState(() => {
+    const stored = localStorage.getItem('visibleSlots');
+    return stored ? parseInt(stored, 10) : 3;
+  }); // Start with 3 slots or from localStorage
+  const [uploadingSlots, setUploadingSlots] = useState(Array(10).fill(false)); // Track uploading state for each slot
+  const [removingSlots, setRemovingSlots] = useState(Array(10).fill(false)); // Track removing state for each slot
+  const [removingEmptySlots, setRemovingEmptySlots] = useState(Array(10).fill(false)); // Track removing empty slots state
   const isOnline = useOnlineStatus();
   const [reload, setReload] = useState(false);
 
@@ -43,7 +49,7 @@ function Photos() {
     const loadImages = async () => {
       if (!isObjEmpty(profiledata?.images)) {
         const newImages = Array(10).fill(null);
-        let maxIndexWithImage = 2; // Start with minimum 3 slots (index 0, 1, 2)
+        let maxIndexWithImage = -1;
 
         profiledata.images.forEach((imageName, index) => {
           if (imageName && index < 10) {
@@ -54,11 +60,23 @@ function Photos() {
 
         setImages(newImages);
 
-        // Ensure visibleSlots shows at least the slots that have images, minimum 3
+        // Calculate required slots based on images
         const requiredSlots = Math.max(3, maxIndexWithImage + 1);
-        setVisibleSlots(requiredSlots);
+
+        // If visibleSlots is less than required, update it
+        if (visibleSlots < requiredSlots) {
+          const newVisibleSlots = requiredSlots;
+          setVisibleSlots(newVisibleSlots);
+          localStorage.setItem('visibleSlots', newVisibleSlots.toString());
+        }
 
         setReload(false);
+      } else {
+        // No images, ensure minimum 3 slots
+        if (visibleSlots < 3) {
+          setVisibleSlots(3);
+          localStorage.setItem('visibleSlots', '3');
+        }
       }
     };
 
@@ -66,6 +84,13 @@ function Photos() {
   }, [isOnline, user, reload, profiledata?.images, shortid]);
 
   const handleImageCropped = async (blob, imageIndex) => {
+    // Set uploading state
+    setUploadingSlots(prev => {
+      const newState = [...prev];
+      newState[imageIndex] = true;
+      return newState;
+    });
+
     const timestamp = Date.now();
     const imageName = IMAGE_NAMES[imageIndex];
     const imageId = imageIndex + 1;
@@ -89,7 +114,17 @@ function Photos() {
     // Update the specific image slot
     imagesObj[imageIndex] = `${imageName}?t=${timestamp}`;
 
-    const res2 = await updateUserInfo(user?.id, { images: imagesObj });
+    // If uploading to a slot beyond current visibleSlots, increase visibleSlots
+    let newVisibleSlots = visibleSlots;
+    if (imageIndex >= visibleSlots) {
+      newVisibleSlots = Math.min(imageIndex + 1, 10);
+      setVisibleSlots(newVisibleSlots);
+      localStorage.setItem('visibleSlots', newVisibleSlots.toString());
+    }
+
+    const updateData = { images: imagesObj };
+
+    const res2 = await updateUserInfo(user?.id, updateData);
 
     if (res2.success) {
       setProfiledata({
@@ -101,12 +136,29 @@ function Photos() {
       const newImages = [...images];
       newImages[imageIndex] = { uri: `${CDNURL}/${shortid}/${imagesObj[imageIndex]}` };
       setImages(newImages);
+      if (newVisibleSlots !== visibleSlots) {
+        setVisibleSlots(newVisibleSlots);
+      }
     } else {
       alert('Upload Image Error.. try again later');
     }
+
+    // Clear uploading state
+    setUploadingSlots(prev => {
+      const newState = [...prev];
+      newState[imageIndex] = false;
+      return newState;
+    });
   };
 
   const handleImageRemove = async (imageIndex) => {
+    // Set removing state
+    setRemovingSlots(prev => {
+      const newState = [...prev];
+      newState[imageIndex] = true;
+      return newState;
+    });
+
     const imageId = imageIndex + 1;
     const res = await deleteImage(shortid, imageId);
     console.log(`handleImageRemove${imageIndex + 1} res::`, res);
@@ -125,18 +177,74 @@ function Photos() {
         setImages(newImages);
       }
     }
+
+    // Clear removing state
+    setRemovingSlots(prev => {
+      const newState = [...prev];
+      newState[imageIndex] = false;
+      return newState;
+    });
   };
 
-  const handleAddMoreSlots = () => {
+  const handleAddMoreSlots = async () => {
     // Add 1 more slot, but don't exceed 10 total
     const newVisibleSlots = Math.min(visibleSlots + 1, 10);
     setVisibleSlots(newVisibleSlots);
+    localStorage.setItem('visibleSlots', newVisibleSlots.toString());
   };
 
-  const handleRemoveEmptySlot = () => {
-    // Remove 1 slot, but don't go below 3 total
-    const newVisibleSlots = Math.max(visibleSlots - 1, 3);
-    setVisibleSlots(newVisibleSlots);
+  const handleRemoveEmptySlot = async (slotIndex) => {
+    // Set removing empty slot state
+    setRemovingEmptySlots(prev => {
+      const newState = [...prev];
+      newState[slotIndex] = true;
+      return newState;
+    });
+
+    // Remove the specific empty slot by shifting subsequent slots left
+    let imagesObj = profiledata?.images ? [...profiledata.images] : [];
+
+    // Shift images left from slotIndex onwards
+    for (let i = slotIndex; i < 9; i++) {
+      imagesObj[i] = imagesObj[i + 1] || '';
+    }
+    imagesObj[9] = ''; // Ensure the last slot is empty
+
+    // Calculate new visibleSlots - minimum 3, or up to the last non-empty slot + 1
+    let newVisibleSlots = 3;
+    for (let i = 0; i < 10; i++) {
+      if (imagesObj[i]) {
+        newVisibleSlots = Math.max(newVisibleSlots, i + 1);
+      }
+    }
+    newVisibleSlots = Math.min(newVisibleSlots, 10);
+
+    const updateData = { images: imagesObj };
+
+    const res = await updateUserInfo(user?.id, updateData);
+    if (res.success) {
+      setProfiledata({ ...profiledata, images: imagesObj });
+
+      // Update local images state
+      const newImages = Array(10).fill(null);
+      for (let i = 0; i < 10; i++) {
+        if (imagesObj[i]) {
+          newImages[i] = { uri: `${CDNURL}/${shortid}/${imagesObj[i]}` };
+        }
+      }
+      setImages(newImages);
+      setVisibleSlots(newVisibleSlots);
+      localStorage.setItem('visibleSlots', newVisibleSlots.toString());
+    } else {
+      alert(`Failed to remove empty slot: ${res.msg || 'Unknown error'}. Please try again.`);
+    }
+
+    // Clear removing empty slot state
+    setRemovingEmptySlots(prev => {
+      const newState = [...prev];
+      newState[slotIndex] = false;
+      return newState;
+    });
   };
 
   const getDisplayedSlots = () => {
@@ -214,15 +322,30 @@ function Photos() {
                         >
                           <X className="h-4 w-4" />
                         </Button>
+                        {removingSlots[index] && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-xl">
+                            <Loader2 className="h-8 w-8 animate-spin text-white" />
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-blue-50 group-hover:to-purple-50 transition-all duration-300 rounded-xl overflow-hidden">
+                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-blue-50 group-hover:to-purple-50 transition-all duration-300 rounded-xl overflow-hidden relative">
                         <ImageUploader
                           onImageCropped={(blob) => handleImageCropped(blob, index)}
                           setReload={setReload}
                           minimal={true}
                           className="w-full h-full"
                         />
+                        {uploadingSlots[index] && (
+                          <div className="absolute inset-0 bg-white/80 flex items-center justify-center rounded-xl">
+                            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                          </div>
+                        )}
+                        {removingEmptySlots[index] && (
+                          <div className="absolute inset-0 bg-white/80 flex items-center justify-center rounded-xl">
+                            <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -231,7 +354,7 @@ function Photos() {
                   {!image && visibleSlots > 3 && (
                     <div className="absolute -top-2 -right-2 z-20">
                       <Button
-                        onClick={handleRemoveEmptySlot}
+                        onClick={() => handleRemoveEmptySlot(index)}
                         variant="destructive"
                         size="sm"
                         className="h-6 w-6 p-0 rounded-full bg-red-500 hover:bg-red-600 border-2 border-white shadow-lg"
