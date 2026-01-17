@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import supabase from '../../lib/supabase';
 
 export default function AuthConfirm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [hasProcessed, setHasProcessed] = useState(false); // Prevents double execution
+  const hasProcessedRef = useRef(false); // Use ref to prevent double execution
 
   // 1. Extract the secure parameters from the email link URL
   const token_hash = searchParams.get('token_hash');
@@ -14,39 +14,29 @@ export default function AuthConfirm() {
 
   useEffect(() => {
     const verifyAndRedirect = async () => {
-      console.log("Starting verification process 1 hasProcessed:", hasProcessed);
-      if (hasProcessed) return;
-      //setHasProcessed(true);
-
-       console.log("Starting verification process 2");
+      if (hasProcessedRef.current) return;
+      hasProcessedRef.current = true;
 
       if (token_hash && type) {
-         console.log("Starting verification process 3");
         try {
-          // 2. Exchange the token_hash for a live browser session
-          console.log("Starting verification process 4");
-          if (!hasProcessed) {
-            const { data, error } = await supabase.auth.verifyOtp({
-              token_hash,
-              type: 'recovery',
-            });
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: 'recovery',
+          });
 
-            console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
-            console.log("Verification result error:", { error });
-            console.log("Verification result data:", { data });
+          console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
+          console.log("Verification result error:", { error });
+          console.log("Verification result data:", { data });
 
-            setHasProcessed(true);
-
-            if (!error) {
-              // 3. SUCCESS: The user is now authenticated.
-              // Log out any existing session before redirecting to password reset
-              await supabase.auth.signOut();
-              navigate(next, { replace: true });
-            } else {
-              // FAILURE: Token might be expired or already used
-              console.error('Hash verification failed:', error.message);
-              navigate('/login?error=link-expired', { replace: true });
-            }
+          if (!error) {
+            // SUCCESS: The user is now authenticated.
+            // Log out any existing session before redirecting to password reset
+            await supabase.auth.signOut();
+            navigate(next, { replace: true });
+          } else {
+            // FAILURE: Token might be expired or already used
+            console.error('Hash verification failed:', error.message);
+            navigate('/login?error=link-expired', { replace: true });
           }
         } catch (err) {
           console.error('Unexpected error during verification:', err);
@@ -59,8 +49,7 @@ export default function AuthConfirm() {
       }
     };
 
-     console.log("Starting verifyAndRedirect call");
-     verifyAndRedirect();
+    verifyAndRedirect();
   }, []); // Empty dependency array ensures this only runs once on mount
 
   return (
