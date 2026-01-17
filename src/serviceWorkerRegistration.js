@@ -1,27 +1,40 @@
 import { Workbox } from 'workbox-window';
 
 export default function registerServiceWorker() {
-    console.log(" registerServiceWorker 1")
-  if ( 'production' !== process.env.NODE_ENV ) {
-    console.log(" registerServiceWorker 2")
+  // Only register service worker in production
+  if (process.env.NODE_ENV !== 'production') {
     return;
   }
-  // Check if the serviceWorker Object exists in the navigator object ( means if browser supports SW )
+
+  // Check if the serviceWorker Object exists in the navigator object
   if ('serviceWorker' in navigator) {
     const wb = new Workbox('sw.js');
 
     wb.addEventListener('installed', event => {
-      /**
-       * We have the condition - event.isUpdate because we don't want to show
-       * this message on the very first service worker installation,
-       * only on the updated
-       */
       if (event.isUpdate) {
         if (confirm(`New app update is available!. Click OK to refresh`)) {
           window.location.reload();
         }
       }
     });
-    wb.register();
+
+    wb.addEventListener('activated', event => {
+      // Service worker activated
+    });
+
+    wb.addEventListener('waiting', event => {
+      // New service worker is waiting
+    });
+
+    wb.addEventListener('message', event => {
+      if (event.data && event.data.type === 'CACHE_UPDATED') {
+        const { updatedURL } = event.data.payload;
+        console.log(`A newer version of ${updatedURL} is available!`);
+      }
+    });
+
+    wb.register().catch(error => {
+      console.error('Service worker registration failed:', error);
+    });
   }
 }
