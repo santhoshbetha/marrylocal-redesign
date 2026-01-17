@@ -25,6 +25,9 @@ export default function AuthConfirm() {
             type,
           });
 
+          console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
+          console.log("Verification result:", { error });
+
           if (!error) {
             // 3. SUCCESS: The user is now authenticated.
             // Redirect them to the actual password update form.
