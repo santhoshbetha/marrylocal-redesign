@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import supabase from '../../lib/supabase';
 
 export default function AuthConfirm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const isProcessing = useRef(false); // Prevents React 18+ double-execution in StrictMode
+  const [hasProcessed, setHasProcessed] = useState(false); // Prevents double execution
 
   useEffect(() => {
     // 1. Extract the secure parameters from the email link URL
@@ -14,8 +14,8 @@ export default function AuthConfirm() {
     const next = searchParams.get('next') || '/changepassword';
 
     const verifyAndRedirect = async () => {
-      if (isProcessing.current) return;
-      isProcessing.current = true;
+      if (hasProcessed) return;
+      setHasProcessed(true);
 
       if (token_hash && type) {
         try {
@@ -49,7 +49,7 @@ export default function AuthConfirm() {
     };
 
     verifyAndRedirect();
-  }, [searchParams, navigate]);
+  }, []); // Empty dependency array ensures this only runs once on mount
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">

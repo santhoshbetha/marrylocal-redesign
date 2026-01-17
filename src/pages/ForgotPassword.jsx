@@ -170,7 +170,7 @@ function ForgotPassword() {
               setLoading(false);
               toast.success('Password reset email sent! Please check your inbox and follow the instructions.', {
                 duration: 10000,
-                description: `You will be logged out for security reasons in ${countdown} seconds.`,
+                description: `Closing in ${countdown} for security reasons`,
               });
               // Start countdown timer for logout
               setCountdown(10);
