@@ -14,6 +14,7 @@ export default function AuthConfirm() {
 
   useEffect(() => {
     const verifyAndRedirect = async () => {
+      console.log("Starting verification process: hasProcessedRef.current", hasProcessedRef.current);
       if (hasProcessedRef.current) return;
       hasProcessedRef.current = true;
 
