@@ -16,7 +16,7 @@ export default function AuthConfirm() {
     const verifyAndRedirect = async () => {
       console.log("Starting verification process 1 hasProcessed:", hasProcessed);
       if (hasProcessed) return;
-      setHasProcessed(true);
+      //setHasProcessed(true);
 
        console.log("Starting verification process 2");
 
@@ -24,24 +24,28 @@ export default function AuthConfirm() {
          console.log("Starting verification process 3");
         try {
           // 2. Exchange the token_hash for a live browser session
-           console.log("Starting verification process 4");
-          const { error } = await supabase.auth.verifyOtp({
-            token_hash,
-            type: 'recovery',
-          });
+          console.log("Starting verification process 4");
+          if (!hasProcessed) {
+            const { error } = await supabase.auth.verifyOtp({
+              token_hash,
+              type: 'recovery',
+            });
 
-          console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
-          console.log("Verification result:", { error });
+            console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
+            console.log("Verification result:", { error });
 
-          if (!error) {
-            // 3. SUCCESS: The user is now authenticated.
-            // Log out any existing session before redirecting to password reset
-            await supabase.auth.signOut();
-            navigate(next, { replace: true });
-          } else {
-            // FAILURE: Token might be expired or already used
-            console.error('Hash verification failed:', error.message);
-            navigate('/login?error=link-expired', { replace: true });
+            setHasProcessed(true);
+
+            if (!error) {
+              // 3. SUCCESS: The user is now authenticated.
+              // Log out any existing session before redirecting to password reset
+              await supabase.auth.signOut();
+              navigate(next, { replace: true });
+            } else {
+              // FAILURE: Token might be expired or already used
+              console.error('Hash verification failed:', error.message);
+              navigate('/login?error=link-expired', { replace: true });
+            }
           }
         } catch (err) {
           console.error('Unexpected error during verification:', err);
@@ -55,7 +59,7 @@ export default function AuthConfirm() {
     };
 
      console.log("Starting verifyAndRedirect call");
-    //verifyAndRedirect();
+     verifyAndRedirect();
   }, [searchParams, navigate, hasProcessed]); // Empty dependency array ensures this only runs once on mount
 
   return (
