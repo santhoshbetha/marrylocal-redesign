@@ -5,23 +5,21 @@ export default async function aroundUsersWorker(params) {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const cols = {
-    gender: userGender === 'Male' ? 'Female' : 'Male',
-    state: '',
-    jobstatus: '',
-    agefrom: 18,
-    ageto: 100,
-    lat: userLat,
-    long: userLng,
-    searchdistance: searchdistance,
-  };
+  const oppositeGender = userGender === 'Male' ? 'Female' : 'Male';
 
-  const { data, error } = await supabase.rpc('search_by_distance', cols);
+  // Use direct query instead of RPC to avoid potential issues
+  const radiusMeters = searchdistance * 1000; // assuming searchdistance is in km
+
+  const { count, error } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('gender', oppositeGender)
+    .filter('location', 'st_dwithin', `POINT(${userLng} ${userLat}), ${radiusMeters}`);
 
   if (error) {
     console.error('Error in aroundUsersWorker:', error);
     return 0;
   }
 
-  return data ? data.length : 0;
+  return count || 0;
 }
