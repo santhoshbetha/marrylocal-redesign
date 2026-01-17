@@ -5,6 +5,16 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Eye, EyeOff, Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { updateUserInfo } from '../services/userService';
@@ -29,9 +39,42 @@ function ChangePassword() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [logoutTimer, setLogoutTimer] = useState(null);
+  const [logoutMessage, setLogoutMessage] = useState('');
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
   const navigate = useNavigate();
+
+  // Function to handle logout with timer
+  const handleSecurityLogout = () => {
+    setLogoutMessage('Logging out because of security reasons...');
+    
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.auth.signOut();
+        localStorage.clear();
+        secureLocalStorage.clear();
+        navigate('/login?msg=security-logout', { replace: true });
+      } catch (error) {
+        console.error('Error during security logout:', error);
+        navigate('/login?msg=security-logout', { replace: true });
+      }
+    }, 5000); // 5 second timer
+    
+    setLogoutTimer(timer);
+  };
+
+  // Handle dialog confirm action
+  const handleConfirmLeave = () => {
+    setShowLeaveDialog(false);
+    handleSecurityLogout();
+  };
+
+  // Handle dialog cancel action
+  const handleCancelLeave = () => {
+    setShowLeaveDialog(false);
+    setPendingNavigation(null);
+  };
 
   // Validate access - allow access for password reset even when logged out
   useEffect(() => {
@@ -59,13 +102,10 @@ function ChangePassword() {
 
     // Prevent navigation using history API
     const handlePopState = (e) => {
-      const confirmLeave = window.confirm(
-        'You are in the middle of changing your password. Are you sure you want to leave? Your password change will be cancelled.'
-      );
-      if (!confirmLeave) {
-        // Push the current state back to prevent navigation
-        window.history.pushState(null, '', window.location.pathname);
-      }
+      setShowLeaveDialog(true);
+      setPendingNavigation('back');
+      // Push the current state back to prevent navigation
+      window.history.pushState(null, '', window.location.pathname);
     };
 
     // Prevent programmatic navigation by intercepting link clicks
@@ -76,12 +116,8 @@ function ChangePassword() {
         // Allow navigation to login page or same page
         if (url.pathname !== '/login' && url.pathname !== window.location.pathname) {
           e.preventDefault();
-          const confirmLeave = window.confirm(
-            'You are in the middle of changing your password. Are you sure you want to leave? Your password change will be cancelled.'
-          );
-          if (confirmLeave) {
-            window.location.href = target.href;
-          }
+          setShowLeaveDialog(true);
+          setPendingNavigation(target.href);
         }
       }
     };
@@ -94,8 +130,12 @@ function ChangePassword() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handlePopState);
       document.removeEventListener('click', handleLinkClick, true);
+      // Clear any pending logout timer
+      if (logoutTimer) {
+        clearTimeout(logoutTimer);
+      }
     };
-  }, []);
+  }, [logoutTimer]);
 
   const validatePassword = (password) => {
     if (password.length < 6) {
@@ -240,6 +280,17 @@ function ChangePassword() {
             </div>
           )}
 
+          {/* Security Logout Overlay */}
+          {logoutMessage && (
+            <div className="absolute inset-0 bg-red-500 bg-opacity-95 flex items-center justify-center z-20 rounded-lg">
+              <div className="text-center text-white">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                <p className="text-lg font-semibold">{logoutMessage}</p>
+                <p className="text-sm mt-2">You will be redirected to login shortly...</p>
+              </div>
+            </div>
+          )}
+
           <Card className="border-0 shadow-xl">
             <CardHeader className="text-center pb-2">
               <div className="flex justify-center mb-4">
@@ -359,6 +410,24 @@ function ChangePassword() {
           </Card>
         </div>
       </div>
+
+      {/* Navigation Warning Dialog */}
+      <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Leave Password Change?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are in the middle of changing your password. If you leave now, your password change will be cancelled and you will be logged out for security reasons.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelLeave}>Stay Here</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmLeave} className="bg-red-600 hover:bg-red-700">
+              Leave & Logout
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
