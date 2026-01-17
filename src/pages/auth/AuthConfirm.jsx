@@ -7,12 +7,12 @@ export default function AuthConfirm() {
   const navigate = useNavigate();
   const [hasProcessed, setHasProcessed] = useState(false); // Prevents double execution
 
-  useEffect(() => {
-    // 1. Extract the secure parameters from the email link URL
-    const token_hash = searchParams.get('token_hash');
-    const type = searchParams.get('type'); // This will be 'recovery' for password resets
-    const next = searchParams.get('next') || '/changepassword';
+  // 1. Extract the secure parameters from the email link URL
+  const token_hash = searchParams.get('token_hash');
+  const type = searchParams.get('type'); // This will be 'recovery' for password resets
+  const next = searchParams.get('next') || '/changepassword';
 
+  useEffect(() => {
     const verifyAndRedirect = async () => {
       console.log("Starting verification process 1 hasProcessed:", hasProcessed);
       if (hasProcessed) return;
@@ -26,13 +26,14 @@ export default function AuthConfirm() {
           // 2. Exchange the token_hash for a live browser session
           console.log("Starting verification process 4");
           if (!hasProcessed) {
-            const { error } = await supabase.auth.verifyOtp({
+            const { data, error } = await supabase.auth.verifyOtp({
               token_hash,
               type: 'recovery',
             });
 
             console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
-            console.log("Verification result:", { error });
+            console.log("Verification result error:", { error });
+            console.log("Verification result data:", { data });
 
             setHasProcessed(true);
 
@@ -60,7 +61,7 @@ export default function AuthConfirm() {
 
      console.log("Starting verifyAndRedirect call");
      verifyAndRedirect();
-  }, [searchParams, navigate, hasProcessed]); // Empty dependency array ensures this only runs once on mount
+  }, []); // Empty dependency array ensures this only runs once on mount
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">
