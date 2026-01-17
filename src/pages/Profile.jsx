@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Phone, RefreshCw, Edit3, Check, X, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Mail, Phone, RefreshCw, Edit3, Check, X, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { Spinner } from '@/components/ui/spinner';
 import { Editable } from '@/components/Editable';
@@ -41,6 +41,7 @@ function Profile() {
   const [bioValue, setBioValue] = useState(
     !isObjEmpty(profiledata?.bio) ? profiledata?.bio : ''
   );
+  const [profilePicLoading, setProfilePicLoading] = useState(true);
   const isOnline = useOnlineStatus();
 
   useEffect(() => {
@@ -51,6 +52,8 @@ function Profile() {
       setBioValue(!isObjEmpty(profiledata?.bio) ? profiledata?.bio : '');
       setReload(false);
     }
+    // Reset profile picture loading when profile data changes
+    setProfilePicLoading(true);
   }, [profiledata, reload]);
 
   const handlesaveSocials = async e => {
@@ -161,6 +164,7 @@ function Profile() {
     } else {
       ev.target.src = '/female-default-2.png';
     }
+    setProfilePicLoading(false);
   };
 
   return (
@@ -173,15 +177,21 @@ function Profile() {
           <div className="grid sm:grid-cols-1 w-full lg:grid-cols-3 gap-2 md:gap-4">
             <Card className="p-6 md:p-8 shadow-lg border-border/50 w-full h-full md:h-[100%]">
               <div 
-                className="w-full max-w-[280px] aspect-square mx-auto overflow-hidden rounded-2xl cursor-pointer bg-gradient-to-br from-primary/30 via-primary/15 via-primary/10 to-primary/5 ring-2 ring-primary/20 hover:ring-primary/40 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm hover:scale-[1.02]"
+                className="w-full max-w-[280px] aspect-square mx-auto overflow-hidden rounded-2xl cursor-pointer bg-gradient-to-br from-primary/30 via-primary/15 via-primary/10 to-primary/5 ring-2 ring-primary/20 hover:ring-primary/40 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm hover:scale-[1.02] relative"
                 onClick={handleProfilePictureClick}
               >
+                {profilePicLoading && (
+                  <div className="absolute inset-0 bg-white/80 flex items-center justify-center rounded-2xl z-10">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                )}
                 {!isObjEmpty(profiledata?.images) ? (
                   <img
                     src={`${CDNURL}/${profiledata?.shortid}/${profiledata?.images[1]}`}
                     alt="Profile picture"
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                     onError={addDefaultImg}
+                    onLoad={() => setProfilePicLoading(false)}
                   />
                 ) : (
                   <>
@@ -190,12 +200,14 @@ function Profile() {
                         src="/male-default-4.png"
                         alt="Profile picture"
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        onLoad={() => setProfilePicLoading(false)}
                       />
                     ) : (
                       <img
                         src="/female-default-2.png"
                         alt="Profile picture"
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        onLoad={() => setProfilePicLoading(false)}
                       />
                     )}
                   </>

@@ -344,7 +344,7 @@ function UserProfile() {
           )}
 
           {/* Profile Details */}
-          <div className="py-6 px-6 space-y-6">
+          <div className="py-0 px-6">
             {/* Contact Information */}
             {!isObjEmpty(user) && user?.userstate == 'active' && (
               <div className="pb-4">

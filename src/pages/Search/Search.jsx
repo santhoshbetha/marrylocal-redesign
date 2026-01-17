@@ -270,36 +270,36 @@ function Search() {
           <div className="flex">
             <button
               onClick={() => setActiveTab('search')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 sm:flex-row sm:gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
                 activeTab === 'search'
                   ? 'text-primary bg-primary/5 border-b-2 border-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
               <SearchIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Search</span>
+              <span className="text-xs sm:text-sm">Search</span>
             </button>
             <button
               onClick={() => setActiveTab('shortlist')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 sm:flex-row sm:gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
                 activeTab === 'shortlist'
                   ? 'text-primary bg-primary/5 border-b-2 border-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
               <Heart className="w-4 h-4" />
-              <span className="hidden sm:inline">Shortlist</span>
+              <span className="text-xs sm:text-sm">Shortlist</span>
             </button>
             <button
               onClick={() => setActiveTab('searchuser')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 sm:flex-row sm:gap-2 px-4 md:px-8 py-4 text-sm md:text-base font-semibold transition-all duration-200 ${
                 activeTab === 'searchuser'
                   ? 'text-primary bg-primary/5 border-b-2 border-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
               <UserSearch className="w-4 h-4" />
-              <span className="hidden sm:inline">Search User</span>
+              <span className="text-xs sm:text-sm">Search User</span>
             </button>
           </div>
         </div>
