@@ -27,7 +27,7 @@ export default function AuthConfirm() {
            console.log("Starting verification process 4");
           const { error } = await supabase.auth.verifyOtp({
             token_hash,
-            type,
+            type: 'recovery',
           });
 
           console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
@@ -56,7 +56,7 @@ export default function AuthConfirm() {
 
      console.log("Starting verifyAndRedirect call");
     verifyAndRedirect();
-  }, []); // Empty dependency array ensures this only runs once on mount
+  }, [searchParams, navigate, hasProcessed]); // Empty dependency array ensures this only runs once on mount
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">
