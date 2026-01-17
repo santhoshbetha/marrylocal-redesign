@@ -1,11 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import supabase from '../../lib/supabase';
 
 export default function AuthConfirm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const hasProcessedRef = useRef(false); // Use ref to prevent double execution
 
   // 1. Extract the secure parameters from the email link URL
   const token_hash = searchParams.get('token_hash');
@@ -14,9 +13,19 @@ export default function AuthConfirm() {
 
   useEffect(() => {
     const verifyAndRedirect = async () => {
-      console.log("Starting verification process: hasProcessedRef.current", hasProcessedRef.current);
-      if (hasProcessedRef.current) return;
-      hasProcessedRef.current = true;
+      // Use sessionStorage to prevent double execution across component mounts
+      const processedKey = `auth_confirm_processed_${token_hash}`;
+      const hasProcessed = sessionStorage.getItem(processedKey);
+
+      console.log("Starting verification process for token:", token_hash, "hasProcessed:", hasProcessed);
+
+      if (hasProcessed) {
+        console.log("Verification already processed, skipping");
+        return;
+      }
+
+      // Mark as processed immediately
+      sessionStorage.setItem(processedKey, 'true');
 
       if (token_hash && type) {
         try {
@@ -51,7 +60,7 @@ export default function AuthConfirm() {
     };
 
     verifyAndRedirect();
-  }, []); // Empty dependency array ensures this only runs once on mount
+  }, [token_hash, type, next, navigate]); // Include dependencies
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">
