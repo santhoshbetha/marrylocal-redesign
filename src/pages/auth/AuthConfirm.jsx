@@ -1,12 +1,10 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import supabase from '../../lib/supabase';
-import { SearchDataAndRecoveryContext } from '../../context/SearchDataAndRecoveryContext';
 
 export default function AuthConfirm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setEmail } = useContext(SearchDataAndRecoveryContext);
 
   // 1. Extract the secure parameters from the email link URL
   const token_hash = searchParams.get('token_hash');
@@ -43,12 +41,6 @@ export default function AuthConfirm() {
 
           if (!error) {
             // SUCCESS: The user is now authenticated.
-            // Set the email in context for the password reset flow
-            if (data?.user?.email) {
-              setEmail(data.user.email);
-            }
-            // Log out any existing session before redirecting to password reset
-            await supabase.auth.signOut();
             navigate(next, { replace: true });
           } else {
             // FAILURE: Token might be expired or already used

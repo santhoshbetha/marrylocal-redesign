@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useBlocker } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -33,10 +33,17 @@ function ChangePassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
+  // Block navigation away from this page during password reset
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) => 
+      currentLocation.pathname === '/changepassword' && 
+      nextLocation.pathname !== '/changepassword' &&
+      nextLocation.pathname !== '/login'
+  );
+
   // Validate access - allow access for password reset even when logged out
   useEffect(() => {
-    // For password reset flow, we don't need authentication since user was just verified and signed out
-    // The email context will be available from the forgot password flow
+    // Allow access if user is logged in OR if there's an email (password reset flow)
     if (!userSession || !user) {
       if (!email) {
         setMessage('Access denied. Please use the password reset link from your email.');
@@ -47,9 +54,34 @@ function ChangePassword() {
         return;
       }
       // If there's an email but no user session, this is a valid password reset flow
-      // No authentication required since verifyOtp already validated the token
     }
   }, [user, userSession, email, navigate]);
+
+  // Handle navigation blocking
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      const confirmLeave = window.confirm(
+        'You are in the middle of changing your password. Are you sure you want to leave? Your password change will be cancelled.'
+      );
+      if (confirmLeave) {
+        blocker.proceed();
+      } else {
+        blocker.reset();
+      }
+    }
+  }, [blocker]);
+
+  // Prevent accidental page refresh/close during password change
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = 'You are in the middle of changing your password. Are you sure you want to leave?';
+      return e.returnValue;
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   const validatePassword = (password) => {
     if (password.length < 6) {
@@ -112,19 +144,19 @@ function ChangePassword() {
         setMessageType('success');
 
         // Small delay so user sees success message before redirect
-        setTimeout(() => {
-          //
-          // logout
-          //
-          if (!isObjEmpty(userSession)) {
-            localStorage.removeItem('shortlistarray');
-            localStorage.removeItem('page');
-            localStorage.removeItem('shortlistarraylength');
-            localStorage.removeItem('userstate');
-            localStorage.clear();
-            secureLocalStorage.clear();
-            //dispatch(logout());
-          }
+        setTimeout(async () => {
+          // Properly logout the user
+          await supabase.auth.signOut();
+          
+          // Clear local storage
+          localStorage.removeItem('shortlistarray');
+          localStorage.removeItem('page');
+          localStorage.removeItem('shortlistarraylength');
+          localStorage.removeItem('userstate');
+          localStorage.clear();
+          secureLocalStorage.clear();
+          
+          // Redirect to login page
           navigate('/login?msg=reset');
         }, 2000);
       }
@@ -136,8 +168,8 @@ function ChangePassword() {
     setLoading(false);
   };
 
-  // If no valid session and no email for password reset, show access denied message
-  if ((!userSession || !user) && !email) {
+  // If no valid session, show access denied message
+  if (!userSession || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-12">
         <div className="container mx-auto px-4">
