@@ -342,7 +342,7 @@ function SearchSection({
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
       <div className="container mx-auto px-4 py-4 max-w-7xl">
         <Card className="bg-background rounded-2xl shadow-xl border border-border mb-2">
-          <CardContent className="p-4">
+          <CardContent className="px-4 py-0">
             <Accordion
               type="single"
               collapsible
