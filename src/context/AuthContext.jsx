@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import supabase from '../lib/supabase.js';
 import { getProfileData } from '../services/userService';
+import { toast } from 'sonner';
 
 const AuthContext = createContext();
 
@@ -11,9 +12,23 @@ export const AuthProvider = ({ children }) => {
   const [profiledata, setProfiledata] = useState(null);
   const [userSession, setUserSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const setAuth = authUser => {
     setUser(authUser);
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await supabase.auth.signOut();
+      localStorage.clear();
+      window.location.reload();
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Failed to logout. Please try again.');
+      setIsLoggingOut(false);
+    }
   };
 
   const updateUserData = async user => {
@@ -84,6 +99,8 @@ export const AuthProvider = ({ children }) => {
         userSession,
         setProfiledata,
         loading,
+        isLoggingOut,
+        handleLogout,
       }}
     >
       {children}

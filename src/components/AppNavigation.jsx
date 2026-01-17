@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useAuth } from '../context/AuthContext';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useLogout } from '../hooks/useLogout';
 import {
   Search,
   Plus,
@@ -29,6 +30,7 @@ import {
   Lock,
   Users,
   Mail,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -45,11 +47,12 @@ import { toast } from 'sonner';
 import supabase from '../lib/supabase';
 
 export function AppNavigation({ children }) {
-  const { user, profiledata, setProfiledata } = useAuth();
+  const { user, profiledata, setProfiledata, isLoggingOut } = useAuth();
   const location = useLocation();
   useIsMobile();
   const [showReactivateDialog, setShowReactivateDialog] = useState(false);
   const [isReactivating, setIsReactivating] = useState(false);
+  const { handleLogout } = useLogout();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
@@ -154,6 +157,14 @@ export function AppNavigation({ children }) {
       requireAuth: true,
     },
     /*{
+      href: '#',
+      label: isLoggingOut ? 'Logging out...' : 'Logout',
+      icon: Lock,
+      isActive: false,
+      requireAuth: true,
+      onClick: handleLogout,
+    },*/
+    /*{
       href: '/changepassword',
       label: 'Change Password',
       icon: Lock,
@@ -210,6 +221,14 @@ export function AppNavigation({ children }) {
       isActive: location.pathname === '/settings',
       requireAuth: true,
     },
+    /*{
+      href: '#',
+      label: isLoggingOut ? 'Logging out...' : 'Logout',
+      icon: Lock,
+      isActive: false,
+      requireAuth: true,
+      onClick: handleLogout,
+    },*/
   ];
 
   // Add service fees button if required (only for non-admin users)
@@ -246,40 +265,94 @@ export function AppNavigation({ children }) {
             return (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
-                  asChild
+                  asChild={item.href !== '#'}
                   isActive={item.isActive}
                   size="lg"
-                  disabled={!isOnline}
+                  disabled={!isOnline || isLoggingOut}
                   className={cn(
                     'rounded-2xl transition-all duration-200 hover:scale-105',
                     item.isActive && 'bg-primary/15 text-primary',
-                    !isOnline && 'opacity-50 cursor-not-allowed'
+                    (!isOnline || isLoggingOut) && 'opacity-50 cursor-not-allowed'
                   )}
+                  onClick={item.href === '#' ? () => {
+                    if (!isOnline) {
+                      toast.error('Please check your internet connection and try again.');
+                      return;
+                    }
+                    item.onClick?.();
+                  } : undefined}
                 >
-                  <Link 
-                    to={item.href} 
-                    onClick={(e) => {
-                      if (!isOnline) {
-                        e.preventDefault();
-                        toast.error('Please check your internet connection and try again.');
-                        return;
-                      }
-                      item.onClick?.(e);
-                    }}
-                  >
-                    <item.icon
-                      className={cn(
-                        '!h-6 !w-6 !min-h-6 !min-w-6 transition-transform',
-                        item.isActive && 'animate-bounce-gentle',
+                  {item.href !== '#' ? (
+                    <Link 
+                      to={item.href} 
+                      onClick={(e) => {
+                        if (!isOnline) {
+                          e.preventDefault();
+                          toast.error('Please check your internet connection and try again.');
+                          return;
+                        }
+                        item.onClick?.(e);
+                      }}
+                    >
+                      <item.icon
+                        className={cn(
+                          '!h-6 !w-6 !min-h-6 !min-w-6 transition-transform',
+                          item.isActive && 'animate-bounce-gentle',
+                        )}
+                      />
+                      <span className="text-base font-medium">{item.label}</span>
+                    </Link>
+                  ) : (
+                    <>
+                      {isLoggingOut ? (
+                        <Loader2 className="!h-6 !w-6 !min-h-6 !min-w-6 animate-spin" />
+                      ) : (
+                        <item.icon
+                          className={cn(
+                            '!h-6 !w-6 !min-h-6 !min-w-6 transition-transform',
+                            item.isActive && 'animate-bounce-gentle',
+                          )}
+                        />
                       )}
-                    />
-                    <span className="text-base font-medium">{item.label}</span>
-                  </Link>
+                      <span className="text-base font-medium">{item.label}</span>
+                    </>
+                  )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
           })}
         </SidebarMenu>
+
+        {/* Logout Button */}
+        <div className="px-4 pb-4">
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild={false}
+              size="lg"
+              disabled={!isOnline || isLoggingOut}
+              className={cn(
+                'w-full rounded-2xl transition-all duration-200 hover:scale-105 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200',
+                (!isOnline || isLoggingOut) && 'opacity-50 cursor-not-allowed'
+              )}
+              onClick={() => {
+                if (!isOnline) {
+                  toast.error('Please check your internet connection and try again.');
+                  return;
+                }
+                handleLogout();
+              }}
+            >
+              {isLoggingOut ? (
+                <Loader2 className="!h-6 !w-6 !min-h-6 !min-w-6 animate-spin" />
+              ) : (
+                <Lock className="!h-6 !w-6 !min-h-6 !min-w-6 transition-transform" />
+              )}
+              <span className="text-base font-medium">
+                {isLoggingOut ? 'Logging out...' : 'Logout'}
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </div>
 
         {/* Connection Status */}
         <div className={cn(
@@ -309,27 +382,54 @@ export function AppNavigation({ children }) {
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border shadow-lg">
       <div className="grid grid-cols-5 h-16">
         {navigationItems.slice(0, 5).map(item => (
-          <Link
-            key={item.href}
-            to={item.href}
-            onClick={(e) => {
-              if (!isOnline) {
-                e.preventDefault();
-                toast.error('Please check your internet connection and try again.');
-                return;
-              }
-            }}
-            className={cn(
-              'flex flex-col items-center justify-center text-xs font-medium transition-colors',
-              item.isActive 
-                ? 'text-primary' 
-                : 'text-muted-foreground hover:text-primary',
-              !isOnline && 'opacity-50'
-            )}
-          >
-            <item.icon className="h-5 w-5 mb-1" />
-            <span>{item.label}</span>
-          </Link>
+          item.href === '#' ? (
+            <button
+              key={item.href}
+              type="button"
+              onClick={() => {
+                if (!isOnline) {
+                  toast.error('Please check your internet connection and try again.');
+                  return;
+                }
+                item.onClick?.();
+              }}
+              disabled={!isOnline || isLoggingOut}
+              className={cn(
+                'flex flex-col items-center justify-center text-xs font-medium transition-colors',
+                'text-muted-foreground hover:text-primary',
+                (!isOnline || isLoggingOut) && 'opacity-50'
+              )}
+            >
+              {isLoggingOut ? (
+                <Loader2 className="h-5 w-5 mb-1 animate-spin" />
+              ) : (
+                <item.icon className="h-5 w-5 mb-1" />
+              )}
+              <span>{item.label}</span>
+            </button>
+          ) : (
+            <Link
+              key={item.href}
+              to={item.href}
+              onClick={(e) => {
+                if (!isOnline) {
+                  e.preventDefault();
+                  toast.error('Please check your internet connection and try again.');
+                  return;
+                }
+              }}
+              className={cn(
+                'flex flex-col items-center justify-center text-xs font-medium transition-colors',
+                item.isActive 
+                  ? 'text-primary' 
+                  : 'text-muted-foreground hover:text-primary',
+                !isOnline && 'opacity-50'
+              )}
+            >
+              <item.icon className="h-5 w-5 mb-1" />
+              <span>{item.label}</span>
+            </Link>
+          )
         ))}
       </div>
       {/* Connection Status for Mobile */}
@@ -401,6 +501,17 @@ export function AppNavigation({ children }) {
                     >
                       Retry
                     </Button>
+                  </div>
+                </div>
+              )}
+              {isLoggingOut && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm mx-4">
+                    <Loader2 className="h-12 w-12 text-primary mx-auto mb-4 animate-spin" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Logging Out</h3>
+                    <p className="text-gray-600">
+                      Please wait while we securely log you out...
+                    </p>
                   </div>
                 </div>
               )}

@@ -2,6 +2,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useLogout } from '@/hooks/useLogout';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Heart, Menu, User, Settings, LogOut, Search, Users, MessageCircle, Home, Key } from 'lucide-react';
+import { Heart, Menu, User, Settings, LogOut, Search, Users, MessageCircle, Home, Key, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { usePageGradient } from '@/hooks/usePageGradient';
 
@@ -21,11 +22,8 @@ export function NavAfter() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { profiledata } = useAuth();
+  const { handleLogout, isLoggingOut } = useLogout();
   const gradient = usePageGradient();
-
-  async function onLogout() {
-    navigate('/logout');
-  }
 
   const getInitials = () => {
     if (profiledata?.firstname && profiledata?.lastname) {
@@ -133,7 +131,7 @@ export function NavAfter() {
                 <span>Delete Account</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => onLogout()} className="cursor-pointer text-red-600 focus:text-red-600">
+              <DropdownMenuItem onSelect={() => handleLogout()} className="cursor-pointer text-red-600 focus:text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>
@@ -259,13 +257,18 @@ export function NavAfter() {
                     <Button
                       variant="ghost"
                       className="w-full justify-start text-red-300 hover:bg-red-500/20 hover:text-red-200"
+                      disabled={isLoggingOut}
                       onClick={() => {
                         setIsOpen(false);
-                        onLogout();
+                        handleLogout();
                       }}
                     >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Log out
+                      {isLoggingOut ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <LogOut className="mr-2 h-4 w-4" />
+                      )}
+                      {isLoggingOut ? 'Logging out...' : 'Log out'}
                     </Button>
                   </div>
                 </div>
