@@ -57,8 +57,44 @@ function ChangePassword() {
       return e.returnValue;
     };
 
+    // Prevent navigation using history API
+    const handlePopState = (e) => {
+      const confirmLeave = window.confirm(
+        'You are in the middle of changing your password. Are you sure you want to leave? Your password change will be cancelled.'
+      );
+      if (!confirmLeave) {
+        // Push the current state back to prevent navigation
+        window.history.pushState(null, '', window.location.pathname);
+      }
+    };
+
+    // Prevent programmatic navigation by intercepting link clicks
+    const handleLinkClick = (e) => {
+      const target = e.target.closest('a');
+      if (target && target.href) {
+        const url = new URL(target.href, window.location.origin);
+        // Allow navigation to login page or same page
+        if (url.pathname !== '/login' && url.pathname !== window.location.pathname) {
+          e.preventDefault();
+          const confirmLeave = window.confirm(
+            'You are in the middle of changing your password. Are you sure you want to leave? Your password change will be cancelled.'
+          );
+          if (confirmLeave) {
+            window.location.href = target.href;
+          }
+        }
+      }
+    };
+
     window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('click', handleLinkClick, true);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('click', handleLinkClick, true);
+    };
   }, []);
 
   const validatePassword = (password) => {
