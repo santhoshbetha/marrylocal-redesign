@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { useNavigate, useBlocker } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -33,14 +33,6 @@ function ChangePassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Block navigation away from this page during password reset
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) => 
-      currentLocation.pathname === '/changepassword' && 
-      nextLocation.pathname !== '/changepassword' &&
-      nextLocation.pathname !== '/login'
-  );
-
   // Validate access - allow access for password reset even when logged out
   useEffect(() => {
     // Allow access if user is logged in OR if there's an email (password reset flow)
@@ -56,20 +48,6 @@ function ChangePassword() {
       // If there's an email but no user session, this is a valid password reset flow
     }
   }, [user, userSession, email, navigate]);
-
-  // Handle navigation blocking
-  useEffect(() => {
-    if (blocker.state === 'blocked') {
-      const confirmLeave = window.confirm(
-        'You are in the middle of changing your password. Are you sure you want to leave? Your password change will be cancelled.'
-      );
-      if (confirmLeave) {
-        blocker.proceed();
-      } else {
-        blocker.reset();
-      }
-    }
-  }, [blocker]);
 
   // Prevent accidental page refresh/close during password change
   useEffect(() => {
