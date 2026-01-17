@@ -14,12 +14,17 @@ export default function AuthConfirm() {
     const next = searchParams.get('next') || '/changepassword';
 
     const verifyAndRedirect = async () => {
+      console.log("Starting verification process 1");
       if (hasProcessed) return;
       setHasProcessed(true);
 
+       console.log("Starting verification process 2");
+
       if (token_hash && type) {
+         console.log("Starting verification process 3");
         try {
           // 2. Exchange the token_hash for a live browser session
+           console.log("Starting verification process 4");
           const { error } = await supabase.auth.verifyOtp({
             token_hash,
             type,
@@ -48,6 +53,7 @@ export default function AuthConfirm() {
       }
     };
 
+     console.log("Starting verifyAndRedirect call");
     verifyAndRedirect();
   }, []); // Empty dependency array ensures this only runs once on mount
 
