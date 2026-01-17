@@ -14,7 +14,7 @@ export default function AuthConfirm() {
     const next = searchParams.get('next') || '/changepassword';
 
     const verifyAndRedirect = async () => {
-      console.log("Starting verification process 1");
+      console.log("Starting verification process 1 hasProcessed:", hasProcessed);
       if (hasProcessed) return;
       setHasProcessed(true);
 
@@ -55,7 +55,7 @@ export default function AuthConfirm() {
     };
 
      console.log("Starting verifyAndRedirect call");
-    verifyAndRedirect();
+    //verifyAndRedirect();
   }, [searchParams, navigate, hasProcessed]); // Empty dependency array ensures this only runs once on mount
 
   return (
