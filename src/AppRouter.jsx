@@ -39,6 +39,7 @@ const AdminBulkOperations = lazy(() => import('@/pages/AdminBulkOperations'));
 const UserProfiles = lazy(() => import('@/pages/UserProfiles'));
 const AdminUserList = lazy(() => import('@/pages/AdminUserList'));
 const AdminEmailTemplates = lazy(() => import('@/pages/AdminEmailTemplates'));
+const ScrollToTop = lazy(() => import('./components/ScrollToTop'));
 
 export default function AppRouter({ openLogin, setOpenLogin }) {
   // Check if maintenance mode is enabled
@@ -65,6 +66,7 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
 
   return (
     <Suspense fallback={<LoadingFallback />}>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home openLogin={openLogin} setOpenLogin={setOpenLogin} />} />
         <Route path="/about" element={<About />} />

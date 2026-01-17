@@ -193,7 +193,7 @@ export function SearchList({
   };
 
   return (
-    <div className="container mx-auto px-4 py-0 max-w-7xl">
+    <div className="container mx-auto px-4 pb-6 max-w-7xl">
       {/* Loading Progress Bar */}
       <div className="mb-6 relative h-2 bg-muted/30 rounded-full overflow-hidden">
         <div

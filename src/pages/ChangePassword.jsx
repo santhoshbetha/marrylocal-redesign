@@ -45,11 +45,6 @@ function ChangePassword() {
     }
   }, [user, userSession, navigate]);
 
-  useEffect(() => {
-    // Scroll to top when component mounts
-    window.scrollTo(0, 0);
-  }, []);
-
   const validatePassword = (password) => {
     if (password.length < 6) {
       return 'Password must be at least 6 characters long';
