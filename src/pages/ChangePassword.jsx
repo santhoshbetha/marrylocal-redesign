@@ -33,17 +33,21 @@ function ChangePassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Validate access - only allow access after successful AuthConfirm
+  // Validate access - allow access for password reset even when logged out
   useEffect(() => {
+    // Allow access if user is logged in OR if there's an email (password reset flow)
     if (!userSession || !user) {
-      setMessage('Access denied. Please use the password reset link from your email.');
-      setMessageType('error');
-      setTimeout(() => {
-          navigate('/', { replace: true });
-      }, 5000);
-      return;
+      if (!email) {
+        setMessage('Access denied. Please use the password reset link from your email.');
+        setMessageType('error');
+        setTimeout(() => {
+            navigate('/', { replace: true });
+        }, 5000);
+        return;
+      }
+      // If there's an email but no user session, this is a valid password reset flow
     }
-  }, [user, userSession, navigate]);
+  }, [user, userSession, email, navigate]);
 
   const validatePassword = (password) => {
     if (password.length < 6) {

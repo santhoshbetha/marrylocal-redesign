@@ -35,7 +35,8 @@ export default function AuthConfirm() {
 
           if (!error) {
             // 3. SUCCESS: The user is now authenticated.
-            // Redirect them to the actual password update form.
+            // Log out any existing session before redirecting to password reset
+            await supabase.auth.signOut();
             navigate(next, { replace: true });
           } else {
             // FAILURE: Token might be expired or already used
