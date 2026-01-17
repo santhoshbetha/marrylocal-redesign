@@ -43,6 +43,7 @@ function ChangePassword() {
   const [logoutMessage, setLogoutMessage] = useState('');
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   // Function to handle logout with timer
