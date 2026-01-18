@@ -50,11 +50,11 @@ export function FAQSection() {
             </AccordionItem>
 
             <AccordionItem value="item-3">
-              <AccordionTrigger className="text-left text-lg sm:text-xl">
+              <AccordionTrigger className="text-left text-base sm:text-lg lg:text-xl px-3 sm:px-4">
                 How do I search for matches in my city?
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed px-3 sm:px-4">
                   After creating your profile, use search filters to find matches by city, age
                   range, education etc.
                 </p>
@@ -62,9 +62,9 @@ export function FAQSection() {
             </AccordionItem>
 
             <AccordionItem value="item-4">
-              <AccordionTrigger className="text-left text-lg sm:text-xl">Is MarryLocal free to use?</AccordionTrigger>
+              <AccordionTrigger className="text-left text-base sm:text-lg lg:text-xl px-3 sm:px-4">Is MarryLocal free to use?</AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed px-3 sm:px-4">
                   MarryLocal curently free. You can create a profile, browse matches, and contact
                   matches.
                 </p>
@@ -72,11 +72,11 @@ export function FAQSection() {
             </AccordionItem>
 
             <AccordionItem value="item-5">
-              <AccordionTrigger className="text-left text-lg sm:text-xl">
+              <AccordionTrigger className="text-left text-base sm:text-lg lg:text-xl px-3 sm:px-4">
                 How do you ensure user safety and privacy?
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+                <p className="text-muted-foreground text-base sm:text-lg leading-relaxed px-3 sm:px-4">
                   Safety is our top priority. All profiles are manually reviewed and verified. Your
                   personal contact information is never shared without your consent.{' '}
                 </p>
