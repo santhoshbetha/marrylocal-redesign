@@ -274,19 +274,19 @@ function SearchSection({
 
       const res = await refetch();
 
-      //console.log("res.status::", res.status)
-      //console.log("res.data::", res.data)
+      console.log("res.status::", res.status)
+      console.log("res.data.pages[0].data::", res.data.pages[0].data.length)
 
       if (res.status == 'success') {
-        if (res.data?.length != 0) {
+        if (res.data.pages[0].data.length != 0) {
          //console.log('searchUsers success::', res.data);
         } else {
           setSearchData([]);
         }
-        if (res.data?.length == 0) {
+        if (res.data.pages[0].data.length == 0) {
           setSearchresultszero(true);
         }
-        if (res.data?.length > 500) {
+        if (res.data.pages[0].data.length > 500) {
           alert('More than 500 matches. Modify your search criteria next time for better outputs');
         }
       } else {
