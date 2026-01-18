@@ -274,8 +274,8 @@ function SearchSection({
 
       const res = await refetch();
 
-      console.log("res.status::", res.status)
-      console.log("res.data.pages[0].data::", res.data.pages[0].data.length)
+      //console.log("res.status::", res.status)
+      //console.log("res.data.pages[0].data::", res.data.pages[0].data.length)
 
       if (res.status == 'success') {
         if (res.data.pages[0].data.length != 0) {
