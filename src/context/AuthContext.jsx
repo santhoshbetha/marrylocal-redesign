@@ -92,8 +92,6 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    console.log('Updating user data for:', user?.id);
-
     isUpdatingRef.current = true;
     setLoading(true);
     let res = await getProfileData(user?.id);

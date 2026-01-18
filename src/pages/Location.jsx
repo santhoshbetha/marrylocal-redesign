@@ -122,9 +122,17 @@ function Location() {
         if (dayssincecoordschange > 30) {
           //1 month
           delay(2000).then(async () => {
-            await resetCoords([getcoords(profiledata?.city).lat, getcoords(profiledata?.city).lng]);
             setShowResetConfirmDialog(false);
             setResetCoordsConfirmClick(false);
+            try {
+              await resetCoords([getcoords(profiledata?.city).lat, getcoords(profiledata?.city).lng]);
+            } catch (error) {
+              console.error('Error resetting coordinates:', error);
+              alert('Error resetting coordinates. Please try again.');
+            } finally {
+              setLoading(false);
+            }
+          }).catch(() => {
             setLoading(false);
           });
         } else {
@@ -135,6 +143,9 @@ function Location() {
         }
       } else {
         console.log('profiledata location empty');
+        setLoading(false);
+        setShowResetConfirmDialog(false);
+        setResetCoordsConfirmClick(false);
       }
     }
   }, [resetCoordsConfirmClick]);
@@ -164,10 +175,15 @@ function Location() {
       setLoading(true);
       delay(2000).then(async () => {
         setShowGeoConfirmDialog(false);
-        await saveGeoCodes([coordinates?.lat, coordinates?.lng]);
-        //set location button
-        //setLocationclass("btn btn-secondary disabled col-sm-11")
-        //  setOvalclass("")
+        try {
+          await saveGeoCodes([coordinates?.lat, coordinates?.lng]);
+        } catch (error) {
+          console.error('Error saving coordinates:', error);
+          alert('Error saving coordinates. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      }).catch(() => {
         setLoading(false);
       });
     }
@@ -220,36 +236,37 @@ function Location() {
       setShowGeoConfirmDialog(true);
     } else {
       alert('GEO ERROR, CO-ORDINATES ARE FAR FROM YOUR CITY. TRY AGAIN');
+      setIsGettingLocation(false);
     }
   }
 
   function errorsCallback(error) {
     console.warn(`ERROR(${error.code}): ${error.message}`);
+    let message = 'Error getting location. Please try again or set coordinates manually.';
+    if (error.code === 1) {
+      message = 'Location permission denied. Please allow location access in your browser settings to set your coordinates.';
+    } else if (error.code === 2) {
+      message = 'Location unavailable. Please check your GPS and try again.';
+    } else if (error.code === 3) {
+      message = 'Location request timed out. Please try again.';
+    }
+    alert(message);
+    setIsGettingLocation(false);
   }
 
   var options = {
     enableHighAccuracy: true,
-    timeout: 27000,
+    timeout: 10000,
     maximumAge: 0,
   };
 
   const getCurrentLocation = () => {
+    setIsGettingLocation(true);
     if (navigator.geolocation) {
-      navigator.permissions.query({ name: 'geolocation' }).then(function (result) {
-        if (result.state === 'granted') {
-          //If granted then you can directly call your function here
-          navigator.geolocation.getCurrentPosition(successCallback);
-        } else if (result.state === 'prompt') {
-          navigator.geolocation.getCurrentPosition(successCallback, errorsCallback, options);
-        } else if (result.state === 'denied') {
-          //If denied then you have to show instructions to enable location
-        }
-        result.onchange = function () {
-          //console.log(result.state);
-        };
-      });
+      navigator.geolocation.getCurrentPosition(successCallback, errorsCallback, options);
     } else {
       alert('Location not available!');
+      setIsGettingLocation(false);
     }
   };
 

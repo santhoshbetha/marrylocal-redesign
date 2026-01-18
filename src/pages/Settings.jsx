@@ -78,7 +78,7 @@ function Settings() {
         let dayssincelocationchange = Math.floor(dif / (1000 * 3600 * 24));
         if (dayssincelocationchange > 30) {
           //1 month
-          console.log('useEffect allowlocationchange true');
+          //console.log('useEffect allowlocationchange true');
           setAllowlocationchange(true);
         } else {
           setAllowlocationchange(false);
