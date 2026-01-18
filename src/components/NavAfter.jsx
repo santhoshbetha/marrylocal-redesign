@@ -37,7 +37,7 @@ export function NavAfter() {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to={profiledata?.role === 'admin' ? '/admin' : '/myspace'} className="flex items-center gap-2">
-          <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          <img src="/logored.png" alt="Logo" className="h-8 w-8" />
           <span className="font-custom text-white">MarryLocal</span>
         </Link>
 
@@ -149,7 +149,7 @@ export function NavAfter() {
             <SheetContent side="right" className={`w-[300px] sm:w-[400px] bg-gradient-to-b ${gradient} text-white border-l-0`}>
               <SheetHeader>
                 <SheetTitle className="flex items-center space-x-2 text-white">
-                  <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+                  <img src="/logored.png" alt="Logo" className="h-8 w-8" />
                   <span className="font-custom text-lg">MarryLocal</span>
                 </SheetTitle>
               </SheetHeader>

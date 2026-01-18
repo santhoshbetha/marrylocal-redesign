@@ -20,7 +20,7 @@ export function NavBefore({ openLogin, setOpenLogin }) {
     <header className={`border-b border-border/40 bg-gradient-to-r ${gradient} backdrop-blur supports-[backdrop-filter]:bg-blue-600/90 sticky top-0 z-50 shadow-lg`}>
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2 group">
-          <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          <img src="/logored.png" alt="Logo" className="h-8 w-8" />
           <span className="font-custom text-white">MarryLocal</span>
         </Link>
 
@@ -85,7 +85,7 @@ export function NavBefore({ openLogin, setOpenLogin }) {
           <SheetContent side="right" className={`w-[300px] sm:w-[400px] bg-gradient-to-b ${gradient} text-white border-l-0`}>
             <SheetHeader>
               <SheetTitle className="flex items-center space-x-2 text-white">
-                <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+                <img src="/logored.png" alt="Logo" className="h-8 w-8" />
                 <span className="font-custom">MarryLocal</span>
               </SheetTitle>
             </SheetHeader>

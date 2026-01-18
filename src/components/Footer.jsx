@@ -10,7 +10,7 @@ export function Footer() {
           <div className="space-y-3 sm:space-y-4 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center space-x-2">
               <img src="/logored.png" alt="Logo" className="h-6 w-6 sm:h-8 sm:w-8" />
-              <span className="font-serif text-lg sm:text-xl font-semibold">MarryLocal</span>
+              <span className="font-custom">MarryLocal</span>
             </div>
             <p className="text-primary-foreground/80 text-xs sm:text-sm">
               Find meaningful connections in your locality with freedom and choice.
