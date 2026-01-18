@@ -1,11 +1,13 @@
 import { logout } from '../../store/actions/authActions';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import secureLocalStorage from 'react-secure-storage';
 import supabase from '../../lib/supabase';
 
 function Logout() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const logoutfunc = async () => {
@@ -57,12 +59,12 @@ function Logout() {
         sessionStorage.clear();
 
         dispatch(logout());
-        window.location.reload(false);
+        navigate('/');
       } catch (cleanupError) {
         console.error('Error during cleanup:', cleanupError);
         // Still proceed with logout even if cleanup fails
         dispatch(logout());
-        window.location.reload(false);
+        navigate('/');
       }
     };
 
