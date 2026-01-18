@@ -413,7 +413,7 @@ function Settings() {
               </div>
 
               <div className="bg-green-50/50 border border-green-200 rounded-lg p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <div className="font-medium text-gray-800 mb-1">Current Location</div>
                     <div className="text-sm text-gray-600">{profiledata?.city}, {profiledata?.state}</div>
@@ -423,23 +423,27 @@ function Settings() {
                       </div>
                     )}
                   </div>
-                  <Button
-                    className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2"
-                    onClick={() => setShowNewDialog(true)}
-                    disabled={!allowlocationchange}
-                  >
-                    {allowlocationchange ? (
-                      <>
-                        <MapPin className="mr-2 size-4" />
-                        Change Location
-                      </>
-                    ) : (
-                      <>
-                        <span className="mr-2">⏰</span>
-                        Location change allowed in {30 - Math.floor(Math.abs(new Date(Date.now()) - new Date(profiledata?.dateoflocation)) / (1000 * 3600 * 24))} days
-                      </>
-                    )}
-                  </Button>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
+                    <Button
+                      className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 sm:px-6 py-3 sm:py-2 w-full sm:w-auto min-h-[4rem] sm:min-h-auto"
+                      onClick={() => setShowNewDialog(true)}
+                      disabled={!allowlocationchange}
+                    >
+                      {allowlocationchange ? (
+                        <>
+                          <MapPin className="mr-2 size-4" />
+                          Change Location
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2 w-full">
+                          <span className="text-lg flex-shrink-0">⏰</span>
+                          <span className="text-sm leading-tight flex-1 whitespace-normal break-words text-left overflow-hidden">
+                            Location change allowed in {30 - Math.floor(Math.abs(new Date(Date.now()) - new Date(profiledata?.dateoflocation)) / (1000 * 3600 * 24))} days
+                          </span>
+                        </div>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
