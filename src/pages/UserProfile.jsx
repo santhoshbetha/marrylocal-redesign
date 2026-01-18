@@ -51,12 +51,9 @@ function UserProfile() {
     shortid: params.shortid,
   });
 
-  const images = user?.images || [
+  const images = user?.images ? user.images.filter(image => image && image.trim() !== '') : [
     user?.image || '/professional-portrait-in-urban-setting.jpg',
-    '/professional-woman-smiling.png',
-    '/young-woman-portrait.png',
-    '/professional-headshot-of-a-young-man-with-brown-ha.jpg',
-  ];
+  ].filter(Boolean);
 
 
 
@@ -288,7 +285,7 @@ function UserProfile() {
           </div>
 
           {/* Image Carousel */}
-          {!isObjEmpty(user?.images) && (
+          {images.length > 0 && (
             <div className="px-6 py-4">
               <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-2xl group border border-border/50">
                 <div className="relative w-full h-full">
