@@ -34,7 +34,7 @@ export function TermsPopup() {
             delay(1200).then(() => {
                 setAccepted(profiledata?.termsaccepted);
                 if (profiledata?.termsaccepted == false) {
-                    console.log("here")
+                    //console.log("here")
                     setShowclass("show")
                 }
                 setTermsChecked(true);
@@ -51,7 +51,7 @@ export function TermsPopup() {
     }, [user]);
     
     const setTermsaccepted = async () => {
-        console.log("settermsaccepted user?.id", user?.id)
+        //console.log("settermsaccepted user?.id", user?.id)
         let termsaccepted = true;
         const res = await updateUserInfo(user?.id, {termsaccepted: termsaccepted});
         if (res.success) {
@@ -59,7 +59,7 @@ export function TermsPopup() {
             setShowclass("")
             setTermsAdding(false)
         } else {
-          console.log(res.msg);
+          //console.log(res.msg);
           alert ('Something wrong. Try again later')
         }
         setTermsAdding(false)

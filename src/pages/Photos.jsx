@@ -95,14 +95,14 @@ function Photos() {
     const imageName = IMAGE_NAMES[imageIndex];
     const imageId = imageIndex + 1;
 
-    console.log('uploadImage timestamp::', timestamp);
+    //console.log('uploadImage timestamp::', timestamp);
 
     // Create a file from the blob
     const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
 
     // Upload to server
     const res = await uploadImage(shortid, file, imageId, timestamp);
-    console.log('uploadImage res::', res);
+    //console.log('uploadImage res::', res);
 
     let imagesObj = profiledata?.images ? [...profiledata.images] : [];
 
@@ -161,7 +161,7 @@ function Photos() {
 
     const imageId = imageIndex + 1;
     const res = await deleteImage(shortid, imageId);
-    console.log(`handleImageRemove${imageIndex + 1} res::`, res);
+    //console.log(`handleImageRemove${imageIndex + 1} res::`, res);
 
     let imagesObj = profiledata?.images ? [...profiledata.images] : [];
 

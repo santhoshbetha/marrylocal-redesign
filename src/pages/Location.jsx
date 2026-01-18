@@ -142,7 +142,7 @@ function Location() {
           setResetCoordsConfirmClick(false);
         }
       } else {
-        console.log('profiledata location empty');
+        //console.log('profiledata location empty');
         setLoading(false);
         setShowResetConfirmDialog(false);
         setResetCoordsConfirmClick(false);

@@ -17,10 +17,10 @@ export default function AuthConfirm() {
       const processedKey = `auth_confirm_processed_${token_hash}`;
       const hasProcessed = sessionStorage.getItem(processedKey);
 
-      console.log("Starting verification process for token:", token_hash, "hasProcessed:", hasProcessed);
+      //console.log("Starting verification process for token:", token_hash, "hasProcessed:", hasProcessed);
 
       if (hasProcessed) {
-        console.log("Verification already processed, skipping");
+        //console.log("Verification already processed, skipping");
         return;
       }
 
@@ -34,10 +34,10 @@ export default function AuthConfirm() {
             type: 'recovery',
           });
 
-          console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
-          console.log("Verification result error:", { error });
-          console.log("Verification result data:", { data });
-          console.log("Verification result email:", data.user.email);
+          //console.log("Verifying OTP with token_hash:", token_hash, "and type:", type);
+          //console.log("Verification result error:", { error });
+          //console.log("Verification result data:", { data });
+          //console.log("Verification result email:", data.user.email);
 
           if (!error) {
             // SUCCESS: The user is now authenticated.

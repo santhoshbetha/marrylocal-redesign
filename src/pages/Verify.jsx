@@ -213,12 +213,12 @@ function Verify() {
 
   const verifyNumber = async e => {
     e.preventDefault();
-    console.log('verify here');
+    //console.log('verify here');
     if (validate_adhar(formik.values.aadhar)) {
-      console.log('verify here 2:', profiledata?.aadharnumber);
+      //console.log('verify here 2:', profiledata?.aadharnumber);
       if (!isObjEmpty(profiledata?.aadharnumber)) {
         if (formik.values.aadhar == Number(profiledata?.aadharnumber)) {
-          console.log('verify here 3');
+          //console.log('verify here 3');
           setNumclass('custom-opacity');
           setImgclass('');
           setRetryclass('');

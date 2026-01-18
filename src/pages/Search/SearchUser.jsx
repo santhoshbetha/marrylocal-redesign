@@ -128,7 +128,7 @@ export function SearchUser() {
           to={{ pathname: `/user/${userdata?.shortid}` }}
           onClick={() => {
             localStorage.setItem('userstate', JSON.stringify({ backbutton: false }));
-            console.log('shortid here::', userdata?.shortid);
+            //console.log('shortid here::', userdata?.shortid);
             // const profileUrl = `/user/${userdata?.shortid}`
             // window.open(profileUrl, "_blank", "noopener,noreferrer")
           }}

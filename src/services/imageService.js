@@ -47,9 +47,9 @@ export const getImage = async (shortid, imagename) => {
       .from('localm')
       .list(`images/${shortid}/${imagename}`);
 
-    console.log('getImage imagename::', imagename);
-    console.log('getImage data:', data);
-    console.log('getImage error:', error);
+    //console.log('getImage imagename::', imagename);
+    //console.log('getImage data:', data);
+    //console.log('getImage error:', error);
 
     if (error) {
       return {

@@ -115,9 +115,9 @@ export function ImageUploader({
 
   const clearImage = () => {
     setRemoving(true);
-    console.log('clearimage');
+    //console.log('clearimage');
     if (onImageRemove) {
-      console.log('onImageRemove');
+      //console.log('onImageRemove');
       onImageRemove();
     }
     setPreviewImage(null);

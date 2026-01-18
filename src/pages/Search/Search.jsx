@@ -21,7 +21,6 @@ function isObjEmpty(val) {
 
 function Search() {
   const { user, setAuth, profiledata, setProfiledata } = useAuth();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(
     localStorage.getItem('activetab') ? localStorage.getItem('activetab') : 'search',
   );

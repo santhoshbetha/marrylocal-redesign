@@ -162,7 +162,7 @@ function Settings() {
     e.preventDefault();
     setLoading(true);
 
-    console.log('handleLocationSubmit 1 stat1, city1::', state1, city1);
+    //console.log('handleLocationSubmit 1 stat1, city1::', state1, city1);
 
     if (isOnline) {
       if (userSession) {
@@ -178,7 +178,7 @@ function Settings() {
             dateoflocation: dateoflocation,
           };
 
-          console.log('newlocationdata::', newlocationdata);
+          //console.log('newlocationdata::', newlocationdata);
           const res = await updateUserInfo(user?.id, newlocationdata);
           if (res.success) {
             setProfiledata({
@@ -193,7 +193,7 @@ function Settings() {
             });
           }
 
-          console.log('changelocation res:', res);
+          //console.log('changelocation res:', res);
 
           delay(1000).then(async () => {
             setLoading(false);
@@ -203,7 +203,7 @@ function Settings() {
             }
           });
         } catch (error) {
-          console.log('error::', error);
+          //console.log('error::', error);
           setLoading(false);
           alert('Something wrong. Try later');
         }

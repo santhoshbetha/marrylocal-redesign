@@ -76,7 +76,7 @@ export function Login({ openLogin, setOpenLogin }) {
         throw error;
       }
     } catch (error) {
-      console.log('error', error);
+      //console.log('error', error);
       setLoading(false);
     } finally {
       setLoading(false);
