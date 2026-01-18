@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppRouter from './AppRouter';
 import { Layout } from '@/components/Layout';
 import { NavBefore } from '@/components/NavBefore';
@@ -9,11 +9,43 @@ import { SearchDataAndRecoveryContextProvider } from './context/SearchDataAndRec
 import { AuthVerify } from './commons/AuthVerify';
 import { Suspense, lazy } from 'react';
 
+// Global Loading Context
+export const GlobalLoadingContext = React.createContext();
+
+export const useGlobalLoading = () => {
+  const context = React.useContext(GlobalLoadingContext);
+  if (!context) {
+    throw new Error('useGlobalLoading must be used within a GlobalLoadingProvider');
+  }
+  return context;
+};
+
+/*
+USAGE EXAMPLE:
+import { useGlobalLoading } from '../App';
+
+function MyComponent() {
+  const { setGlobalLoading } = useGlobalLoading();
+
+  const handleAsyncOperation = async () => {
+    setGlobalLoading(true);
+    try {
+      await someAsyncOperation();
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
+  return <button onClick={handleAsyncOperation}>Do Something</button>;
+}
+*/
+
 function App() {
   const [openLogin, setOpenLogin] = useState(false);
   const { user, profiledata } = useAuth();
   const [theme, _setTheme] = useState('light');
   const [shouldLoadTermsPopup, setShouldLoadTermsPopup] = useState(false);
+  const [globalLoading, setGlobalLoading] = useState(false);
 
   // Lazy load TermsPopup only when needed
   const TermsPopup = lazy(() => import('./pages/TermsPopup').then(module => ({ default: module.TermsPopup })));
@@ -45,22 +77,34 @@ function App() {
   }, [user, profiledata]);
 
   return (
-    <div className="App">
-      <Toaster richColors />
+    <GlobalLoadingContext.Provider value={{ globalLoading, setGlobalLoading }}>
+      <div className="App">
+        <Toaster richColors />
 
-      {user ? <NavAfter /> : <NavBefore openLogin={openLogin} setOpenLogin={setOpenLogin} />}
-      <SearchDataAndRecoveryContextProvider>
-        <Layout>
-          <AppRouter openLogin={openLogin} setOpenLogin={setOpenLogin} profiledata={profiledata} />
-        </Layout>
-      </SearchDataAndRecoveryContextProvider>
-      <AuthVerify />
-      {shouldLoadTermsPopup && (
-        <Suspense fallback={null}>
-          <TermsPopup />
-        </Suspense>
-      )}
-    </div>
+        {/* Global Loading Spinner */}
+        {globalLoading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-4 p-6 bg-background/90 rounded-2xl shadow-2xl border border-border">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/30 border-t-primary"></div>
+              <p className="text-sm text-muted-foreground font-medium">Loading...</p>
+            </div>
+          </div>
+        )}
+
+        {user ? <NavAfter /> : <NavBefore openLogin={openLogin} setOpenLogin={setOpenLogin} />}
+        <SearchDataAndRecoveryContextProvider>
+          <Layout>
+            <AppRouter openLogin={openLogin} setOpenLogin={setOpenLogin} profiledata={profiledata} />
+          </Layout>
+        </SearchDataAndRecoveryContextProvider>
+        <AuthVerify />
+        {shouldLoadTermsPopup && (
+          <Suspense fallback={null}>
+            <TermsPopup />
+          </Suspense>
+        )}
+      </div>
+    </GlobalLoadingContext.Provider>
   );
 }
 
