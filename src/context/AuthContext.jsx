@@ -23,21 +23,42 @@ const getAroundUsersCount = async (supabaseUrl, supabaseKey, userLat, userLng, u
     return 0;
   }
 
+  // Haversine distance calculation function
+  const haversineDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371000; // Earth's radius in meters
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
   console.log('Fetching around users count for:', { lat, lng, oppositeGender });
 
-  const { count, error } = await supabase
+  // First get all users of opposite gender with their coordinates
+  const { data: users, error } = await supabase
     .from('users')
-    .select('*', { count: 'exact', head: true })
-    .eq('gender', oppositeGender);
-
-  console.log('Around users count result:', { count, error });
+    .select('latitude, longitude')
+    .eq('gender', oppositeGender)
+    .not('latitude', 'is', null)
+    .not('longitude', 'is', null);
 
   if (error) {
-    console.error('Error getting around users count:', error);
+    console.error('Error getting around users:', error);
     return 0;
   }
+
+  // Filter users within radius using haversine distance
+  const usersWithinRadius = users.filter(user => {
+    const distance = haversineDistance(lat, lng, parseFloat(user.latitude), parseFloat(user.longitude));
+    return distance <= radiusMeters;
+  });
+
+  const count = usersWithinRadius.length;
   console.log('Around users count:', count);
-  return count || 0;
+  return count;
 };
 
 export const AuthProvider = ({ children }) => {
@@ -91,11 +112,6 @@ export const AuthProvider = ({ children }) => {
         }
       }
       setProfiledata({ ...res.data });
-
-      console.log('Profile data updated:', res.data);
-      console.log('Profile data res.data.lat:', res.data.latitude);
-      console.log('Profile data res.data.lng:', res.data.longitude);
-      console.log('Profile data res.data.gender:', res.data.gender);
 
       // Run worker to update arounduserscount if needed
       if (!countUpdatedRef.current && (res.data.arounduserscount == null || res.data.arounduserscount <= 100) && res.data.latitude && res.data.longitude) {
