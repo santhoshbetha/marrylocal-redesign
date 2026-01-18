@@ -69,7 +69,11 @@ function Logout() {
     logoutfunc();
   }, [dispatch]);
 
-  return <div className="mt-4">Logging out ...</div>;
+  return (
+    <div className="mt-2 sm:mt-4 text-sm sm:text-base leading-tight px-2 sm:px-0">
+      Logging out ...
+    </div>
+  );
 }
 
 export default Logout;

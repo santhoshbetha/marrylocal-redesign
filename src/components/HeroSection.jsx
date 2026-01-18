@@ -13,33 +13,33 @@ export function HeroSection({ openLogin, setOpenLogin }) {
   };
 
   return (
-    <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-12 sm:py-16 lg:py-32">
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <div className="space-y-6 lg:space-y-8 text-center lg:text-left bg-yellow-700d lg:w-[120%] lg:ps-24">
-            <div className="space-y-4">
+    <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-8 sm:py-12 lg:py-32">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
+          <div className="space-y-4 sm:space-y-6 lg:space-y-8 text-center lg:text-left bg-yellow-700d lg:w-[120%] lg:ps-24">
+            <div className="space-y-3 sm:space-y-4">
               <Badge
                 variant="secondary"
-                className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+                className="bg-white/10 text-white border-white/20 hover:bg-white/20 text-xs sm:text-sm"
               >
                 Search with confidence
               </Badge>
-              <h1 className="text-3xl sm:text-4xl lg:text-6xl font-serif font-bold text-balance leading-tight text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-6xl font-serif font-bold text-balance leading-tight text-white">
                 Find matches in your locality
               </h1>
-              <p className="text-base sm:text-lg text-white/80 text-pretty max-w-lg mx-auto lg:mx-0">
+              <p className="text-sm sm:text-base lg:text-lg text-white/80 text-pretty max-w-lg mx-auto lg:mx-0 px-2 sm:px-0">
                 This app is made for people to have more choice/freedom. Register to search people
                 in your proximity.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-4 sm:px-0">
               <Dialog open={openLogin} onOpenChange={setOpenLogin}>
                 <DialogTrigger asChild>
                   <Button
                     onClick={() => setOpenLogin(true)}
                     size="lg"
-                    className="bg-white text-slate-900 hover:bg-white/90 font-medium"
+                    className="bg-white text-slate-900 hover:bg-white/90 font-medium text-sm sm:text-base h-10 sm:h-11"
                   >
                     Login
                   </Button>
@@ -52,7 +52,7 @@ export function HeroSection({ openLogin, setOpenLogin }) {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white/30 text-white hover:bg-white/10 bg-transparent hover:text-white/80"
+                className="border-white/30 text-white hover:bg-white/10 bg-transparent hover:text-white/80 text-sm sm:text-base h-10 sm:h-11"
                 onClick={handleRegister}
               >
                 Register
@@ -83,7 +83,7 @@ export function HeroSection({ openLogin, setOpenLogin }) {
               <img
                 src="/CoupleLocal.png"
                 alt="Happy couple illustration"
-                className="w-[120%] max-w-sm md:max-w-3xl mx-auto"
+                className="w-[100%] max-w-xs sm:max-w-sm md:max-w-3xl mx-auto"
               />
             </div>
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-3xl blur-3xl"></div>

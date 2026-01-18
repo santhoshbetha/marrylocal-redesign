@@ -89,14 +89,14 @@ export function Login({ openLogin, setOpenLogin }) {
   });
 
   return (
-    <DialogContent className="w-[90%] sm:max-w-[425px]">
+    <DialogContent className="w-[95%] sm:w-[90%] sm:max-w-[425px] mx-2 sm:mx-auto">
       {loading && <Spinner size="lg" className="fixed top-[50%] left-[50%] z-50 cursor-pointer" />}
       <DialogTitle></DialogTitle>
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>Enter your email below to login to your account</CardDescription>
+      <CardHeader className="px-4 sm:px-6 py-3 sm:py-4">
+        <CardTitle className="text-xl sm:text-2xl">Login</CardTitle>
+        <CardDescription className="text-sm sm:text-base">Enter your email below to login to your account</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
         <Formik
           initialValues={{
             email: '',
@@ -116,9 +116,9 @@ export function Login({ openLogin, setOpenLogin }) {
         >
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
             <form onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4 sm:gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -128,15 +128,16 @@ export function Login({ openLogin, setOpenLogin }) {
                     value={values.email}
                     autoFocus={false}
                     required
+                    className="h-9 sm:h-10 text-sm sm:text-base"
                   />
-                  <p className="text-red-700">{errors.email && touched.email && errors.email}</p>
+                  <p className="text-red-700 text-xs sm:text-sm">{errors.email && touched.email && errors.email}</p>
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
                     <Link
                       to="/forgotpassword"
-                      className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                      className="ml-auto inline-block text-xs sm:text-sm underline-offset-4 hover:underline"
                       onClick={forgotPassword}
                     >
                       Forgot your password?
@@ -150,24 +151,25 @@ export function Login({ openLogin, setOpenLogin }) {
                       onBlur={handleBlur}
                       value={values.password}
                       required
+                      className="h-9 sm:h-10 text-sm sm:text-base pr-8"
                     />
                     <span
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 sm:h-7 sm:w-7 text-gray-500
                                                 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 bg-background"
                     >
                       {ToggleIcon}
                     </span>
                   </div>
-                  <p className="text-red-700">
+                  <p className="text-red-700 text-xs sm:text-sm">
                     {errors.password && touched.password && errors.password}
                   </p>
                 </div>
-                {error && <div className="text-red-500">{error}</div>}
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {error && <div className="text-red-500 text-xs sm:text-sm">{error}</div>}
+                <Button type="submit" className="w-full h-9 sm:h-10 text-sm sm:text-base" disabled={isSubmitting}>
                   Login
                 </Button>
               </div>
-              <div className="mt-4 text-center text-sm">
+              <div className="mt-3 sm:mt-4 text-center text-xs sm:text-sm">
                 Don&apos;t have an account?{' '}
                 <Link
                   to="/register"

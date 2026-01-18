@@ -170,14 +170,14 @@ function Profile() {
   return (
     <div className="">
       <Card className="w-full shadow-none border-border/50 rounded-none">
-        <CardHeader className="flex flex-row items-center justify-between md:mx-2 lg:mx-10">
-          <CardTitle className="text-2xl">Your Profile (edit as required)</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between px-3 sm:px-4 md:mx-2 lg:mx-10 py-3 sm:py-4">
+          <CardTitle className="text-lg sm:text-xl lg:text-2xl">Your Profile (edit as required)</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center w-[100%]">
+        <CardContent className="flex flex-col items-center justify-center w-[100%] px-2 sm:px-4">
           <div className="grid sm:grid-cols-1 w-full lg:grid-cols-3 gap-2 md:gap-4">
-            <Card className="p-6 md:p-8 shadow-lg border-border/50 w-full h-full md:h-[100%]">
+            <Card className="p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg border-border/50 w-full h-full md:h-[100%]">
               <div 
-                className="w-full max-w-[280px] aspect-square mx-auto overflow-hidden rounded-2xl cursor-pointer bg-gradient-to-br from-primary/30 via-primary/15 via-primary/10 to-primary/5 ring-2 ring-primary/20 hover:ring-primary/40 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm hover:scale-[1.02] relative"
+                className="w-full max-w-[240px] sm:max-w-[280px] aspect-square mx-auto overflow-hidden rounded-2xl cursor-pointer bg-gradient-to-br from-primary/30 via-primary/15 via-primary/10 to-primary/5 ring-2 ring-primary/20 hover:ring-primary/40 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm hover:scale-[1.02] relative"
                 onClick={handleProfilePictureClick}
               >
                 {profilePicLoading && (
