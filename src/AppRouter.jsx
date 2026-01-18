@@ -108,7 +108,6 @@ export default function AppRouter({ openLogin, setOpenLogin, profiledata }) {
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/changepassword" element={<ChangePassword />} />
 
-        <Route path="/verify" element={<Verify />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/cancellation" element={<Cancellation />} />
@@ -117,6 +116,7 @@ export default function AppRouter({ openLogin, setOpenLogin, profiledata }) {
         <Route path="/paymentstatus" element={<ServiceFeesPhonePePaymentStatus/>}/>
 
         <Route element={<ProtectedRoute />}>
+          <Route path="/verify" element={<Verify />} />
           <Route path="/myspace" element={<Navigate to="/search" />} />
           <Route path="/location" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}><LazyLocation profiledata={profiledata} /></Suspense>} />
           <Route path="/search" element={<Search />} />

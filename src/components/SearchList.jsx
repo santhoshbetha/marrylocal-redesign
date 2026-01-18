@@ -66,9 +66,6 @@ export function SearchList({
   let [dataclone, setDataclone] = useState(searchProfiles);
   let datasort = structuredClone(searchProfiles);
 
-  let lat;
-  let lng;
-
   const currentProfiles = isObjEmpty(dataclone) ? [] : dataclone?.slice(startIndex, endIndex);
 
   useEffect(() => {
@@ -78,6 +75,9 @@ export function SearchList({
   }, [searchProfiles]);
 
   useEffect(() => {
+    let lat;
+    let lng;
+
     if (cityNum == 1) {
       lat = profiledata?.latitude;
       lng = profiledata?.longitude;
@@ -100,7 +100,7 @@ export function SearchList({
         }
       }
     }
-  }, [dataclone]);
+  }, [dataclone, cityNum, profiledata?.latitude, profiledata?.longitude, profiledata?.addons?.location2?.lat, profiledata?.addons?.location2?.lng, profiledata?.addons?.location3?.lat, profiledata?.addons?.location3?.lng, searchProfiles]);
 
   useEffect(() => {
     setIsLoading(loading);

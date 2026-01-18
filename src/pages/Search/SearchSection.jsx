@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import secureLocalStorage from 'react-secure-storage';
 import { useFormik } from 'formik';
 import {
@@ -267,8 +267,19 @@ function SearchSection({
     }
   }, [selectcity]);
 
+  const [savedFormValues] = useState(() => {
+    // Load saved values synchronously on initialization
+    try {
+      const saved = localStorage.getItem('searchFormValues');
+      return saved ? JSON.parse(saved) : null;
+    } catch (error) {
+      console.warn('Failed to parse saved search form values:', error);
+      return null;
+    }
+  });
+
   const formik = useFormik({
-    initialValues: {
+    initialValues: savedFormValues || {
       religion: '',
       language: '',
       searchdistance: '',
@@ -280,8 +291,9 @@ function SearchSection({
       community: '',
       economicstatus: 'All',
     },
+    enableReinitialize: true, // Allow formik to reinitialize when initialValues change
 
-    onSubmit: async values => {
+    onSubmit: async () => {
       //alert(JSON.stringify(values, null, 2));
       searchinput = {
         gender: profiledata?.gender,
@@ -338,6 +350,14 @@ function SearchSection({
       }
     },
   });
+
+  // Save form values to localStorage whenever they change
+  useEffect(() => {
+    if (formik.values && Object.keys(formik.values).length > 0) {
+      localStorage.setItem('searchFormValues', JSON.stringify(formik.values));
+    }
+  }, [formik.values]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
       <div className="container mx-auto px-4 py-4 max-w-7xl">
@@ -373,6 +393,7 @@ function SearchSection({
                         <Select
                           required
                           name="religion"
+                          value={formik.values.religion}
                           onValueChange={value => {
                             formik.setFieldValue('religion', value);
                           }}
@@ -401,6 +422,7 @@ function SearchSection({
                         <Select
                           required
                           name="language"
+                          value={formik.values.language}
                           onValueChange={value => {
                             formik.setFieldValue('language', value);
                           }}
@@ -423,6 +445,7 @@ function SearchSection({
                           <Select
                             required
                             name="community"
+                            value={formik.values.community}
                             onValueChange={value => {
                               formik.setFieldValue('community', value);
                             }}
@@ -445,6 +468,7 @@ function SearchSection({
                         <Select
                           required
                           name="economicstatus"
+                          value={formik.values.economicstatus}
                           onValueChange={value => {
                             formik.setFieldValue('economicstatus', value);
                           }}
@@ -468,6 +492,7 @@ function SearchSection({
                         <Select
                           required
                           name="searchdistance"
+                          value={formik.values.searchdistance}
                           onValueChange={value => {
                             formik.setFieldValue('searchdistance', value);
                           }}
@@ -504,6 +529,7 @@ function SearchSection({
                         <Select
                           required
                           name="city"
+                          value={formik.values.city}
                           onValueChange={value => {
                             formik.setFieldValue('city', value);
                           }}
@@ -534,6 +560,7 @@ function SearchSection({
                         <Select
                           required
                           name="educationlevel"
+                          value={formik.values.educationlevel}
                           onValueChange={value => {
                             formik.setFieldValue('educationlevel', value);
                           }}
