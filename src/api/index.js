@@ -1,7 +1,7 @@
 import SimpleCrypto from 'simple-crypto-js';
 
-export const urlroot = "https://localm-api.dgsbuu.easypanel.host"
-export const url = "https://localm-api.dgsbuu.easypanel.host/api/v1"
+//#export const urlroot = "https://localm-api.dgsbuu.easypanel.host"
+//export const url = "https://localm-api.dgsbuu.easypanel.host/api/v1"
 
 //export const urlroot = "http://localhost:5500"
 //export const url = "http://localhost:5500/api/v1"
