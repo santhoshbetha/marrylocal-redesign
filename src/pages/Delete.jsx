@@ -19,11 +19,13 @@ import secureLocalStorage from 'react-secure-storage';
 import { deleteUserAccount } from '../services/registerService';
 import { logout } from '../store/actions/authActions';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, Trash2, Shield } from 'lucide-react';
 
 function Delete() {
   const { user } = useAuth();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [deleting, setDeleting] = useState(false);
   const [confirmClick, setConfirmClick] = useState(false);
   const isOnline = useOnlineStatus();
@@ -120,7 +122,7 @@ function Delete() {
 
             {/* Danger Zone */}
             <div className="border-2 border-red-200 rounded-lg p-6 bg-red-50/50">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <h3 className="text-xl font-bold text-red-800 mb-2">Danger Zone</h3>
                   <p className="text-red-700 text-sm">Once you delete your account, there is no going back.</p>
@@ -130,7 +132,7 @@ function Delete() {
                     <Button
                       variant="destructive"
                       size="lg"
-                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
                     >
                       <Trash2 className="w-5 h-5 mr-2" />
                       Delete My Account
@@ -181,10 +183,20 @@ function Delete() {
                 If you're having issues or need to temporarily deactivate your account, consider these alternatives:
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button variant="outline" size="sm" className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                  onClick={() => navigate('/contact')}
+                >
                   Contact Support
                 </Button>
-                <Button variant="outline" size="sm" className="text-purple-600 border-purple-200 hover:bg-purple-50">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                  onClick={() => navigate('/privacy')}
+                >
                   Privacy Settings
                 </Button>
               </div>
