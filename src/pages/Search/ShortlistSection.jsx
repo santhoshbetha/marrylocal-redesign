@@ -156,6 +156,7 @@ export function ShortlistSection({ loggedInUser, userid, shortlist, profiledata,
             >
               {currentProfiles?.map(eachUser => (
                 <Link
+                  key={eachUser?.shortid || eachUser?.id}
                   to={{ pathname: `/user/${eachUser?.shortid}` }}
                   onClick={() => {
                     localStorage.setItem(

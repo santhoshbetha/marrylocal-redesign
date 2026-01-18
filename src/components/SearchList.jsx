@@ -276,6 +276,7 @@ export function SearchList({
         >
           {currentProfiles?.map(profile => (
             <UserCard
+              key={profile?.shortid || profile?.id}
               setSelectedUser={setSelectedUser}
               profile={profile}
               shortlisted={shortlistSet.has(profile?.shortid)}

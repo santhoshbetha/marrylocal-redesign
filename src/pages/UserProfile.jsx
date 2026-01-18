@@ -55,15 +55,15 @@ function UserProfile() {
     user?.image || '/professional-portrait-in-urban-setting.jpg',
   ].filter(Boolean);
 
-
-
   useEffect(() => {
     if (!isObjEmpty(userinfo)) {
       setUser(userinfo);
     }
   }, [userinfo]);
 
-    console.log("userprofile user:;", user.bio);
+  console.log("UserProfile user?.images: ", user?.images);
+  console.log("UserProfile images.length: ", images.length);
+
 
   const nextImage = () => {
     setCurrentImageIndex(prev => (prev + 1) % images.length);
@@ -285,7 +285,7 @@ function UserProfile() {
           </div>
 
           {/* Image Carousel */}
-          {images.length > 0 && (
+          {user?.images && images.length > 0 && (
             <div className="px-6 py-4">
               <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-2xl group border border-border/50">
                 <div className="relative w-full h-full">
