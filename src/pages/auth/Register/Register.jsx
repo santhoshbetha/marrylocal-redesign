@@ -401,7 +401,7 @@ function Register() {
   }
 
   return (
-    <div className="flex justify-center mt-4 mb-8">
+    <div className="flex justify-center mt-0 sm:mt-2 mb-8">
       <Card className="w-[95%] max-w-3xl shadow-lg border-border/50 mx-4 rounded-lg relative">
         {loading && <Spinner size="xl" className="fixed top-[50%] left-[50%] z-50 cursor-pointer absolute" />}
         <CardHeader className="bg-gradient-to-r from-[#10182C] to-[#1a2340] pt-6 pb-6 rounded-t-lg">
