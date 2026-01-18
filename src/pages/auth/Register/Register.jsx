@@ -87,7 +87,7 @@ const authRegister = async (userdata, signal) => {
     if (res1.success) {
       userExists = res1.userExists;
       if (userExists) {
-        console.log("userExists true")
+        //console.log("userExists true")
         clearTimeout(timeoutId);
         throw new Error('User with given email or phone number or aadhar number exists!');
       }
@@ -109,8 +109,8 @@ const authRegister = async (userdata, signal) => {
       const referrer_code = referrercode_uid.rnd();
       const referrer = isObjEmpty(userdata?.referrer) ? null : userdata?.referrer;
 
-      console.log("referrer_code:;", referrer_code)
-      console.log("referrer:;", referrer)
+      //console.log("referrer_code:;", referrer_code)
+      //console.log("referrer:;", referrer)
 
       let onetimefeesrequired = false;
 
@@ -153,7 +153,7 @@ const authRegister = async (userdata, signal) => {
             community: userdata?.community,
             economicstatus: userdata?.economicstatus,
             phonenumber: userdata?.phonenumber,
-            email: userdata?.email.toLowerCase(),
+            email: userdata?.email?.toLowerCase(),
             dateofcreation: dateofcreation,
             dateofactivation: dateofcreation, 
             dateoflocation: dateofcreation,   
@@ -167,18 +167,18 @@ const authRegister = async (userdata, signal) => {
         }
       });
 
-      console.log("data:", data)
-      console.log("data.session:", data.session)
-      console.log("error:", error)
+      //console.log("data:", data)
+      //console.log("data?.session:", data?.session)
+      //console.log("error:", error)
       
       if (error) {
-        console.log("signUp Error: error", error)
+        //console.log("signUp Error: error", error)
         clearTimeout(timeoutId);
         throw error
       }
 
       if (!error && data) {
-        console.log("not error and data")
+        //console.log("not error and data")
         //
         // add this email to the user who referred
         //
@@ -190,7 +190,7 @@ const authRegister = async (userdata, signal) => {
         //if (res3.success) {
         //  return session;
         //} else {
-        //    console.log("signUp Error: error", error)
+        //    //console.log("signUp Error: error", error)
         //    throw error;
         //}
       }
@@ -198,7 +198,7 @@ const authRegister = async (userdata, signal) => {
       clearTimeout(timeoutId);
 
       if (!isObjEmpty(data?.session)) {
-        return data.session;
+        return data?.session;
       } else {
         if (!isObjEmpty(data)) {
             return null;
@@ -224,7 +224,12 @@ function Register() {
   const simpleValidator2 = useRef(new SimpleReactValidator());
   const [accountformallValid, setAccountformallValid] = useState(true);
   let [searchParams] = useSearchParams();
-  const refcode = searchParams.get('ref');
+  let refcode = searchParams.get('ref');
+
+  // Validate refcode format
+  if (refcode && (refcode.length !== 10 || !/^[a-zA-Z0-9]+$/.test(refcode))) {
+    refcode = null;
+  }
 
   // Form Autosave: Restore data from localStorage on component mount
   useEffect(() => {
@@ -249,15 +254,15 @@ function Register() {
       return authRegister(variables);
     },
     onSuccess: (resp) => {
-      console.log("register onSuccess")
+      //console.log("register onSuccess")
       dispatch(registerSuccess(resp));
       // Clear autosaved form data
       localStorage.removeItem('registrationForm');
       // Navigate to success page
-      navigate('/registration-success', { state: { email: data.email } });
+      navigate('/registration-success', { state: { email: data?.email } });
     },
     onError: (error) => {
-      console.log("register onError error", error)
+      //console.log("register onError error", error)
         toast.error(error.message || 'Registration failed', {
           position: 'top-center',
         });
@@ -284,10 +289,10 @@ function Register() {
       }
 
       // Check if date of birth is valid (not later than 20 years ago)
-      if (!isObjEmpty(data.dob)) {
-        const selectedDate = new Date(data.dob);
-        console.log("Selected Date of Birth:", selectedDate);
-        console.log("Maximum Allowed Date:", maxDate);
+      if (!isObjEmpty(data?.dob)) {
+        const selectedDate = new Date(data?.dob);
+        //console.log("Selected Date of Birth:", selectedDate);
+        //console.log("Maximum Allowed Date:", maxDate);
         if (selectedDate > maxDate) {
           toast.error('You must be at least 20 years old to register. Please select a valid date of birth.');
           return false;
@@ -298,8 +303,8 @@ function Register() {
       }
 
       // Check community fields if going to account step (when language is already filled)
-      if (!isObjEmpty(data.language)) {
-        if (isObjEmpty(data.language) || isObjEmpty(data.religion) || isObjEmpty(data.community) || isObjEmpty(data.economicstatus)) {
+      if (!isObjEmpty(data?.language)) {
+        if (isObjEmpty(data?.language) || isObjEmpty(data?.religion) || isObjEmpty(data?.community) || isObjEmpty(data?.economicstatus)) {
           toast.error('Please fill all community and personal info fields.');
           return false;
         }
@@ -313,9 +318,9 @@ function Register() {
       }
     }
 
-    if (!isObjEmpty(data.password)) {
-      if (!isObjEmpty(data.passwordconfirm)) {
-        if (data.password != data.passwordconfirm) {
+    if (!isObjEmpty(data?.password)) {
+      if (!isObjEmpty(data?.passwordconfirm)) {
+        if (data?.password != data?.passwordconfirm) {
           toast.error('Passwords do not match.');
           return false;
         }
@@ -330,14 +335,14 @@ function Register() {
       const userInfoValid = simpleValidator1.current.allValid();
       if (!userInfoValid) return false;
       // Check required selects
-      if (isObjEmpty(data.gender) || isObjEmpty(data.educationlevel) || isObjEmpty(data.jobstatus) || isObjEmpty(data.state) || isObjEmpty(data.city)) return false;
+      if (isObjEmpty(data?.gender) || isObjEmpty(data?.educationlevel) || isObjEmpty(data?.jobstatus) || isObjEmpty(data?.state) || isObjEmpty(data?.city)) return false;
       // Check DOB
-      if (!isObjEmpty(data.dob)) {
-        const selectedDate = new Date(data.dob);
-        console.log("Selected Date of Birth:", selectedDate);
-        console.log("Maximum Allowed Date:", maxDate);
+      if (!isObjEmpty(data?.dob)) {
+        const selectedDate = new Date(data?.dob);
+        //console.log("Selected Date of Birth:", selectedDate);
+        //console.log("Maximum Allowed Date:", maxDate);
         if (selectedDate > maxDate) {
-          console.log("Selected date is later than the maximum allowed date.");
+          //("Selected date is later than the maximum allowed date.");
           return false;
         }
       } else {
@@ -346,10 +351,10 @@ function Register() {
       return true;
     } else if (currentStepIndex === 1) {
       // Community step
-      return !isObjEmpty(data.language) && !isObjEmpty(data.religion) && !isObjEmpty(data.community) && !isObjEmpty(data.economicstatus);
+      return !isObjEmpty(data?.language) && !isObjEmpty(data?.religion) && !isObjEmpty(data?.community) && !isObjEmpty(data?.economicstatus);
     } else if (currentStepIndex === 2) {
       // Account step
-      return !isObjEmpty(data.phonenumber) && !isObjEmpty(data.email) && !isObjEmpty(data.password) && !isObjEmpty(data.passwordconfirm) && data.password === data.passwordconfirm && accountformallValid;
+      return !isObjEmpty(data?.phonenumber) && !isObjEmpty(data?.email) && !isObjEmpty(data?.password) && !isObjEmpty(data?.passwordconfirm) && data?.password === data?.passwordconfirm && accountformallValid;
     }
     return false;
   };
@@ -389,7 +394,7 @@ function Register() {
     RegisterPressCount.current = RegisterPressCount.current + 1;
     
     // TODO: Replace with actual registration mutation (Redux or React Query)
-    const registerData = refcode != null ? { ...data, referrer: refcode } : data;
+    const registerData = !isObjEmpty(refcode) ? { ...data, referrer: refcode } : data;
     doRegister.mutate(registerData);
     
     // Temporary placeholder - remove once integration is complete

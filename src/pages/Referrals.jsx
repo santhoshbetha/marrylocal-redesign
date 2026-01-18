@@ -87,7 +87,9 @@ function Referrals() {
             <div className="space-y-6">
               <div className="flex items-center gap-3">
                 <Share2 className="w-5 h-5 text-primary" />
-                <h3 className="text-xl font-semibold text-foreground">Share Your Referral Link</h3>
+                <h3 className="text-xl font-semibold text-foreground">
+                  Share below Referral Link
+                </h3>
               </div>
 
               <div className="space-y-4">
@@ -111,7 +113,7 @@ function Referrals() {
                 </div>
 
                 <div className="flex items-center gap-2 p-4 bg-muted/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground">Or share your referral code:</span>
+                  <span className="text-sm text-muted-foreground">Or share this referral code:</span>
                   <span className="font-mono text-lg font-semibold text-primary bg-primary/10 px-3 py-1 rounded-md">
                     {profiledata?.referral_code}
                   </span>

@@ -30,8 +30,10 @@ export function UserInfoForm({
   jobstatus,
   state,
   city,
+  referrer,
   updateFields,
   simpleValidator,
+  refcode
 }) {
   const [state1, setState1] = useState('');
   const [open, setOpen] = useState(false);
@@ -41,6 +43,7 @@ export function UserInfoForm({
   const [searchCity, setSearchCity] = useState('');
   const [stateOpen, setStateOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
+  //const [refcode, setRefcode] = useState(null); // Set to null to show referrer input
 
   const filteredStates = states.filter(st => 
     st.toLowerCase().includes(searchState.toLowerCase())
@@ -79,6 +82,7 @@ export function UserInfoForm({
     initialValues: {
       firstname: firstname,
       lastname: lastname,
+      referrer: referrer || '',
       dob: dob,
       gender: gender,
       educationlevel: educationlevel,
@@ -97,6 +101,20 @@ export function UserInfoForm({
         .max(15)
         .required('required')
         .matches(/^[aA-zZ\s]+$/, 'Only alphabets are allowed'),
+      referrer: Yup.string()
+        .optional()
+        .test('referrer-validation', 'Referrer code must be exactly 10 characters and contain only letters and numbers', function(value) {
+          if (!value || value.length === 0) {
+            return true; // Optional field, empty is valid
+          }
+          if (value.length !== 10) {
+            return this.createError({ message: 'Referrer code must be exactly 10 characters' });
+          }
+          if (!/^[a-zA-Z0-9]+$/.test(value)) {
+            return this.createError({ message: 'Referrer code must contain only letters and numbers' });
+          }
+          return true;
+        }),
       dob: Yup.date()
         .required('Date of birth is required'),
     }),
@@ -106,6 +124,26 @@ export function UserInfoForm({
   return (
     <FormWrapper title="User Details">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6">
+        {refcode == null ? (
+          <div className="col-span-1 md:col-span-2">
+            <Label className="py-2">Your Referrer Code (<span className='text-primary'>Leave it empty if none</span>)</Label>
+            <Input
+              type="text"
+              name="referrer"
+              placeholder=""
+              className=""
+              value={formik.values.referrer}
+              onChange={e => {
+                formik.values.referrer = e.target.value.trim();
+                updateFields({ referrer: e.target.value });
+              }}
+              onBlur={formik.handleBlur}
+            />
+            {formik.touched.referrer && formik.errors.referrer ? (
+              <p className="text-red-600">{formik.errors.referrer}</p>
+            ) : null}
+          </div>
+        ) : null}
         <div className="">
           <Label className="py-2">First Name</Label>
           <Input
