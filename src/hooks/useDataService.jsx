@@ -68,14 +68,12 @@ export function useShortlistData(dataIn) {
   return useQuery({
     queryKey: shortlistDataQueryKey(),
     queryFn: async ({ signal }) => {
-      console.log('useShortlistData...2');
       // Create AbortController with 10 second timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds
 
       try {
         if (!isObjEmpty(dataIn.userid)) {
-          console.log('useShortlistData...3');
           const response = await getShortlistData(dataIn.userid, controller.signal);
           clearTimeout(timeoutId);
           return response.data || null;

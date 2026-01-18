@@ -315,7 +315,7 @@ function SearchSection({
 
       if (res.status == 'success') {
         if (res.data?.length != 0) {
-          console.log('searchUsers success::', res.data);
+         //console.log('searchUsers success::', res.data);
         } else {
           setSearchData([]);
         }

@@ -116,8 +116,6 @@ export function UserProfileDialog({ user, onClose }) {
     }
   };
 
-  console.log('user.images::', user.images);
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-2xl bg-background dark:border-3 rounded-2xl shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
