@@ -227,61 +227,64 @@ function UserProfile() {
       <div className="container mx-auto px-4 py-4 max-w-4xl dark:border-3 mt-2">
         <div className="bg-background rounded-2xl shadow-xl border border-border overflow-hidden">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 px-6 py-8 border-b border-border flex items-start justify-between shadow-sm">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="text-4xl font-bold text-foreground bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                  {user?.firstname} <span className="text-2xl text-muted-foreground">({user?.city})</span>
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 px-4 sm:px-6 py-4 sm:py-8 border-b border-border shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                  <div className="text-2xl sm:text-4xl font-bold text-foreground bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent truncate">
+                    {user?.firstname} <span className="text-lg sm:text-2xl text-muted-foreground">({user?.city})</span>
+                  </div>
+                  {(user?.aadharverified || user?.passportverified || user?.licenseverified) ? (
+                    <div className="flex items-center gap-2 bg-green-100 text-green-800 px-2 sm:px-3 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-sm border border-green-200 self-start">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span>Verified</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 bg-yellow-100 text-yellow-800 px-2 sm:px-3 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-sm border border-yellow-200 self-start">
+                      <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span>Not Verified</span>
+                    </div>
+                  )}
                 </div>
-                {(user?.aadharverified || user?.passportverified || user?.licenseverified) ? (
-                  <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-2 rounded-full text-sm font-medium shadow-sm border border-green-200">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>Verified</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 bg-yellow-100 text-yellow-800 px-3 py-2 rounded-full text-sm font-medium shadow-sm border border-yellow-200">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span>Not Verified</span>
-                  </div>
-                )}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-muted-foreground">
+                  <span className="text-sm sm:text-lg">Age: {user?.age}</span>
+                  <span className="text-sm sm:text-lg hidden sm:inline">•</span>
+                  <span className="text-sm sm:text-lg">{user?.language}</span>
+                  {user?.showcommunity == true && user?.community && user?.community != 'Do not wish to mention' && (
+                    <>
+                      <span className="text-sm sm:text-lg hidden sm:inline">•</span>
+                      <span className="text-sm sm:text-lg">{user?.community}</span>
+                    </>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-4 text-muted-foreground">
-                <span className="text-lg">Age: {user?.age}</span>
-                <span className="text-lg">•</span>
-                <span className="text-lg">{user?.language}</span>
-                {user?.showcommunity == true && user?.community && user?.community != 'Do not wish to mention' && (
-                  <>
-                    <span className="text-lg">•</span>
-                    <span className="text-lg">{user?.community}</span>
-                  </>
+              <div className="flex-shrink-0 self-start sm:self-auto">
+                {backbutton ? (
+                  <Button
+                    size="sm"
+                    className="bg-blue-500 hover:bg-blue-400 text-xs sm:text-sm px-3 sm:px-4 py-2"
+                    onClick={async () => {
+                      secureLocalStorage.setItem('reloadshortlistdata', false);
+                      navigate(-1);
+                    }}
+                  >
+                    Back
+                  </Button>
+                ) : (
+                  <button
+                    onClick={reportUser}
+                    className="p-1.5 sm:p-2 hover:bg-destructive/10 rounded-full transition-colors group"
+                    aria-label="Report user"
+                    title="Report this user"
+                  >
+                    <Flag
+                      fill="red"
+                      className="w-6 h-6 sm:w-8 sm:h-8 text-destructive group-hover:scale-110 transition-transform"
+                    />
+                  </button>
                 )}
               </div>
             </div>
-            {backbutton ? (
-              <Button
-                className="bg-blue-500 hover:bg-blue-400"
-                onClick={async () => {
-                  // localStorage.setItem('scrollback', "true");
-                  //localStorage.setItem("reloadshortlistdata", false);
-                  secureLocalStorage.setItem('reloadshortlistdata', false);
-                  navigate(-1);
-                }}
-              >
-                Back
-              </Button>
-            ) : (
-              <button 
-                onClick={reportUser}
-                className="p-2 hover:bg-destructive/10 rounded-full transition-colors group"
-                aria-label="Report user"
-                title="Report this user"
-              >
-                <Flag
-                  fill="red"
-                  className="w-8 h-8 text-destructive group-hover:scale-110 transition-transform"
-                />
-              </button>
-            )}
           </div>
 
           {/* Image Carousel */}

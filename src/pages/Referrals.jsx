@@ -35,12 +35,12 @@ function Referrals() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
       {/* Header Section */}
-      <div className="text-center py-8 px-4">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-          <Users className="w-8 h-8 text-primary" />
+      <div className="text-center py-4 sm:py-8 px-4">
+        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full mb-2 sm:mb-4">
+          <Users className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
         </div>
-        <h1 className="text-4xl font-bold text-foreground mb-2">Referrals</h1>
-        <p className="text-muted-foreground text-lg">Invite friends and earn rewards</p>
+        <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-1 sm:mb-2">Referrals</h1>
+        <p className="text-muted-foreground text-base sm:text-lg">Invite friends and earn rewards</p>
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
