@@ -3,7 +3,7 @@ import { UserCard } from './UserCard';
 import { UserProfileDialog } from './UserProfileDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight, LayoutGrid, Search } from 'lucide-react';
+import { LayoutGrid, Search } from 'lucide-react';
 
 function isObjEmpty(val) {
   return val == null ||
@@ -46,19 +46,41 @@ export function SearchList({
   searchresultszero,
   cityNum,
   loading,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
 }) {
   const [sortmsg, setSortmsg] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
-  let pagesave = localStorage.getItem('page');
-  const [currentPage, setCurrentPage] = useState(
-    pagesave == null ? 1 : Number(localStorage.getItem('page')),
-  );
-  const itemsPerPage = 9;
   const resultsRef = useRef(null);
-  const totalPages = Math.ceil((searchProfiles?.length || 0) / itemsPerPage) || 1;
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
   const [isLoading, setIsLoading] = useState(false);
+  const [currentSort, setCurrentSort] = useState(''); // Track current sort type
+
+  // Function to apply sorting to profiles
+  const applySorting = (profiles, sortType) => {
+    if (!sortType || isObjEmpty(profiles)) return profiles;
+
+    const sortedProfiles = structuredClone(profiles);
+
+    switch (sortType) {
+      case 'login_time':
+        sortedProfiles.sort((a, b) => new Date(b.last_login || 0) - new Date(a.last_login || 0));
+        break;
+      case 'age_asc':
+        sortedProfiles.sort((a, b) => (a.age || 0) - (b.age || 0));
+        break;
+      case 'age_desc':
+        sortedProfiles.sort((a, b) => (b.age || 0) - (a.age || 0));
+        break;
+      case 'distance':
+        sortedProfiles.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+        break;
+      default:
+        return sortedProfiles;
+    }
+
+    return sortedProfiles;
+  };
 
   // Memoize shortlist as a Set for efficient lookups
   const shortlistSet = useMemo(() => new Set(shortlist || []), [shortlist]);
@@ -66,13 +88,16 @@ export function SearchList({
   let [dataclone, setDataclone] = useState(searchProfiles);
   let datasort = structuredClone(searchProfiles);
 
-  const currentProfiles = isObjEmpty(dataclone) ? [] : dataclone?.slice(startIndex, endIndex);
+  // Use all searchProfiles for infinite scroll (no local pagination)
+  const currentProfiles = isObjEmpty(dataclone) ? [] : dataclone;
 
   useEffect(() => {
     if (!isObjEmpty(searchProfiles)) {
-      setDataclone(searchProfiles);
+      // Apply current sort to new data
+      const sortedData = applySorting(searchProfiles, currentSort);
+      setDataclone(sortedData);
     }
-  }, [searchProfiles]);
+  }, [searchProfiles, currentSort]);
 
   useEffect(() => {
     let lat;
@@ -106,90 +131,40 @@ export function SearchList({
     setIsLoading(loading);
   }, [loading]);
 
-  const goToPage = page => {
-    if (page !== currentPage) {
-      setIsLoading(true);
-      setCurrentPage(page);
-      localStorage.setItem('page', page);
-      setTimeout(() => {
-        setIsLoading(false);
-        resultsRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }, 100);
-    }
-  };
-
-  const goToPrevious = () => {
-    if (currentPage > 1) {
-      goToPage(currentPage - 1);
-    }
-  };
-
-  const goToNext = () => {
-    if (currentPage < totalPages) {
-      goToPage(currentPage + 1);
-    }
-  };
-
-
-  // Helper function to generate page numbers with ellipsis
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisiblePages = 7;
-
-    // Ensure totalPages is a valid number
-    const validTotalPages = Math.max(1, Math.floor(totalPages) || 1);
-
-    if (validTotalPages <= maxVisiblePages) {
-      // Show all pages if total is small
-      return Array.from({ length: validTotalPages }, (_, i) => i + 1);
-    }
-
-    // Always show first page
-    pages.push(1);
-
-    if (currentPage <= 3) {
-      // Near the beginning: show 1, 2, 3, 4, ..., last
-      pages.push(2, 3, 4);
-      pages.push('ellipsis-end');
-      pages.push(validTotalPages);
-    } else if (currentPage >= validTotalPages - 2) {
-      // Near the end: show 1, ..., last-3, last-2, last-1, last
-      pages.push('ellipsis-start');
-      pages.push(validTotalPages - 3, validTotalPages - 2, validTotalPages - 1, validTotalPages);
-    } else {
-      // In the middle: show 1, ..., current-1, current, current+1, ..., last
-      pages.push('ellipsis-start');
-      pages.push(currentPage - 1, currentPage, currentPage + 1);
-      pages.push('ellipsis-end');
-      pages.push(validTotalPages);
-    }
-
-    return pages;
-  };
-
   if (!isObjEmpty(shortlist)) {
     localStorage.setItem('shortlistarray', JSON.stringify(shortlist));
   }
 
   const sortClick = e => {
     e.preventDefault();
+    // Create a copy of all search profiles for sorting
+    const allProfiles = structuredClone(searchProfiles || []);
+
     if (sortmsg == '' || sortmsg == 'Sorted by distance') {
-      datasort.sort((a, b) => new Date(b.timeoflogin) - new Date(a.timeoflogin));
+      // Client-side sorting by login time (most recent first)
+      const sortedProfiles = applySorting(allProfiles, 'login_time');
+      setDataclone(sortedProfiles);
+      setCurrentSort('login_time');
       setSortmsg('Sorted by login time');
     } else if (sortmsg == 'Sorted by login time') {
-      datasort.sort((a, b) => a.age - b.age);
+      // Client-side sorting by age ascending (youngest first)
+      const sortedProfiles = applySorting(allProfiles, 'age_asc');
+      setDataclone(sortedProfiles);
+      setCurrentSort('age_asc');
       setSortmsg('Sorted by age - ascending');
     } else if (sortmsg == 'Sorted by age - ascending') {
-      datasort.sort((a, b) => b.age - a.age);
+      // Client-side sorting by age descending (oldest first)
+      const sortedProfiles = applySorting(allProfiles, 'age_desc');
+      setDataclone(sortedProfiles);
+      setCurrentSort('age_desc');
       setSortmsg('Sorted by age - descending');
     } else if (sortmsg == 'Sorted by age - descending') {
-      datasort.sort((a, b) => a.distance - b.distance);
+      // Client-side sorting by distance (closest first)
+      const sortedProfiles = applySorting(allProfiles, 'distance');
+      setDataclone(sortedProfiles);
+      setCurrentSort('distance');
       setSortmsg('Sorted by distance');
     }
-    setDataclone(datasort);
   };
 
   return (
@@ -231,7 +206,7 @@ export function SearchList({
             <Button
               variant="outline"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="border-orange-200 text-orange-700 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-900/20"
+              className="border-orange-200 text-orange-700 hover:bg-orange-100 hover:text-orange-800 hover:border-orange-300 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-900/40 dark:hover:text-orange-300 dark:hover:border-orange-700"
             >
               Adjust Search Criteria
             </Button>
@@ -285,70 +260,24 @@ export function SearchList({
         </div>
       </div>
 
-      {/* Enhanced Pagination */}
-      {totalPages > 1 && (
-        <Card className="bg-background rounded-2xl shadow-xl border border-border">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              {/* Previous Button */}
-              <Button
-                onClick={goToPrevious}
-                disabled={currentPage === 1}
-                variant="outline"
-                className="px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-primary-foreground transition-all"
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Previous
-              </Button>
-
-              <div className="flex items-center gap-2 flex-wrap justify-center">
-                {getPageNumbers().map((page, index) => {
-                  if (typeof page === 'string') {
-                    return (
-                      <span
-                        key={`${page}-${index}`}
-                        className="w-12 h-12 flex items-center justify-center text-muted-foreground font-medium"
-                      >
-                        ...
-                      </span>
-                    );
-                  }
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => goToPage(page)}
-                      className={`w-12 h-12 rounded-xl font-semibold transition-all ${
-                        currentPage === page
-                          ? 'bg-primary text-primary-foreground shadow-lg'
-                          : 'bg-muted/50 border border-border hover:bg-muted text-foreground hover:border-primary/50'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Next Button */}
-              <Button
-                onClick={goToNext}
-                disabled={currentPage === totalPages}
-                variant="outline"
-                className="px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-primary-foreground transition-all"
-              >
-                Next
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Load More Button for Infinite Scroll */}
+      {hasNextPage && (
+        <div className="flex justify-center mt-8">
+          <Button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all"
+          >
+            {isFetchingNextPage ? 'Loading...' : 'Load More Profiles'}
+          </Button>
+        </div>
       )}
 
       {/* Results Summary */}
       {currentProfiles?.length > 0 && (
         <div className="text-center text-sm text-muted-foreground mt-6 pb-6">
-          Showing {startIndex + 1}-{Math.min(endIndex, searchProfiles?.length)} of{' '}
-          {searchProfiles?.length} profiles
+          Showing {currentProfiles?.length} profiles
+          {hasNextPage && ' (more available)'}
         </div>
       )}
 

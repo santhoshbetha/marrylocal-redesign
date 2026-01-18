@@ -8,7 +8,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { searchUser } from '@/services/searchService';
 import { SearchUserCard } from '@/components/SearchUserCard';
-import { UserProfileDialog } from '@/components/UserProfileDialog';
 
 function isObjEmpty(val) {
   return val == null ||
@@ -30,17 +29,22 @@ export function SearchUser() {
   const handleSearchSubmit = async e => {
     e.preventDefault();
     setSearchdone(false);
+    console.log("search text", searchtext);
 
     var phoneregex = /^\d{10}$/;
     var emailregex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     var useridregex = /^\d{5,7}$/;
+    console.log("search user debug 1 ", searchtext);
     if (searchtext.match(emailregex) || searchtext.match(phoneregex)) {
       setLoading(true);
+      console.log("search user debug 2 ", searchtext);
       //await searchuser(searchtext)
       const res = await searchUser(searchtext);
+      console.log("search user debug 3 ", res);
       setLoading(false);
       if (res.success) {
         setUserdata(res.data);
+        console.log("search user res.data", res.data);
         setUseractive(res.data?.userstate === 'active');
       } else {
         setUserdata(null);

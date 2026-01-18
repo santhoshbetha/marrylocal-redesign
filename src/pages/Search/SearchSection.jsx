@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import secureLocalStorage from 'react-secure-storage';
 import { useFormik } from 'formik';
 import {
@@ -34,7 +34,7 @@ import { SearchList } from '../../components/SearchList';
 import { Search } from 'lucide-react';
 import { getCityUsercount } from '@/services/registerService';
 import { searchUsers } from '@/services/searchService';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 
 let distanceMap = new Map([
   ['10 kms', 10000],
@@ -135,55 +135,7 @@ function SearchSection({
     }
   };
 
-  const usersSearchQueryKey = () => ['userssearch'];
-
-  const {
-    status,
-    data: querydata,
-    error: fetcherror,
-    refetch,
-  } = useQuery({
-    queryKey: usersSearchQueryKey(),
-    queryFn: async ({ signal }) => {
-      if (!isObjEmpty(searchinput)) {
-        const response = await searchUsers(searchinput, signal);
-        return response.data || null;
-      } else {
-        return null;
-      }
-    },
-    //enabled: false,
-    refetchInterval: 7 * (60 * 1000), // 7 min
-    //refetchOnMount: false
-  });
-
-  useEffect(() => {
-    if (!isObjEmpty(querydata)) {
-      setSearchData(
-        querydata?.filter(eachUser => {
-          if (eachUser?.userid == profiledata?.userid) {
-            return false;
-          }
-          if (eachUser?.showinotherreligionpeoplesearch == true) {
-            if (eachUser?.userstate == 'active') {
-              return true;
-            } else {
-              return false;
-            }
-          } else if (eachUser?.showinotherreligionpeoplesearch == false) {
-            if (eachUser?.religion == profilereligion) {
-              if (eachUser?.userstate == 'active') {
-                return true;
-              } else {
-                return false;
-              }
-            }
-          }
-        }),
-      );
-    }
-  }, [querydata]);
-
+  // TODO: Move useQuery after formik declaration
   useEffect(() => {
     // Check if all condition variables are loaded (not undefined)
     if (
@@ -351,12 +303,72 @@ function SearchSection({
     },
   });
 
+  const usersSearchQueryKey = () => ['userssearch'];
+
   // Save form values to localStorage whenever they change
   useEffect(() => {
     if (formik.values && Object.keys(formik.values).length > 0) {
       localStorage.setItem('searchFormValues', JSON.stringify(formik.values));
     }
   }, [formik.values]);
+
+  const {
+    status,
+    data: infiniteData,
+    error: fetcherror,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: usersSearchQueryKey(),
+    queryFn: async ({ pageParam = 1, signal }) => {
+      if (!isObjEmpty(searchinput)) {
+        const response = await searchUsers(searchinput, signal, pageParam, 20, profiledata);
+        return {
+          data: response.data || [],
+          pagination: response.pagination,
+        };
+      } else {
+        return { data: [], pagination: { hasNextPage: false } };
+      }
+    },
+    getNextPageParam: (lastPage) => {
+      return lastPage.pagination?.hasNextPage ? lastPage.pagination.page + 1 : undefined;
+    },
+    //enabled: false,
+    refetchInterval: 7 * (60 * 1000), // 7 min
+    //refetchOnMount: false
+  });
+
+  useEffect(() => {
+    if (!isObjEmpty(infiniteData)) {
+      // For useInfiniteQuery, data is paginated - flatten all pages
+      const allUsers = infiniteData.pages.flatMap(page => page.data || []);
+      setSearchData(
+        allUsers?.filter(eachUser => {
+          if (eachUser?.userid == profiledata?.userid) {
+            return false;
+          }
+          if (eachUser?.showinotherreligionpeoplesearch == true) {
+            if (eachUser?.userstate == 'active') {
+              return true;
+            } else {
+              return false;
+            }
+          } else if (eachUser?.showinotherreligionpeoplesearch == false) {
+            if (eachUser?.religion == profilereligion) {
+              if (eachUser?.userstate == 'active') {
+                return true;
+              } else {
+                return false;
+              }
+            }
+          }
+        }),
+      );
+    }
+  }, [infiniteData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
@@ -668,6 +680,9 @@ function SearchSection({
           searchresultszero={searchresultszero}
           cityNum={cityNum}
           loading={loading}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
         />
       </div>
     </div>

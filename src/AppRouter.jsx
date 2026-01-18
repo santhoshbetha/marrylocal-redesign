@@ -39,33 +39,9 @@ const UserProfiles = lazy(() => import('@/pages/UserProfiles'));
 const AdminUserList = lazy(() => import('@/pages/AdminUserList'));
 const AdminEmailTemplates = lazy(() => import('@/pages/AdminEmailTemplates'));
 const ScrollToTop = lazy(() => import('./components/ScrollToTop'));
+const Location = lazy(() => import('@/pages/Location'));
 
-// Lazy load Location only after profiledata is loaded
-const LazyLocation = ({ profiledata }) => {
-  const [LocationComponent, setLocationComponent] = useState(null);
-
-  useEffect(() => {
-    if (profiledata) {
-      const loadLocation = async () => {
-        const module = await import('@/pages/Location');
-        setLocationComponent(() => module.default);
-      };
-      loadLocation();
-    }
-  }, [profiledata]);
-
-  if (!LocationComponent) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  return <LocationComponent />;
-};
-
-export default function AppRouter({ openLogin, setOpenLogin, profiledata }) {
+export default function AppRouter({ openLogin, setOpenLogin }) {
   // Check if maintenance mode is enabled
   const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
 
@@ -118,7 +94,7 @@ export default function AppRouter({ openLogin, setOpenLogin, profiledata }) {
         <Route element={<ProtectedRoute />}>
           <Route path="/verify" element={<Verify />} />
           <Route path="/myspace" element={<Navigate to="/search" />} />
-          <Route path="/location" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}><LazyLocation profiledata={profiledata} /></Suspense>} />
+          <Route path="/location" element={<Location />} />
           <Route path="/search" element={<Search />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/photos" element={<Photos />} />

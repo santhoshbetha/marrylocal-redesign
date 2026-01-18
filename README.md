@@ -37,3 +37,13 @@ If you are developing a production application, we recommend using TypeScript wi
 ==================================================
 qfwoaopvraxyzocxpf@xfavaj.com -- edoPASS1*
 vfbjkhbxsxwlpayqfx@enotj.com -- edoPASS1*
+
+============================================================================================================EDGE Function deployment:
+# Set the access token (you can add this to your shell profile)
+$env:SUPABASE_ACCESS_TOKEN = 'sbp_70976fc24531ffd56aea837d3ac9cbcf92843c10'
+
+# Deploy any function
+npx supabase functions deploy function-name
+
+# Or deploy all functions
+npx supabase functions deploy

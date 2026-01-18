@@ -237,7 +237,7 @@ function Search() {
           let dif = Math.abs(datenow - new Date(profiledata?.dateofactivation));
           let dayssinceactivation = Math.floor(dif / (1000 * 3600 * 24));
           if (dayssinceactivation > Number(profiledata?.acceptedyearsofservice) * 356) {
-            //24 months  (356 = 12 months, 547 = 18 months, 712 = 24 months)
+            //12 months  (356 = 12 months, 547 = 18 months, 712 = 24 months)
             if (profiledata?.userstate == 'active') {
               setActive(false);
               setLoading(true);

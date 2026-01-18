@@ -42,7 +42,7 @@ function MyComponent() {
 
 function App() {
   const [openLogin, setOpenLogin] = useState(false);
-  const { user, profiledata } = useAuth();
+  const { user, profiledata, loading: authLoading } = useAuth();
   const [theme, _setTheme] = useState('light');
   const [shouldLoadTermsPopup, setShouldLoadTermsPopup] = useState(false);
   const [globalLoading, setGlobalLoading] = useState(false);
@@ -76,6 +76,15 @@ function App() {
     }
   }, [user, profiledata]);
 
+  // Show global loading during login until profile data is loaded
+  useEffect(() => {
+    if (authLoading && user) {
+      setGlobalLoading(true);
+    } else if (!authLoading && profiledata) {
+      setGlobalLoading(false);
+    }
+  }, [authLoading, user, profiledata]);
+
   return (
     <GlobalLoadingContext.Provider value={{ globalLoading, setGlobalLoading }}>
       <div className="App">
@@ -94,7 +103,7 @@ function App() {
         {user ? <NavAfter /> : <NavBefore openLogin={openLogin} setOpenLogin={setOpenLogin} />}
         <SearchDataAndRecoveryContextProvider>
           <Layout>
-            <AppRouter openLogin={openLogin} setOpenLogin={setOpenLogin} profiledata={profiledata} />
+            <AppRouter openLogin={openLogin} setOpenLogin={setOpenLogin} />
           </Layout>
         </SearchDataAndRecoveryContextProvider>
         <AuthVerify />

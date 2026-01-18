@@ -20,6 +20,7 @@ function isObjEmpty(val) {
 export function ShortlistSection({ loggedInUser, userid, shortlist, profiledata, setProfiledata }) {
   const [shortListProfiles, setShortListProfiles] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loadingCardId, setLoadingCardId] = useState(null);
 
   const itemsPerPage = 12;
   const resultsRef = useRef(null);
@@ -57,6 +58,17 @@ export function ShortlistSection({ loggedInUser, userid, shortlist, profiledata,
       setIsLoading(false);
     });
   }, [data]);
+
+  // Clear loading card state after navigation delay
+  useEffect(() => {
+    if (loadingCardId) {
+      const timeout = setTimeout(() => {
+        setLoadingCardId(null);
+      }, 2000); // Clear after 2 seconds to handle navigation delay
+
+      return () => clearTimeout(timeout);
+    }
+  }, [loadingCardId]);
 
   const goToPage = page => {
     if (page !== currentPage) {
@@ -155,26 +167,37 @@ export function ShortlistSection({ loggedInUser, userid, shortlist, profiledata,
                             }`}
             >
               {currentProfiles?.map(eachUser => (
-                <Link
-                  key={eachUser?.shortid || eachUser?.id}
-                  to={{ pathname: `/user/${eachUser?.shortid}` }}
-                  onClick={() => {
-                    localStorage.setItem(
-                      'userstate',
-                      JSON.stringify({
-                        backbutton: true,
-                        userid: eachUser?.userid,
-                      }),
-                    );
-                  }}
-                >
-                  <ShortCard
-                    loggedInUser={loggedInUser}
-                    userprofile={eachUser}
-                    profiledata={profiledata}
-                    setProfiledata={setProfiledata}
-                  />
-                </Link>
+                <div key={eachUser?.shortid || eachUser?.id} className="relative">
+                  <Link
+                    to={{ pathname: `/user/${eachUser?.shortid}` }}
+                    onClick={() => {
+                      setLoadingCardId(eachUser?.shortid || eachUser?.id);
+                      localStorage.setItem(
+                        'userstate',
+                        JSON.stringify({
+                          backbutton: true,
+                          userid: eachUser?.userid,
+                        }),
+                      );
+                    }}
+                    className="block"
+                  >
+                    <ShortCard
+                      loggedInUser={loggedInUser}
+                      userprofile={eachUser}
+                      profiledata={profiledata}
+                      setProfiledata={setProfiledata}
+                    />
+                  </Link>
+                  {loadingCardId === (eachUser?.shortid || eachUser?.id) && (
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
+                        <p className="text-sm text-muted-foreground">Loading...</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
