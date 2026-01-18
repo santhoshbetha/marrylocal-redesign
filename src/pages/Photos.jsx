@@ -256,16 +256,16 @@ function Photos() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-8">
         <Card className="w-full shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="text-center py-4">
-            <div className="flex items-center justify-center mb-2">
-              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
-                <Camera className="h-6 w-6 text-white" />
-              </div>
+<CardHeader className="text-center py-2 sm:py-4 px-3 sm:px-6">
+          <div className="flex items-center justify-center mb-1 sm:mb-2">
+            <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
+              <Camera className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Your Photo Gallery
-            </CardTitle>
-            <p className="text-gray-600 text-sm mt-1">
+          </div>
+          <CardTitle className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Your Photo Gallery
+          </CardTitle>
+          <p className="text-gray-600 text-xs sm:text-sm mt-0.5 sm:mt-1 px-2 sm:px-0">
               Upload up to 10 photos to showcase your personality and lifestyle
             </p>
           </CardHeader>
