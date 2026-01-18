@@ -1,90 +1,111 @@
-//https://www.youtube.com/watch?v=dQNkufTnA-k&t=1s&ab_channel=ImranSayed-CodeytekAcademy
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-core.prod.js');
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-precaching.prod.js');
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-routing.prod.js');
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-expiration.prod.js');
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-strategies.prod.js');
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-cacheable-response.prod.js');
+// Service Worker for MarryLocal
+// Simplified version to avoid potential issues
 
-workbox.core.clientsClaim();
-self.skipWaiting();
+const CACHE_NAME = 'marrylocal-v1';
+const STATIC_CACHE = 'marrylocal-static-v1';
+const API_CACHE = 'marrylocal-api-v1';
 
-workbox.precaching.cleanupOutdatedCaches();
-// Removed precacheAndRoute since manifest is not injected
+// Install event - cache static assets
+self.addEventListener('install', event => {
+  console.log('Service Worker installing.');
+  self.skipWaiting();
 
-// Cache the Google Fonts stylesheets with a stale-while-revalidate strategy.
-// @see https://developers.google.com/web/tools/workbox/guides/common-recipes#google_fonts
-workbox.routing.registerRoute(
-    ({url}) => url.origin === 'https://fonts.googleapis.com',
-        new workbox.strategies.StaleWhileRevalidate({
-            cacheName: 'google-fonts-stylesheets',
-    })
-);
-
-// Cache the underlying font files with a cache-first strategy for 1 year.
-// @see https://developers.google.com/web/tools/workbox/guides/common-recipes#google_fonts
-workbox.routing.registerRoute(
-({url}) => url.origin === 'https://fonts.gstatic.com',
-    new workbox.strategies.CacheFirst({
-        cacheName: 'google-fonts-webfonts',
-        plugins: [
-        new workbox.cacheableResponse.CacheableResponsePlugin({
-                statuses: [0, 200],
-            }),
-        new workbox.expiration.ExpirationPlugin({
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-                maxEntries: 30,
-            }),
-        ],
-    })
-);
-
-/**
- * We use CacheFirst for images because, images are not going to change very often,
- * so it does not make sense to revalidate images on every request.
- *
- * @see https://developers.google.com/web/tools/workbox/guides/common-recipes#caching_images
- */
-
-/*
-registerRoute(
-({request}) => request.destination === 'image',
-    new CacheFirst({
-        cacheName: 'images',
-        plugins: [
-            new CacheableResponsePlugin({
-                    statuses: [0, 200],
-                }),
-            new ExpirationPlugin({
-                    maxEntries: 60,
-                    maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
-                }),
-        ],
-    }),
-);*/
-
-// @see https://developers.google.com/web/tools/workbox/guides/common-recipes#cache_css_and_javascript_files
-workbox.routing.registerRoute(
-({request}) => request.destination === 'script' ||
-    request.destination === 'style',
-    new workbox.strategies.StaleWhileRevalidate({
-        cacheName: 'static-resources',
-    })
-);
-  
-
-workbox.routing.registerRoute(
-    ({url}) => url.origin === 'https://localm-api.dgsbuu.easypanel.host' &&
-               url.pathname.startsWith('/localm-api/'),
-
-    new workbox.strategies.CacheFirst({
-      cacheName: 'api-cache',
-      plugins: [
-        new workbox.cacheableResponse.CacheableResponsePlugin({
-          statuses: [0, 200, 404],
-        })
-      ]
+  event.waitUntil(
+    caches.open(STATIC_CACHE).then(cache => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+        // Add other critical static assets here if needed
+      ]);
     })
   );
+});
+
+// Activate event - clean up old caches
+self.addEventListener('activate', event => {
+  console.log('Service Worker activating.');
+  self.clients.claim();
+
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== STATIC_CACHE && cacheName !== API_CACHE) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Fetch event - handle caching strategies
+self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Cache Google Fonts
+  if (url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com') {
+    event.respondWith(
+      caches.open('google-fonts').then(cache => {
+        return cache.match(request).then(response => {
+          if (response) {
+            return response;
+          }
+          return fetch(request).then(response => {
+            if (response.status === 200) {
+              cache.put(request, response.clone());
+            }
+            return response;
+          });
+        });
+      })
+    );
+    return;
+  }
+
+  // Cache API responses
+  if (url.origin === 'https://localm-api.dgsbuu.easypanel.host' && url.pathname.startsWith('/localm-api/')) {
+    event.respondWith(
+      caches.open(API_CACHE).then(cache => {
+        return cache.match(request).then(response => {
+          if (response) {
+            return response;
+          }
+          return fetch(request).then(response => {
+            if (response.status === 200) {
+              cache.put(request, response.clone());
+            }
+            return response;
+          });
+        });
+      })
+    );
+    return;
+  }
+
+  // For other requests, try cache first, then network
+  event.respondWith(
+    caches.match(request).then(response => {
+      if (response) {
+        return response;
+      }
+      return fetch(request).then(response => {
+        // Cache successful GET requests
+        if (request.method === 'GET' && response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(STATIC_CACHE).then(cache => {
+            cache.put(request, responseClone);
+          });
+        }
+        return response;
+      }).catch(() => {
+        // Return cached version if available, otherwise offline page
+        return caches.match('/index.html');
+      });
+    })
+  );
+});
 
   
