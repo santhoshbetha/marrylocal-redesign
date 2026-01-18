@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 
 // Lazy load components for code splitting
 const Home = lazy(() => import('@/pages/Home'));
@@ -9,7 +9,6 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Register = lazy(() => import('@/pages/auth/Register/Register'));
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
 const Logout = lazy(() => import('@/pages/auth/Logout'));
-const Location = lazy(() => import('@/pages/Location'));
 const PageNotFound = lazy(() => import('./pages/404Page'));
 const Search = lazy(() => import('@/pages/Search/Search'));
 const Profile = lazy(() => import('@/pages/Profile'));
@@ -41,7 +40,32 @@ const AdminUserList = lazy(() => import('@/pages/AdminUserList'));
 const AdminEmailTemplates = lazy(() => import('@/pages/AdminEmailTemplates'));
 const ScrollToTop = lazy(() => import('./components/ScrollToTop'));
 
-export default function AppRouter({ openLogin, setOpenLogin }) {
+// Lazy load Location only after profiledata is loaded
+const LazyLocation = ({ profiledata }) => {
+  const [LocationComponent, setLocationComponent] = useState(null);
+
+  useEffect(() => {
+    if (profiledata) {
+      const loadLocation = async () => {
+        const module = await import('@/pages/Location');
+        setLocationComponent(() => module.default);
+      };
+      loadLocation();
+    }
+  }, [profiledata]);
+
+  if (!LocationComponent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return <LocationComponent />;
+};
+
+export default function AppRouter({ openLogin, setOpenLogin, profiledata }) {
   // Check if maintenance mode is enabled
   const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
 
@@ -94,7 +118,7 @@ export default function AppRouter({ openLogin, setOpenLogin }) {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/myspace" element={<Navigate to="/search" />} />
-          <Route path="/location" element={<Location />} />
+          <Route path="/location" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}><LazyLocation profiledata={profiledata} /></Suspense>} />
           <Route path="/search" element={<Search />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/photos" element={<Photos />} />

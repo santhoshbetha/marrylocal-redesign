@@ -80,11 +80,11 @@ var toKilometers = function (miles) {
 function Location() {
   const { user, profiledata, setProfiledata } = useAuth();
   const mapRef = useRef(null);
-  const latitude = profiledata?.latitude;
-  const longitude = profiledata?.longitude;
+  const latitude = profiledata?.latitude || 28.6139;
+  const longitude = profiledata?.longitude || 77.2090;
   const center = {
-    lat: profiledata?.latitude,
-    lng: profiledata?.longitude,
+    lat: latitude,
+    lng: longitude,
   };
   const [coordinates, setCoordinates] = useState(center);
   const [markerPosition, setMarkerPosition] = useState(center);
@@ -98,7 +98,8 @@ function Location() {
 
   useEffect(() => {
     //setLatlng(getcoords(profiledata?.city))
-    setCoordinates(getcoords(profiledata?.city));
+    const coordsFromCity = getcoords(profiledata?.city);
+    setCoordinates(coordsFromCity || { lat: 28.6139, lng: 77.2090 }); // Default to Delhi if not found
     //setLatlngdefault(getcoords(profiledata?.city))
     const datenow = new Date(Date.now());
     let dif = Math.abs(datenow - new Date(profiledata?.dateofcoordinates));

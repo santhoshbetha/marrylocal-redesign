@@ -51,7 +51,7 @@ function App() {
       {user ? <NavAfter /> : <NavBefore openLogin={openLogin} setOpenLogin={setOpenLogin} />}
       <SearchDataAndRecoveryContextProvider>
         <Layout>
-          <AppRouter openLogin={openLogin} setOpenLogin={setOpenLogin} />
+          <AppRouter openLogin={openLogin} setOpenLogin={setOpenLogin} profiledata={profiledata} />
         </Layout>
       </SearchDataAndRecoveryContextProvider>
       <AuthVerify />

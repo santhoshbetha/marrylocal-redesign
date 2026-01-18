@@ -1,13 +1,44 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, useRef } from 'react';
 import supabase, { supabaseUrl, supabaseAnonKey } from '../lib/supabase.js';
 import { getProfileData, updateUserInfo } from '../services/userService';
 import { toast } from 'sonner';
-import { useWorker } from '@koale/useworker';
-import aroundUsersWorker from '../workers/aroundUsersWorker';
+import { createClient } from '@supabase/supabase-js';
 
 const AuthContext = createContext();
 
 //https://stackoverflow.com/questions/72385641/supabase-onauthstatechanged-how-do-i-properly-wait-for-the-request-to-finish-p
+
+const getAroundUsersCount = async (supabaseUrl, supabaseKey, userLat, userLng, userGender) => {
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const oppositeGender = userGender === 'Male' ? 'Female' : 'Male';
+  const radiusMeters = 50 * 1000; // 50km in meters
+
+  const lat = parseFloat(userLat);
+  const lng = parseFloat(userLng);
+
+  console.log('Getting around users count for:', { lat, lng, userGender });
+
+  if (isNaN(lat) || isNaN(lng)) {
+    console.error('Invalid lat/lng:', userLat, userLng);
+    return 0;
+  }
+
+  console.log('Fetching around users count for:', { lat, lng, oppositeGender });
+
+  const { count, error } = await supabase
+    .from('users')
+    .select('*', { count: 'exact', head: true })
+    .eq('gender', oppositeGender);
+
+  console.log('Around users count result:', { count, error });
+
+  if (error) {
+    console.error('Error getting around users count:', error);
+    return 0;
+  }
+  console.log('Around users count:', count);
+  return count || 0;
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -15,8 +46,8 @@ export const AuthProvider = ({ children }) => {
   const [userSession, setUserSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const runWorker = useWorker(aroundUsersWorker);
+  const isUpdatingRef = useRef(false);
+  const countUpdatedRef = useRef(false);
 
   const setAuth = authUser => {
     setUser(authUser);
@@ -36,12 +67,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUserData = async user => {
-    if (!user) {
-      setProfiledata(null);
-      setLoading(false);
+    if (!user || isUpdatingRef.current) {
       return;
     }
 
+    console.log('Updating user data for:', user?.id);
+
+    isUpdatingRef.current = true;
     setLoading(true);
     let res = await getProfileData(user?.id);
     if (res.success == true) {
@@ -60,26 +92,30 @@ export const AuthProvider = ({ children }) => {
       }
       setProfiledata({ ...res.data });
 
+      console.log('Profile data updated:', res.data);
+      console.log('Profile data res.data.lat:', res.data.latitude);
+      console.log('Profile data res.data.lng:', res.data.longitude);
+      console.log('Profile data res.data.gender:', res.data.gender);
+
       // Run worker to update arounduserscount if needed
-      if (res.data.arounduserscount == null || res.data.arounduserscount <= 100) {
-        runWorker({
-          supabaseUrl,
-          supabaseAnonKey,
-          userLat: res.data.lat,
-          userLng: res.data.lng,
-          userGender: res.data.gender,
-          searchdistance: 50 // assuming km or whatever unit
-        }).then(async (count) => {
-          await updateUserInfo(user.id, { arounduserscount: count });
-          setProfiledata(prev => ({ ...prev, arounduserscount: count }));
-        }).catch(error => {
-          console.error('Error updating arounduserscount:', error);
-        });
+      if (!countUpdatedRef.current && (res.data.arounduserscount == null || res.data.arounduserscount <= 100) && res.data.latitude && res.data.longitude) {
+        countUpdatedRef.current = true;
+        getAroundUsersCount(supabaseUrl, supabaseAnonKey, res.data.latitude, res.data.longitude, res.data.gender)
+          .then(async (count) => {
+            console.log('Around users count:', count);
+            await updateUserInfo(user.id, { arounduserscount: count });
+            setProfiledata(prev => ({ ...prev, arounduserscount: count }));
+          })
+          .catch(error => {
+            console.error('Error updating arounduserscount:', error);
+            countUpdatedRef.current = false; // Reset on error to allow retry
+          });
       }
     } else {
       setProfiledata(null);
     }
     setLoading(false);
+    isUpdatingRef.current = false;
   };
 
   useEffect(() => {
@@ -102,6 +138,7 @@ export const AuthProvider = ({ children }) => {
         setAuth(null);
         setUserSession(null);
         setProfiledata(null);
+        countUpdatedRef.current = false; // Reset for next login
         setLoading(false);
       }
     });
