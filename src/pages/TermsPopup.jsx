@@ -216,8 +216,8 @@ export function TermsPopup() {
                         <h6 className='font-bold'>Fees:</h6>
                         <p>
                         Service fees of <b className=''>500Rs</b> applies when there are more than <b>300</b> matches in your area.
-                        <span className='block'>Validity: <b>2 years.</b></span>
-                        <span className='block'>Account will be <b>deactivated</b> after 2 years. You may activate again.</span>
+                        <span className='block'>Validity: <b>1 year</b>.</span>
+                        <span className='block'>Account will be <b>deactivated</b> after <b>1 year</b>. You may activate again.</span>
                         </p>
                     </div>
                 </div>
