@@ -43,7 +43,7 @@ export function FAQSection() {
                 <p className="text-muted-foreground text-sm sm:text-base lg:text-lg leading-relaxed px-3 sm:px-4">
                   To ensure authenticity and safety, we require one government-issued ID for
                   verification: <span hidden>Aadhaar Card, </span>Passport, or Driver's License. All documents are
-                  securely processed and stored with bank-level encryption. Your personal
+                  securely processed and deleted after verification. Your personal
                   information is never shared with other users.
                 </p>
               </AccordionContent>
@@ -65,7 +65,7 @@ export function FAQSection() {
               <AccordionTrigger className="text-left text-base sm:text-lg lg:text-xl px-3 sm:px-4">Is MarryLocal free to use?</AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground text-base sm:text-lg leading-relaxed px-3 sm:px-4">
-                  MarryLocal curently free. You can create a profile, browse matches, and contact
+                  MarryLocal is curently free. You can create a profile, browse matches, and contact
                   matches.
                 </p>
               </AccordionContent>
