@@ -9,20 +9,61 @@ function Logout() {
 
   useEffect(() => {
     const logoutfunc = async () => {
-      const { error } = await supabase.auth.signOut();
+      // Create AbortController for timeout handling
+      const abortController = new AbortController();
+      const timeoutId = setTimeout(() => {
+        abortController.abort();
+      }, 10000); // 10 second timeout
 
-      if (error) {
-        alert('Something wrong. Try later again 22');
+      try {
+        // Use Promise.race to make signOut abortable
+        await Promise.race([
+          supabase.auth.signOut(),
+          new Promise((_, reject) => {
+            abortController.signal.addEventListener('abort', () => {
+              reject(new Error('Logout timeout'));
+            });
+          })
+        ]);
+      } catch (error) {
+        if (error.message === 'Logout timeout') {
+          console.warn('Logout request timed out after 10 seconds');
+        } else {
+          console.warn('Logout error:', error);
+        }
+      } finally {
+        // Always clear timeout
+        clearTimeout(timeoutId);
       }
 
-      localStorage.removeItem('shortlistarray');
-      localStorage.removeItem('page');
-      localStorage.removeItem('userstate');
-      localStorage.clear();
-      secureLocalStorage.clear();
-      dispatch(logout());
-      window.location.reload(false);
-      //window.location.href="/";
+      // Always clear local storage and session data, even if logout was aborted
+      try {
+        localStorage.removeItem('shortlistarray');
+        localStorage.removeItem('page');
+        localStorage.removeItem('userstate');
+        localStorage.clear();
+        secureLocalStorage.clear();
+
+        // Clear any cached data
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            names.forEach(name => {
+              caches.delete(name);
+            });
+          });
+        }
+
+        // Clear session storage
+        sessionStorage.clear();
+
+        dispatch(logout());
+        window.location.reload(false);
+      } catch (cleanupError) {
+        console.error('Error during cleanup:', cleanupError);
+        // Still proceed with logout even if cleanup fails
+        dispatch(logout());
+        window.location.reload(false);
+      }
     };
 
     logoutfunc();
