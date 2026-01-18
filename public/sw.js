@@ -1,37 +1,37 @@
 //https://www.youtube.com/watch?v=dQNkufTnA-k&t=1s&ab_channel=ImranSayed-CodeytekAcademy
-import { clientsClaim } from 'workbox-core';
-import { cleanupOutdatedCaches } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { ExpirationPlugin } from 'workbox-expiration';
-import { StaleWhileRevalidate, CacheFirst } from 'workbox-strategies';
-import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-core.prod.js');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-precaching.prod.js');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-routing.prod.js');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-expiration.prod.js');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-strategies.prod.js');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-cacheable-response.prod.js');
 
-clientsClaim();
+workbox.core.clientsClaim();
 self.skipWaiting();
 
-cleanupOutdatedCaches();
+workbox.precaching.cleanupOutdatedCaches();
 // Removed precacheAndRoute since manifest is not injected
 
 // Cache the Google Fonts stylesheets with a stale-while-revalidate strategy.
 // @see https://developers.google.com/web/tools/workbox/guides/common-recipes#google_fonts
-registerRoute(
+workbox.routing.registerRoute(
     ({url}) => url.origin === 'https://fonts.googleapis.com',
-        new StaleWhileRevalidate({
+        new workbox.strategies.StaleWhileRevalidate({
             cacheName: 'google-fonts-stylesheets',
     })
 );
 
 // Cache the underlying font files with a cache-first strategy for 1 year.
 // @see https://developers.google.com/web/tools/workbox/guides/common-recipes#google_fonts
-registerRoute(
+workbox.routing.registerRoute(
 ({url}) => url.origin === 'https://fonts.gstatic.com',
-    new CacheFirst({
+    new workbox.strategies.CacheFirst({
         cacheName: 'google-fonts-webfonts',
         plugins: [
-        new CacheableResponsePlugin({
+        new workbox.cacheableResponse.CacheableResponsePlugin({
                 statuses: [0, 200],
             }),
-        new ExpirationPlugin({
+        new workbox.expiration.ExpirationPlugin({
                 maxAgeSeconds: 60 * 60 * 24 * 365,
                 maxEntries: 30,
             }),
@@ -64,23 +64,23 @@ registerRoute(
 );*/
 
 // @see https://developers.google.com/web/tools/workbox/guides/common-recipes#cache_css_and_javascript_files
-registerRoute(
+workbox.routing.registerRoute(
 ({request}) => request.destination === 'script' ||
     request.destination === 'style',
-    new StaleWhileRevalidate({
+    new workbox.strategies.StaleWhileRevalidate({
         cacheName: 'static-resources',
     })
 );
   
 
-registerRoute(
+workbox.routing.registerRoute(
     ({url}) => url.origin === 'https://localm-api.dgsbuu.easypanel.host' &&
                url.pathname.startsWith('/localm-api/'),
 
-    new CacheFirst({
+    new workbox.strategies.CacheFirst({
       cacheName: 'api-cache',
       plugins: [
-        new CacheableResponsePlugin({
+        new workbox.cacheableResponse.CacheableResponsePlugin({
           statuses: [0, 200, 404],
         })
       ]

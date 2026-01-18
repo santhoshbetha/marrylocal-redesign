@@ -16,10 +16,10 @@ const getAroundUsersCount = async (supabaseUrl, supabaseKey, userLat, userLng, u
   const lat = parseFloat(userLat);
   const lng = parseFloat(userLng);
 
-  console.log('Getting around users count for:', { lat, lng, userGender });
+  //console.log('Getting around users count for:', { lat, lng, userGender });
 
   if (isNaN(lat) || isNaN(lng)) {
-    console.error('Invalid lat/lng:', userLat, userLng);
+    //console.error('Invalid lat/lng:', userLat, userLng);
     return 0;
   }
 
@@ -35,7 +35,7 @@ const getAroundUsersCount = async (supabaseUrl, supabaseKey, userLat, userLng, u
     return R * c;
   };
 
-  console.log('Fetching around users count for:', { lat, lng, oppositeGender });
+  //console.log('Fetching around users count for:', { lat, lng, oppositeGender });
 
   // First get all users of opposite gender with their coordinates
   const { data: users, error } = await supabase
@@ -46,7 +46,7 @@ const getAroundUsersCount = async (supabaseUrl, supabaseKey, userLat, userLng, u
     .not('longitude', 'is', null);
 
   if (error) {
-    console.error('Error getting around users:', error);
+    //console.error('Error getting around users:', error);
     return 0;
   }
 
@@ -57,7 +57,7 @@ const getAroundUsersCount = async (supabaseUrl, supabaseKey, userLat, userLng, u
   });
 
   const count = usersWithinRadius.length;
-  console.log('Around users count:', count);
+  //console.log('Around users count:', count);
   return count;
 };
 
@@ -118,12 +118,12 @@ export const AuthProvider = ({ children }) => {
         countUpdatedRef.current = true;
         getAroundUsersCount(supabaseUrl, supabaseAnonKey, res.data.latitude, res.data.longitude, res.data.gender)
           .then(async (count) => {
-            console.log('Around users count:', count);
+            //console.log('Around users count:', count);
             await updateUserInfo(user.id, { arounduserscount: count });
             setProfiledata(prev => ({ ...prev, arounduserscount: count }));
           })
           .catch(error => {
-            console.error('Error updating arounduserscount:', error);
+            //console.error('Error updating arounduserscount:', error);
             countUpdatedRef.current = false; // Reset on error to allow retry
           });
       }
