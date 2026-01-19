@@ -115,7 +115,9 @@ function Settings() {
 
     onSubmit: async values => {
       if (!isOnline) {
-        alert('You are offline. check your internet connection');
+        toast.error('You are offline. Check your internet connection', {
+          position: 'top-center',
+        });
         return;
       }
 
@@ -199,19 +201,27 @@ function Settings() {
             setLoading(false);
             setShowNewDialog(false);
             if (res.success) {
-              alert('Location change successful');
+              toast('Location updated successfully!', {
+                position: 'top-center',
+              });
             }
           });
         } catch (error) {
           //console.log('error::', error);
           setLoading(false);
-          alert('Something wrong. Try later');
+          toast.error('Something went wrong. Please try again later', {
+            position: 'top-center',
+          });
         }
       } else {
-        alert('Error, logout and login again');
+        toast.error('Session error. Please logout and login again', {
+          position: 'top-center',
+        });
       }
     } else {
-      alert('You are offline. check your internet connection.');
+      toast.error('You are offline. Check your internet connection', {
+        position: 'top-center',
+      });
     }
   };
 
