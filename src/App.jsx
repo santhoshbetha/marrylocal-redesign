@@ -85,6 +85,28 @@ function App() {
     }
   }, [authLoading, user, profiledata]);
 
+  // Version check for app updates
+  useEffect(() => {
+    const checkVersion = async () => {
+      const response = await fetch('/meta.json', { cache: 'no-store' });
+      const data = await response.json();
+      const currentVersion = localStorage.getItem('app_version');
+
+      if (currentVersion && data.version !== currentVersion) {
+        localStorage.setItem('app_version', data.version);
+        // Optional: Clear Service Worker caches before reloading
+        if (window.caches) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(key => caches.delete(key)));
+        }
+        window.location.reload();
+      } else {
+        localStorage.setItem('app_version', data.version);
+      }
+    };
+    checkVersion();
+  }, []);
+
   return (
     <GlobalLoadingContext.Provider value={{ globalLoading, setGlobalLoading }}>
       <div className="App">

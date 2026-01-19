@@ -11,6 +11,13 @@ import registerServiceWorker from './serviceWorkerRegistration';
 import './index.css';
 import App from './App.jsx';
 
+window.addEventListener('error', (e) => {
+  if (e.message.includes('Loading failed for the module') || e.message.includes('ChunkLoadError')) {
+    // Force a complete page reload to fetch the new manifest/files
+    window.location.reload(); 
+  }
+}, true);
+
 import {
   createStateSyncMiddleware,
   // initMessageListener,

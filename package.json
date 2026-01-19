@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node -e \"const fs = require('fs'); const meta = { version: Date.now().toString() }; fs.writeFileSync('public/meta.json', JSON.stringify(meta, null, 2));\" && vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

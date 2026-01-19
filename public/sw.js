@@ -121,4 +121,13 @@ self.addEventListener('fetch', event => {
   );
 });
 
-  
+// Message event - handle cache clearing
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    caches.keys().then(names => {
+      return Promise.all(names.map(name => caches.delete(name)));
+    }).then(() => {
+      event.ports[0].postMessage({ type: 'CACHE_CLEARED' });
+    });
+  }
+});
