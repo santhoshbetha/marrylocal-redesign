@@ -1,9 +1,9 @@
 // Service Worker for MarryLocal
 // Simplified version to avoid potential issues
 
-const CACHE_NAME = 'marrylocal-v2';
-const STATIC_CACHE = 'marrylocal-static-v2';
-const API_CACHE = 'marrylocal-api-v2';
+const CACHE_NAME = 'marrylocal-v3';
+const STATIC_CACHE = 'marrylocal-static-v3';
+const API_CACHE = 'marrylocal-api-v3';
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
@@ -44,6 +44,11 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
+
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
+    return;
+  }
 
   // Cache Google Fonts
   if (url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com') {
@@ -103,10 +108,18 @@ self.addEventListener('fetch', event => {
           });
         }
         return response;
-      }).catch(() => {
-        // Return cached version if available, otherwise offline page
+      }).catch(error => {
+        // For JavaScript and CSS assets, don't provide fallbacks - let them fail
+        // This prevents serving HTML when JS is expected
+        if (request.url.includes('.js') || request.url.includes('.css') || request.url.includes('/assets/')) {
+          throw error; // Re-throw the error for critical assets
+        }
+        // For other requests, return cached version if available, otherwise offline page
         return caches.match('/index.html');
       });
+    }).catch(() => {
+      // If cache match fails, try network request
+      return fetch(request);
     })
   );
 });
