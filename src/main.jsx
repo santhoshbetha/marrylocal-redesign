@@ -23,19 +23,47 @@ window.addEventListener('error', (e) => {
     )) {
     console.error('JavaScript loading error detected:', e.message, e.filename);
     
-    // Clear caches and reload
+    // Clear caches immediately and reload
     if ('caches' in window) {
       caches.keys().then(names => {
+        console.log('Clearing caches due to chunk loading error');
         return Promise.all(names.map(name => caches.delete(name)));
       }).then(() => {
-        console.log('Caches cleared due to chunk loading error');
-        window.location.reload();
-      }).catch(() => {
-        // If cache clearing fails, still reload
-        window.location.reload();
+        console.log('Caches cleared, unregistering service worker and reloading');
+        // Also unregister service worker to prevent stale chunks
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            return Promise.all(registrations.map(reg => reg.unregister()));
+          }).then(() => {
+            window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+          });
+        } else {
+          window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+        }
+      }).catch((error) => {
+        console.error('Error clearing caches:', error);
+        // Still try to unregister service worker
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            return Promise.all(registrations.map(reg => reg.unregister()));
+          }).then(() => {
+            window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+          });
+        } else {
+          window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+        }
       });
     } else {
-      window.location.reload();
+      // No caches API, just unregister service worker and reload
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          return Promise.all(registrations.map(reg => reg.unregister()));
+        }).then(() => {
+          window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+        });
+      } else {
+        window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+      }
     }
   }
 }, true);
@@ -62,12 +90,37 @@ window.addEventListener('unhandledrejection', (e) => {
       caches.keys().then(names => {
         return Promise.all(names.map(name => caches.delete(name)));
       }).then(() => {
-        window.location.reload();
+        // Also unregister service worker
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            return Promise.all(registrations.map(reg => reg.unregister()));
+          }).then(() => {
+            window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+          });
+        } else {
+          window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+        }
       }).catch(() => {
-        window.location.reload();
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            return Promise.all(registrations.map(reg => reg.unregister()));
+          }).then(() => {
+            window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+          });
+        } else {
+          window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+        }
       });
     } else {
-      window.location.reload();
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          return Promise.all(registrations.map(reg => reg.unregister()));
+        }).then(() => {
+          window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+        });
+      } else {
+        window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
+      }
     }
   }
 });
