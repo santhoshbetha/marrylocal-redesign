@@ -41,12 +41,9 @@ export function UserProfileDialog({ user, onClose }) {
   //  shortid: user?.shortid
   //});
 
-  const images = user.images || [
-    user.image || '/professional-portrait-in-urban-setting.jpg',
-    '/professional-woman-smiling.png',
-    '/young-woman-portrait.png',
-    '/professional-headshot-of-a-young-man-with-brown-ha.jpg',
-  ];
+  const images = user?.images ? user.images.filter(image => image && image.trim() !== '') : [
+    user?.image || '/professional-portrait-in-urban-setting.jpg',
+  ].filter(Boolean);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = () => {
@@ -170,20 +167,21 @@ export function UserProfileDialog({ user, onClose }) {
         {/* Profile Image */}
         <div className="px-6 pt-2 flex justify-center">
           {!isObjEmpty(user?.images) && (
-            <div className="relative w-full max-w-2xl aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-lg group">
+            <div className="relative w-full lg:max-w-lg mx-auto aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-2xl group border border-border/50">
               {/* Carousel Images */}
               <div className="relative w-full h-full">
                 {images.map((image, index) => (
                   <div
                     key={index}
-                    className={`absolute inset-0 transition-opacity duration-500 ${
-                      index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                    className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                      index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
                     }`}
                   >
                     <img
                       src={`${CDNURL}/${user.shortid}/${image}`}
                       alt={`${user.firstname} - Photo ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                      loading="lazy"
                     />
                   </div>
                 ))}
@@ -194,32 +192,32 @@ export function UserProfileDialog({ user, onClose }) {
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/40 hover:bg-black/60 text-white rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110 shadow-lg backdrop-blur-sm"
                     aria-label="Previous image"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-6 h-6" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/40 hover:bg-black/60 text-white rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110 shadow-lg backdrop-blur-sm"
                     aria-label="Next image"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-6 h-6" />
                   </button>
                 </>
               )}
 
               {/* Dot Indicators */}
               {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
                   {images.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => goToImage(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      className={`w-3 h-3 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm ${
                         index === currentImageIndex
-                          ? 'bg-white h-3'
-                          : 'bg-white/50 hover:bg-white/75'
+                          ? 'bg-white w-8 shadow-white/50'
+                          : 'bg-white/50 hover:bg-white/75 hover:scale-110'
                       }`}
                       aria-label={`Go to image ${index + 1}`}
                     />
@@ -229,7 +227,7 @@ export function UserProfileDialog({ user, onClose }) {
 
               {/* Image Counter */}
               {images.length > 1 && (
-                <div className="absolute top-4 right-4 px-3 py-1 bg-black/50 text-white text-sm rounded-full">
+                <div className="absolute top-6 right-6 px-4 py-2 bg-black/40 backdrop-blur-sm text-white text-sm rounded-full font-medium border border-white/20">
                   {currentImageIndex + 1} / {images.length}
                 </div>
               )}
