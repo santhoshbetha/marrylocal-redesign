@@ -421,43 +421,6 @@ function Settings() {
               </div>
             </div>
 
-            <Separator />
-
-            {/* Cache Management Section */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <span className="text-red-600 font-bold">🗂️</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-red-800">Cache Management</h3>
-                  <p className="text-sm text-red-600">Clear cached data to resolve loading issues</p>
-                </div>
-              </div>
-
-              <div className="bg-red-50/50 border border-red-200 rounded-lg p-6 space-y-4">
-                <div className="flex items-center justify-between p-4 bg-white/50 rounded-lg border border-red-100">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <span className="text-red-600 font-bold">🔄</span>
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-800">Clear Application Cache</div>
-                      <div className="text-sm text-gray-600">
-                        Clear all cached data including API responses and static assets
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={clearCache}
-                    variant="outline"
-                    className="bg-red-600 hover:bg-red-700 text-white border-red-600"
-                  >
-                    Clear Cache
-                  </Button>
-                </div>
-              </div>
-            </div>
 
             <Separator />
 
@@ -641,6 +604,45 @@ function Settings() {
                 )}
               </DialogContent>
             </Dialog>
+
+            <Separator />
+
+            {/* Cache Management Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <span className="text-red-600 font-bold">🗂️</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-red-800">Cache Management</h3>
+                  <p className="text-sm text-red-600">Clear cached data to resolve loading issues</p>
+                </div>
+              </div>
+
+              <div className="bg-red-50/50 border border-red-200 rounded-lg p-6 space-y-4">
+                <div className="flex items-center justify-between p-4 bg-white/50 rounded-lg border border-red-100">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-red-100 rounded-lg">
+                      <span className="text-red-600 font-bold">🔄</span>
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-800">Clear Application Cache</div>
+                      <div className="text-sm text-gray-600">
+                        Clear all cached data including API responses and static assets
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={clearCache}
+                    variant="outline"
+                    className="bg-red-600 hover:bg-red-700 text-white border-red-600"
+                  >
+                    Clear Cache
+                  </Button>
+                </div>
+              </div>
+            </div>
+
           </CardContent>
         </Card>
       </div>

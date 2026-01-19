@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +44,31 @@ function Profile() {
   const [profilePicLoading, setProfilePicLoading] = useState(true);
   const isOnline = useOnlineStatus();
 
+  // Handle profile picture loading - only show spinner on fresh loads/reloads, not navigation
+  useEffect(() => {
+    const handlePageShow = (event) => {
+      if (!event.persisted) {
+        // Fresh load or reload - show loading
+        setProfilePicLoading(true);
+      }
+      // If persisted=true, it means page was restored from cache (navigation) - don't show loading
+    };
+
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
+
+  // Add timeout for profile picture loading to prevent infinite loading
+  useEffect(() => {
+    if (profilePicLoading) {
+      const timeout = setTimeout(() => {
+        setProfilePicLoading(false);
+      }, 5000); // 5 second timeout
+
+      return () => clearTimeout(timeout);
+    }
+  }, [profilePicLoading]);
+
   useEffect(() => {
     if (!isObjEmpty(profiledata) && reload) {
       setPhone(isObjEmpty(profiledata?.phonenumber) ? '' : profiledata?.phonenumber);
@@ -52,8 +77,6 @@ function Profile() {
       setBioValue(!isObjEmpty(profiledata?.bio) ? profiledata?.bio : '');
       setReload(false);
     }
-    // Reset profile picture loading when profile data changes
-    setProfilePicLoading(true);
   }, [profiledata, reload]);
 
   const handlesaveSocials = async e => {
@@ -164,6 +187,7 @@ function Profile() {
     } else {
       ev.target.src = '/female-default-2.png';
     }
+    // Ensure loading state is stopped even on error
     setProfilePicLoading(false);
   };
 
@@ -185,9 +209,10 @@ function Profile() {
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
                 )}
-                {!isObjEmpty(profiledata?.images) ? (
+                {!isObjEmpty(profiledata?.images) && profiledata?.images.length > 0 ? (
                   <img
-                    src={`${CDNURL}/${profiledata?.shortid}/${profiledata?.images[1]}`}
+                    key={`${profiledata?.shortid}-${profiledata?.images[0] || profiledata?.images[1]}`}
+                    src={`${CDNURL}/${profiledata?.shortid}/${profiledata?.images[0] || profiledata?.images[1]}`}
                     alt="Profile picture"
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                     onError={addDefaultImg}
@@ -197,6 +222,7 @@ function Profile() {
                   <>
                     {profiledata?.gender == 'Male' ? (
                       <img
+                        key={`default-male-${profiledata?.shortid}`}
                         src="/male-default-4.png"
                         alt="Profile picture"
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
@@ -204,6 +230,7 @@ function Profile() {
                       />
                     ) : (
                       <img
+                        key={`default-female-${profiledata?.shortid}`}
                         src="/female-default-2.png"
                         alt="Profile picture"
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
