@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node -e \"const fs = require('fs'); const meta = { version: Date.now().toString() }; fs.writeFileSync('public/meta.json', JSON.stringify(meta, null, 2));\" && vite build",
+    "build": "node -e \"const fs = require('fs'); const meta = { version: Date.now().toString() }; fs.writeFileSync('public/meta.json', JSON.stringify(meta, null, 2)); const headers = '# Cache control for assets to prevent stale chunks\\n/assets/*\\n  Cache-Control: no-cache, no-store, must-revalidate\\n  Pragma: no-cache\\n  Expires: 0\\n\\n# Allow meta.json to be fetched fresh\\n/meta.json\\n  Cache-Control: no-cache, no-store, must-revalidate\\n  Pragma: no-cache\\n  Expires: 0\\n\\n# Service worker should not be cached\\n/sw.js\\n  Cache-Control: no-cache, no-store, must-revalidate\\n  Pragma: no-cache\\n  Expires: 0'; fs.writeFileSync('public/_headers', headers);\" && vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

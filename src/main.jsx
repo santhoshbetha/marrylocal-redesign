@@ -23,6 +23,9 @@ window.addEventListener('error', (e) => {
     )) {
     console.error('JavaScript loading error detected:', e.message, e.filename);
     
+    // Prevent default error handling and show custom recovery
+    e.preventDefault();
+    
     // Clear caches immediately and reload
     if ('caches' in window) {
       caches.keys().then(names => {
@@ -65,6 +68,8 @@ window.addEventListener('error', (e) => {
         window.location.replace(window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_t=' + Date.now());
       }
     }
+    
+    return false;
   }
 }, true);
 

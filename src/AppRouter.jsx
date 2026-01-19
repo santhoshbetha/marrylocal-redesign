@@ -3,22 +3,55 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 
 // Safe lazy loading wrapper with error handling
 const safeLazy = (importFunc) => {
-  return lazy(() => 
+  return lazy(() =>
     importFunc().catch(error => {
       console.error('Lazy loading failed:', error);
-      // Return a fallback component
+
+      // Automatically trigger cache clearing and reload
+      setTimeout(() => {
+        console.log('Automatically clearing caches and reloading due to lazy loading failure');
+
+        // Clear caches
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            console.log('Clearing caches:', names);
+            return Promise.all(names.map(name => caches.delete(name)));
+          }).then(() => {
+            console.log('Caches cleared, unregistering service worker');
+            // Unregister service worker
+            if ('serviceWorker' in navigator) {
+              return navigator.serviceWorker.getRegistrations();
+            }
+            return [];
+          }).then(registrations => {
+            if (registrations && registrations.length > 0) {
+              return Promise.all(registrations.map(reg => reg.unregister()));
+            }
+          }).then(() => {
+            // Force reload with cache busting
+            const newUrl = window.location.href + (window.location.href.includes('?') ? '&' : '?') + '_cache_bust=' + Date.now();
+            window.location.replace(newUrl);
+          }).catch(error => {
+            console.error('Error during cache clearing:', error);
+            // Fallback: just reload
+            window.location.reload();
+          });
+        } else {
+          // No caches API, just reload
+          window.location.reload();
+        }
+      }, 100); // Small delay to ensure error logging
+
+      // Return a fallback component that shows loading state
       return {
         default: () => (
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold text-red-600 mb-2">Loading Error</h2>
-              <p className="text-gray-600">Failed to load component. Please refresh the page.</p>
-              <button 
-                onClick={() => window.location.reload()} 
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Refresh Page
-              </button>
+          <div className="flex items-center justify-center min-h-screen bg-background">
+            <div className="flex flex-col items-center gap-4 p-6 bg-background/90 rounded-2xl shadow-2xl border border-border max-w-md">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/30 border-t-primary"></div>
+              <div className="text-center">
+                <h2 className="text-xl font-semibold text-primary mb-2">Updating App</h2>
+                <p className="text-muted-foreground text-sm">Loading the latest version...</p>
+              </div>
             </div>
           </div>
         )
