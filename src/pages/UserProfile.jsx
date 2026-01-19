@@ -152,7 +152,7 @@ function UserProfile() {
 
           {/* Image Carousel Skeleton */}
           <div className="px-6 py-4">
-            <Skeleton className="w-full aspect-video rounded-2xl bg-gray-200" />
+            <Skeleton className="w-full lg:max-w-lg mx-auto aspect-square rounded-2xl bg-gray-200" />
           </div>
 
           {/* Profile Details Skeleton */}
@@ -226,14 +226,14 @@ function UserProfile() {
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="bg-background rounded-3xl shadow-2xl border border-border/50 overflow-hidden backdrop-blur-sm">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 px-4 sm:px-6 py-6 sm:py-8 border-b border-border/50 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 px-4 sm:px-6 py-1.5 sm:py-6 border-b border-border/50 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
               <div className="flex-1 min-w-0">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-                  <h1 className="text-3xl sm:text-4xl font-bold text-primary truncate">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-1 sm:mb-3">
+                  <h1 className="text-2xl sm:text-4xl font-bold text-primary truncate">
                     {user?.firstname}
                   </h1>
-                  <span className="text-xl sm:text-2xl text-muted-foreground font-medium">({user?.city})</span>
+                  <span className="text-lg sm:text-2xl text-muted-foreground font-medium">({user?.city})</span>
                   {(user?.aadharverified || user?.passportverified || user?.licenseverified) ? (
                     <div className="flex items-center gap-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-green-200/50 shadow-sm self-start">
                       <CheckCircle className="h-4 w-4" />
@@ -246,17 +246,17 @@ function UserProfile() {
                     </div>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center gap-3 text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-muted-foreground">
                   <div className="flex items-center gap-1">
-                    <span className="text-base sm:text-lg font-medium">Age:</span>
-                    <span className="text-base sm:text-lg text-foreground font-semibold">{user?.age}</span>
+                    <span className="text-sm sm:text-lg font-medium">Age:</span>
+                    <span className="text-sm sm:text-lg text-foreground font-semibold">{user?.age}</span>
                   </div>
                   <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                  <span className="text-base sm:text-lg font-medium">{user?.language}</span>
+                  <span className="text-sm sm:text-lg font-medium">{user?.language}</span>
                   {user?.showcommunity == true && user?.community && user?.community != 'Do not wish to mention' && (
                     <>
                       <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                      <span className="text-base sm:text-lg font-medium">{user?.community}</span>
+                      <span className="text-sm sm:text-lg font-medium">{user?.community}</span>
                     </>
                   )}
                 </div>
@@ -302,7 +302,7 @@ function UserProfile() {
           {/* Image Carousel */}
           {user?.images && images.length > 0 && (
             <div className="px-6 pb-6">
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-2xl group border border-border/50">
+              <div className="relative w-full lg:max-w-lg mx-auto aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-2xl group border border-border/50">
                 <div className="relative w-full h-full">
                   {images?.map((image, index) => (
                     <div
