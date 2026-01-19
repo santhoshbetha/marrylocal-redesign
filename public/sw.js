@@ -1,9 +1,9 @@
 // Service Worker for MarryLocal
 // Simplified version to avoid potential issues
 
-const CACHE_NAME = 'marrylocal-v1';
-const STATIC_CACHE = 'marrylocal-static-v1';
-const API_CACHE = 'marrylocal-api-v1';
+const CACHE_NAME = 'marrylocal-v2';
+const STATIC_CACHE = 'marrylocal-static-v2';
+const API_CACHE = 'marrylocal-api-v2';
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
@@ -92,8 +92,11 @@ self.addEventListener('fetch', event => {
         return response;
       }
       return fetch(request).then(response => {
-        // Cache successful GET requests
-        if (request.method === 'GET' && response.status === 200) {
+        // Only cache static assets, not JavaScript chunks (they have hashes and change frequently)
+        if (request.method === 'GET' && response.status === 200 &&
+            !request.url.includes('/assets/') &&
+            !request.url.includes('.js') &&
+            !request.url.includes('.css')) {
           const responseClone = response.clone();
           caches.open(STATIC_CACHE).then(cache => {
             cache.put(request, responseClone);
