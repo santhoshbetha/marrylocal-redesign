@@ -1,9 +1,9 @@
 // Service Worker for MarryLocal
 // Simplified version to avoid potential issues
 
-const CACHE_NAME = 'marrylocal-v3';
-const STATIC_CACHE = 'marrylocal-static-v3';
-const API_CACHE = 'marrylocal-api-v3';
+const CACHE_NAME = 'marrylocal-v4';
+const STATIC_CACHE = 'marrylocal-static-v4';
+const API_CACHE = 'marrylocal-api-v4';
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
@@ -45,9 +45,14 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
-  if (request.method !== 'GET') {
+  // Skip non-GET requests and non-HTTP requests
+  if (request.method !== 'GET' || !url.protocol.startsWith('http')) {
     return;
+  }
+
+  // Don't intercept requests for JavaScript and CSS assets to avoid issues
+  if (request.url.includes('.js') || request.url.includes('.css') || request.url.includes('/assets/')) {
+    return; // Let the browser handle these directly
   }
 
   // Cache Google Fonts
@@ -97,7 +102,7 @@ self.addEventListener('fetch', event => {
         return response;
       }
       return fetch(request).then(response => {
-        // Only cache static assets, not JavaScript chunks (they have hashes and change frequently)
+        // Only cache static assets that are not JS/CSS
         if (request.method === 'GET' && response.status === 200 &&
             !request.url.includes('/assets/') &&
             !request.url.includes('.js') &&
@@ -108,18 +113,10 @@ self.addEventListener('fetch', event => {
           });
         }
         return response;
-      }).catch(error => {
-        // For JavaScript and CSS assets, don't provide fallbacks - let them fail
-        // This prevents serving HTML when JS is expected
-        if (request.url.includes('.js') || request.url.includes('.css') || request.url.includes('/assets/')) {
-          throw error; // Re-throw the error for critical assets
-        }
-        // For other requests, return cached version if available, otherwise offline page
+      }).catch(() => {
+        // Return cached version if available, otherwise offline page
         return caches.match('/index.html');
       });
-    }).catch(() => {
-      // If cache match fails, try network request
-      return fetch(request);
     })
   );
 });

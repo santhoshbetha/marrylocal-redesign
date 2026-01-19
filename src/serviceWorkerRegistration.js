@@ -16,9 +16,8 @@ export default function registerServiceWorker() {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New service worker is available
-                if (confirm('New app update is available!. Click OK to refresh')) {
-                  window.location.reload();
-                }
+                console.log('New service worker available, reloading...');
+                window.location.reload();
               }
             });
           }
@@ -27,5 +26,18 @@ export default function registerServiceWorker() {
       .catch(error => {
         console.error('Service worker registration failed:', error);
       });
+  }
+}
+
+// Utility function to unregister service worker (can be called from browser console)
+export function unregisterServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(registration => {
+        registration.unregister().then(() => {
+          console.log('Service Worker unregistered successfully');
+        });
+      });
+    });
   }
 }
