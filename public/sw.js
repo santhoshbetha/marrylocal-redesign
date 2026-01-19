@@ -50,8 +50,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Don't intercept requests for JavaScript and CSS assets to avoid issues
-  if (request.url.includes('.js') || request.url.includes('.css') || request.url.includes('/assets/')) {
+  // Don't intercept requests for JavaScript, CSS, and meta.json to avoid caching issues
+  if (request.url.includes('.js') || request.url.includes('.css') || request.url.includes('/assets/') || request.url.includes('meta.json')) {
     return; // Let the browser handle these directly
   }
 
@@ -124,10 +124,18 @@ self.addEventListener('fetch', event => {
 // Message event - handle cache clearing
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'CLEAR_CACHE') {
+    console.log('Clearing all caches via service worker');
     caches.keys().then(names => {
-      return Promise.all(names.map(name => caches.delete(name)));
+      return Promise.all(names.map(name => {
+        console.log('Deleting cache:', name);
+        return caches.delete(name);
+      }));
     }).then(() => {
+      console.log('All caches cleared');
       event.ports[0].postMessage({ type: 'CACHE_CLEARED' });
+    }).catch(error => {
+      console.error('Error clearing caches:', error);
+      event.ports[0].postMessage({ type: 'CACHE_CLEAR_ERROR', error: error.message });
     });
   }
 });
