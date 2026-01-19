@@ -34,17 +34,17 @@ export function SearchUser() {
     var phoneregex = /^\d{10}$/;
     var emailregex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     var useridregex = /^\d{5,7}$/;
-    console.log("search user debug 1 ", searchtext);
+    //console.log("search user debug 1 ", searchtext);
     if (searchtext.match(emailregex) || searchtext.match(phoneregex)) {
       setLoading(true);
-      console.log("search user debug 2 ", searchtext);
+      //console.log("search user debug 2 ", searchtext);
       //await searchuser(searchtext)
       const res = await searchUser(searchtext);
-      console.log("search user debug 3 ", res);
+      //console.log("search user debug 3 ", res);
       setLoading(false);
       if (res.success) {
         setUserdata(res.data);
-        console.log("search user res.data", res.data);
+        //console.log("search user res.data", res.data);
         setUseractive(res.data?.userstate === 'active');
       } else {
         setUserdata(null);

@@ -272,13 +272,13 @@ export const searchUser = async searchtext => {
           .single();
       }
     } else {
-      console.log("search user by email", searchtext);
+      //console.log("search user by email", searchtext);
       dataout = await supabase
         .from('users')
         .select('userid, shortid, firstname, gender, age, images, userstate')
         .textSearch('email', searchtext.toLowerCase())
         .single();
-      console.log("search user by email result", dataout);
+      //console.log("search user by email result", dataout);
     }
 
     if (dataout.error) {
