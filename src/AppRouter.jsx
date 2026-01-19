@@ -60,46 +60,47 @@ const safeLazy = (importFunc) => {
   );
 };
 
-// Import Register normally to avoid chunk loading issues
+// Import components normally to avoid chunk loading issues
 import Register from '@/pages/auth/Register/Register';
+import Home from '@/pages/Home';
+import UserProfile from '@/pages/UserProfile';
+import About from '@/pages/About';
+import Contact from '@/pages/Contact';
+import LoginPage from '@/pages/auth/LoginPage';
+import Logout from '@/pages/auth/Logout';
+import PageNotFound from '@/pages/404Page';
+import Search from '@/pages/Search/Search';
+import Profile from '@/pages/Profile';
+import Verify from '@/pages/Verify';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ChangePassword from '@/pages/ChangePassword';
+import Settings from '@/pages/Settings';
+import Photos from '@/pages/Photos';
+import Addons from '@/pages/Addons';
+import ServiceFeesPhonePePayPage from '@/pages/ServiceFeesPhonePePayPage';
+import ServiceFeesPhonePePaymentStatus from '@/pages/ServiceFeesPhonePePaymentStatus';
+import Terms from '@/pages/Terms';
+import Privacy from '@/pages/Privacy';
+import Delete from '@/pages/Delete';
+import Referrals from '@/pages/Referrals';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import Cancellation from '@/pages/Cancellation';
+import RegistrationSuccess from '@/pages/auth/RegistrationSuccess';
+import EmailVerification from '@/pages/auth/EmailVerification';
+import EmailNotVerified from '@/pages/auth/EmailNotVerified';
+import AuthConfirm from '@/pages/auth/AuthConfirm';
+import Maintenance from '@/pages/Maintenance';
+import Admin from '@/pages/Admin';
+import AdminRoute from '@/components/AdminRoute';
+import AdminRegister from '@/pages/auth/AdminRegister';
+import AdminBulkOperations from '@/pages/AdminBulkOperations';
+import UserProfiles from '@/pages/UserProfiles';
+import AdminUserList from '@/pages/AdminUserList';
+import AdminEmailTemplates from '@/pages/AdminEmailTemplates';
+import ScrollToTop from '@/components/ScrollToTop';
 
 // Lazy load components for code splitting
-const Home = safeLazy(() => import('@/pages/Home'));
-const UserProfile = safeLazy(() => import('@/pages/UserProfile'));
-const About = safeLazy(() => import('@/pages/About'));
-const Contact = safeLazy(() => import('@/pages/Contact'));
-const LoginPage = safeLazy(() => import('@/pages/auth/LoginPage'));
-const Logout = safeLazy(() => import('@/pages/auth/Logout'));
-const PageNotFound = safeLazy(() => import('@/pages/404Page'));
-const Search = safeLazy(() => import('@/pages/Search/Search'));
-const Profile = safeLazy(() => import('@/pages/Profile'));
-const Verify = safeLazy(() => import('@/pages/Verify'));
-const ForgotPassword = safeLazy(() => import('@/pages/ForgotPassword'));
-const ChangePassword = safeLazy(() => import('@/pages/ChangePassword'));
-const Settings = safeLazy(() => import('@/pages/Settings'));
-const Photos = safeLazy(() => import('@/pages/Photos'));
-const Addons = safeLazy(() => import('@/pages/Addons'));
-const ServiceFeesPhonePePayPage = safeLazy(() => import('@/pages/ServiceFeesPhonePePayPage'));
-const ServiceFeesPhonePePaymentStatus = safeLazy(() => import('@/pages/ServiceFeesPhonePePaymentStatus'));
-const Terms = safeLazy(() => import('@/pages/Terms'));
-const Privacy = safeLazy(() => import('@/pages/Privacy'));
-const Delete = safeLazy(() => import('@/pages/Delete'));
-const Referrals = safeLazy(() => import('@/pages/Referrals'));
-const ProtectedRoute = safeLazy(() => import('@/components/ProtectedRoute'));
-const Cancellation = safeLazy(() => import('@/pages/Cancellation'));
-const RegistrationSuccess = safeLazy(() => import('@/pages/auth/RegistrationSuccess'));
-const EmailVerification = safeLazy(() => import('@/pages/auth/EmailVerification'));
-const EmailNotVerified = safeLazy(() => import('@/pages/auth/EmailNotVerified'));
-const AuthConfirm = safeLazy(() => import('@/pages/auth/AuthConfirm'));
-const Maintenance = safeLazy(() => import('@/pages/Maintenance'));
-const Admin = safeLazy(() => import('@/pages/Admin'));
-const AdminRoute = safeLazy(() => import('@/components/AdminRoute'));
-const AdminRegister = safeLazy(() => import('@/pages/auth/AdminRegister'));
-const AdminBulkOperations = safeLazy(() => import('@/pages/AdminBulkOperations'));
-const UserProfiles = safeLazy(() => import('@/pages/UserProfiles'));
-const AdminUserList = safeLazy(() => import('@/pages/AdminUserList'));
-const AdminEmailTemplates = safeLazy(() => import('@/pages/AdminEmailTemplates'));
-const ScrollToTop = safeLazy(() => import('@/components/ScrollToTop'));
+// Note: All components are now imported normally to avoid chunk loading issues in production
 const Location = safeLazy(() => import('@/pages/Location'));
 
 export default function AppRouter({ openLogin, setOpenLogin }) {
