@@ -60,12 +60,14 @@ const safeLazy = (importFunc) => {
   );
 };
 
+// Import Register normally to avoid chunk loading issues
+import Register from '@/pages/auth/Register/Register';
+
 // Lazy load components for code splitting
 const Home = safeLazy(() => import('@/pages/Home'));
 const UserProfile = safeLazy(() => import('@/pages/UserProfile'));
 const About = safeLazy(() => import('@/pages/About'));
 const Contact = safeLazy(() => import('@/pages/Contact'));
-const Register = safeLazy(() => import('@/pages/auth/Register/Register'));
 const LoginPage = safeLazy(() => import('@/pages/auth/LoginPage'));
 const Logout = safeLazy(() => import('@/pages/auth/Logout'));
 const PageNotFound = safeLazy(() => import('@/pages/404Page'));
