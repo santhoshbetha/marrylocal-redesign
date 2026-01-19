@@ -268,6 +268,10 @@ function Register() {
         });
       dispatch(registerFailure(error));
       setLoading(false);
+      // Reload the page after a short delay to allow the error message to be seen
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     }
   });
 
