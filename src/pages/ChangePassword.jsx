@@ -20,6 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import { updateUserInfo } from '../services/userService';
 import { updatePasswordRetryCount } from '../services/registerService';
 import { SearchDataAndRecoveryContext } from '../context/SearchDataAndRecoveryContext';
+import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
 import supabase from '../lib/supabase';
 import secureLocalStorage from 'react-secure-storage';
 
@@ -45,6 +46,11 @@ function ChangePassword() {
   const [pendingNavigation, setPendingNavigation] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordValidity, setPasswordValidity] = useState({
+    minChar: null,
+    number: null,
+    specialChar: null,
+  });
   const navigate = useNavigate();
 
   // Function to handle logout with timer
@@ -140,10 +146,34 @@ function ChangePassword() {
   }, [logoutTimer]);
 
   const validatePassword = (password) => {
-    if (password.length < 6) {
-      return 'Password must be at least 6 characters long';
-    }
+    const minChar = password.length >= 8;
+    const number = /\d/.test(password);
+    const specialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+    setPasswordValidity({
+      minChar,
+      number,
+      specialChar,
+    });
+
+    if (!minChar) return 'Password must be at least 8 characters long';
+    if (!number) return 'Password must contain at least one number';
+    if (!specialChar) return 'Password must contain at least one special character';
     return null;
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    if (newPassword) {
+      validatePassword(newPassword);
+    } else {
+      setPasswordValidity({
+        minChar: null,
+        number: null,
+        specialChar: null,
+      });
+    }
   };
 
   const handlePasswordUpdate = async (e) => {
@@ -320,8 +350,8 @@ function ChangePassword() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter new password (min 6 characters)"
+                      onChange={handlePasswordChange}
+                      placeholder="Enter new password (min 8 characters)"
                       className="pr-10"
                       required
                     />
@@ -337,6 +367,7 @@ function ChangePassword() {
                       )}
                     </button>
                   </div>
+                  {password && <PasswordStrengthIndicator validity={passwordValidity} />}
                 </div>
 
                 {/* Confirm Password Field */}
@@ -404,7 +435,9 @@ function ChangePassword() {
               <div className="text-xs text-gray-500 space-y-1">
                 <p className="font-medium">Password requirements:</p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>At least 6 characters long</li>
+                  <li>At least 8 characters long</li>
+                  <li>At least 1 number (0-9)</li>
+                  <li>At least 1 special character (!@#$%^&* etc.)</li>
                   <li>Both passwords must match</li>
                 </ul>
               </div>

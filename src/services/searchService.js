@@ -262,13 +262,13 @@ export const searchUser = async searchtext => {
         dataout = await supabase
           .from('users')
           .select('userid, shortid, firstname, gender, age, images, userstate')
-          .textSearch('phonenumber', Number(searchtext))
+          .eq('phonenumber', searchtext)
           .single();
       } else {
         dataout = await supabase
           .from('users')
           .select('userid, shortid, firstname, gender, age, images, userstate')
-          .textSearch('userid', searchtext)
+          .eq('userid', searchtext)
           .single();
       }
     } else {
@@ -276,7 +276,7 @@ export const searchUser = async searchtext => {
       dataout = await supabase
         .from('users')
         .select('userid, shortid, firstname, gender, age, images, userstate')
-        .textSearch('email', searchtext.toLowerCase())
+        .eq('email', searchtext.toLowerCase())
         .single();
       //console.log("search user by email result", dataout);
     }
