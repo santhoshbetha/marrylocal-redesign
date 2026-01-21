@@ -201,7 +201,7 @@ function Photos() {
       return newState;
     });
 
-    // Remove the specific empty slot by shifting subsequent slots left
+    // Shift images left from slotIndex onwards to fill the gap
     let imagesObj = profiledata?.images ? [...profiledata.images] : [];
 
     // Shift images left from slotIndex onwards
@@ -210,14 +210,8 @@ function Photos() {
     }
     imagesObj[9] = ''; // Ensure the last slot is empty
 
-    // Calculate new visibleSlots - minimum 3, or up to the last non-empty slot + 1
-    let newVisibleSlots = 3;
-    for (let i = 0; i < 10; i++) {
-      if (imagesObj[i]) {
-        newVisibleSlots = Math.max(newVisibleSlots, i + 1);
-      }
-    }
-    newVisibleSlots = Math.min(newVisibleSlots, 10);
+    // Calculate new visibleSlots - decrease by 1, minimum 3
+    const newVisibleSlots = Math.max(visibleSlots - 1, 3);
 
     const updateData = { images: imagesObj };
 
@@ -256,17 +250,17 @@ function Photos() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-8">
         <Card className="w-full shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-<CardHeader className="text-center py-2 sm:py-4 px-3 sm:px-6">
-          <div className="flex items-center justify-center mb-1 sm:mb-2">
-            <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
-              <Camera className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+          <CardHeader className="text-center py-2 sm:py-4 px-3 sm:px-6">
+            <div className="flex items-center justify-center mb-1 sm:mb-2">
+              <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
+                <Camera className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
             </div>
-          </div>
-          <CardTitle className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Your Photo Gallery
-          </CardTitle>
-          <p className="text-gray-600 text-xs sm:text-sm mt-0.5 sm:mt-1 px-2 sm:px-0">
-              Upload up to 10 photos to showcase your personality and lifestyle
+            <CardTitle className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Your Photo Gallery
+            </CardTitle>
+            <p className="text-gray-600 text-xs sm:text-sm mt-0.5 sm:mt-1 px-2 sm:px-0">
+                Upload up to 10 photos to showcase your personality and lifestyle
             </p>
           </CardHeader>
 
@@ -351,7 +345,7 @@ function Photos() {
                   </div>
 
                   {/* Remove Empty Slot Button */}
-                  {!image && visibleSlots > 3 && (
+                  {!image && visibleSlots > 3 && index >= 3 && (
                     <div className="absolute -top-2 -right-2 z-20">
                       <Button
                         onClick={() => handleRemoveEmptySlot(index)}
