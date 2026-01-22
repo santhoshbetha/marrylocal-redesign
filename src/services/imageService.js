@@ -8,7 +8,7 @@ const CDNURL = 'https://gweikvxgqoptvyqiljhp.supabase.co/storage/v1/object/publi
 export const getImagesList = async shortid => {
   try {
     const { data, error } = await supabase.storage.from('localm').list(`images/${shortid}`, {
-      limit: 4,
+      limit: 10,
       offset: 0,
       sortBy: { column: 'name', order: 'asc' },
     });
@@ -202,6 +202,56 @@ export const deleteImage = async (shortid, imageid) => {
       break;
   }
 
+  try {
+    const { data, error } = await supabase.storage
+      .from('localm')
+      .remove([`images/${shortid}/${imagename}`]);
+
+    if (error) {
+      return {
+        success: false,
+        msg: error?.message,
+      };
+    } else {
+      return {
+        success: true,
+        data: data,
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      msg: error.message,
+    };
+  }
+};
+
+export const copyImage = async (shortid, fromName, toName) => {
+  try {
+    const { data, error } = await supabase.storage
+      .from('localm')
+      .copy(`images/${shortid}/${fromName}`, `images/${shortid}/${toName}`);
+
+    if (error) {
+      return {
+        success: false,
+        msg: error?.message,
+      };
+    } else {
+      return {
+        success: true,
+        data: data,
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      msg: error.message,
+    };
+  }
+};
+
+export const deleteImageByName = async (shortid, imagename) => {
   try {
     const { data, error } = await supabase.storage
       .from('localm')

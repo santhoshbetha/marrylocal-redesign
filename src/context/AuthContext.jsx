@@ -158,7 +158,20 @@ export const AuthProvider = ({ children }) => {
     });
 
     return () => {
-      authListener.subscription.unsubscribe();
+      try {
+        // supabase v2 returns { data: { subscription } } where subscription.unsubscribe() is the correct API
+        if (authListener && authListener.subscription && typeof authListener.subscription.unsubscribe === 'function') {
+          authListener.subscription.unsubscribe();
+        } else if (authListener && typeof authListener === 'function') {
+          // older API might return an unsubscribe function directly
+          authListener();
+        } else if (authListener && typeof authListener.unsubscribe === 'function') {
+          // fallback if structure differs
+          authListener.unsubscribe();
+        }
+      } catch (e) {
+        console.warn('Failed to unsubscribe auth listener', e);
+      }
     };
   }, []);
 

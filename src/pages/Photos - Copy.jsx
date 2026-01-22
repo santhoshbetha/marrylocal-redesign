@@ -7,7 +7,6 @@ import {
   deleteImage,
   copyImage,
   deleteImageByName,
-  getImagesList,
 } from '../services/imageService';
 import { useAuth } from '../context/AuthContext';
 import { SearchDataAndRecoveryContext } from '../context/SearchDataAndRecoveryContext';
@@ -43,6 +42,7 @@ function Photos() {
   const [uploadingSlots, setUploadingSlots] = useState(Array(10).fill(false)); // Track uploading state for each slot
   const [removingSlots, setRemovingSlots] = useState(Array(10).fill(false)); // Track removing state for each slot
   const [removingEmptySlots, setRemovingEmptySlots] = useState(Array(10).fill(false)); // Track removing empty slots state
+  const isOnline = useOnlineStatus();
   const [hasReorganized, setHasReorganized] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [reload, setReload] = useState(false);
@@ -56,95 +56,51 @@ function Photos() {
       setHasReorganized(false);
       setHasLoaded(false);
     }
+      if (!isObjEmpty(profiledata && profiledata.images)) {
+        // Clean up any temp files
+      // const tempNames = ['temp_first', 'temp_second', 'temp_third', 'temp_fourth', 'temp_fifth', 'temp_sixth', 'temp_seventh', 'temp_eighth', 'temp_ninth', 'temp_tenth'];
+      // for (const tempName of tempNames) {
+      //   try {
+      //     await deleteImageByName(shortid, tempName);
+      //   } catch (e) {
+      //     // Ignore
+      //   }
+      // }
+        let newImages = [...images]; // Declare newImages as a copy of current images
+        let maxIndexWithImage = -1;
 
-    try {
-      // Get all images from storage directly
-      const imagesListResponse = await getImagesList(shortid);
-      if (!imagesListResponse.success) {
-        console.error('Failed to get images list:', imagesListResponse.msg);
-        setHasLoaded(true);
-        return;
-      }
-
-      const files = imagesListResponse.data || [];
-      //console.log('Images from storage:', files);
-
-      // Filter out temp files and map filenames to array positions
-      const imageFiles = files.filter(file => {
-        // Skip temp files and face.png (which is for profile picture)
-        return !file.name.startsWith('temp_') && file.name !== 'face.png' && file.name !== 'face';
-      });
-
-      //console.log('Filtered image files:', imageFiles);
-
-      // Create images array from storage files
-      let newImages = Array(10).fill(null);
-      let maxIndexWithImage = -1;
-      let imagesObj = Array(10).fill('');
-
-      // Map filenames to positions
-      imageFiles.forEach(file => {
-        const index = IMAGE_NAMES.indexOf(file.name);
-        if (index !== -1 && index < 10) {
-          // Extract timestamp from file metadata or use current time
-          const timestamp = file.updated_at ? new Date(file.updated_at).getTime() : Date.now();
-          imagesObj[index] = `${file.name}?t=${timestamp}`;
-          newImages[index] = { uri: `${CDNURL}/${shortid}/${file.name}?t=${timestamp}` };
-          maxIndexWithImage = Math.max(maxIndexWithImage, index);
-        }
-      });
-
-      //console.log('Mapped images array:', newImages);
-      //console.log('Images object:', imagesObj);
-
-      setImages(newImages);
-
-      // Check if images are sequential, if not, reorganize
-      const nonEmptyIndices = imagesObj.map((img, i) => img ? i : null).filter(i => i !== null);
-      const isSequential = nonEmptyIndices.length === 0 || (nonEmptyIndices[0] === 0 && nonEmptyIndices.every((val, idx) => idx === 0 || val === nonEmptyIndices[idx-1] + 1));
-
-      //console.log('Non-empty indices:', nonEmptyIndices);
-      //console.log('Is sequential:', isSequential);
-
-      if (!hasReorganized && !isSequential && nonEmptyIndices.length > 1) {
-        // Reorganize photos to fill gaps
-        //console.log('Reorganizing photos...');
-        setHasReorganized(true);
-        await handleReorganizePhotos(imagesObj);
-        return; // Since reorganize will update the state, return to avoid double setting
-      }
-
-      // Update profiledata with the images we found
-      if (profiledata && JSON.stringify(profiledata.images) !== JSON.stringify(imagesObj)) {
-        //console.log('Updating profiledata with storage images');
-        setProfiledata({
-          ...profiledata,
-          images: imagesObj,
+        profiledata.images.forEach((imageName, index) => {
+          if (imageName && index < 10) {
+            newImages[index] = { uri: `${CDNURL}/${shortid}/${imageName}` };
+            maxIndexWithImage = Math.max(maxIndexWithImage, index);
+          }
         });
+
+        setImages(newImages);
+
+        // Check if images are sequential, if not, reorganize
+      // const nonEmptyIndices = profiledata.images.map((img, i) => img ? i : null).filter(i => i !== null);
+      // const isSequential = nonEmptyIndices.length === 0 || (nonEmptyIndices[0] === 0 && nonEmptyIndices.every((val, idx) => idx === 0 || val === nonEmptyIndices[idx-1] + 1));
+      // if (!hasReorganized && !isSequential && nonEmptyIndices.length > 1) {
+      //   // Reorganize photos to fill gaps
+      //   setHasReorganized(true);
+      //   await handleReorganizePhotos();
+      //   return; // Since reorganize will update the state, return to avoid double setting
+      // }
+        // Calculate required slots based on images
+        const requiredSlots = Math.max(3, maxIndexWithImage + 1);
+
+        // If visibleSlots is less than required, update it
+        if (visibleSlots < requiredSlots) {
+          const newVisibleSlots = requiredSlots;
+          setVisibleSlots(newVisibleSlots);
+          localStorage.setItem('visibleSlots', newVisibleSlots.toString());
+        }
+
+        setReload(false);
+        setHasLoaded(true);
       }
-
-      //console.log("profiledata.images::", profiledata?.images);
-
-      // Calculate required slots based on images
-      const requiredSlots = Math.max(3, maxIndexWithImage + 1);
-
-      // If visibleSlots is less than required, update it
-      if (visibleSlots < requiredSlots) {
-        const newVisibleSlots = requiredSlots;
-        setVisibleSlots(newVisibleSlots);
-        localStorage.setItem('visibleSlots', newVisibleSlots.toString());
-      }
-
-
-
-
-      setReload(false);
-      setHasLoaded(true);
-    } catch (error) {
-      console.error('Error loading images:', error);
-      setHasLoaded(true);
-    }
-  };
+    };
 
   useEffect(() => {
     // Don't return the Promise from an async function — call it inside.
@@ -340,20 +296,16 @@ function Photos() {
     });
   };
 
-  const handleReorganizePhotos = async (imagesObj) => {
-    //let imagesObj = profiledata?.images ? [...profiledata.images] : [];
-    //console.log('Reorganizing photos:', imagesObj);
+  const handleReorganizePhotos = async () => {
+    let imagesObj = profiledata?.images ? [...profiledata.images] : [];
     const nonEmptyIndices = [];
     for (let i = 0; i < 10; i++) {
       if (imagesObj[i]) nonEmptyIndices.push(i);
     }
     if (nonEmptyIndices.length <= 1) return; // Nothing to reorganize
 
-    //console.log('Non-empty indices:', nonEmptyIndices);
-
     // Check if already sequential
     const isSequential = nonEmptyIndices.length > 0 && nonEmptyIndices[0] === 0 && nonEmptyIndices.every((val, idx) => idx === 0 || val === nonEmptyIndices[idx-1] + 1);
-    //console.log('Is sequential:', isSequential);
     if (isSequential) return;
 
     // Clean up any existing temp files from previous failed attempts
@@ -370,44 +322,30 @@ function Photos() {
     // For reorganize, assign to sequential positions
     const sortedIndices = [...nonEmptyIndices].sort((a, b) => a - b);
 
-    //console.log('Sorted indices for reorganization:', sortedIndices);
-
     // Copy all to temp names
     const tempCopies = [];
-    //console.log('Creating temp copies for reorganization');
     for (const idx of nonEmptyIndices) {
-     //console.log(`Creating temp copy for index ${idx}`);
       const fromName = imagesObj[idx].split('?')[0];
       const tempName = `temp_${fromName}`;
-      //console.log(`Copying image from ${fromName} to ${tempName}`);
       const copyRes = await copyImage(shortid, fromName, tempName);
-      //console.log(`Copy result for index ${idx}:`, copyRes);
-      if (!copyRes.success && copyRes.msg != 'The resource already exists') {
+      if (!copyRes.success) {
         console.error('Failed to copy to temp:', copyRes.msg);
-        alert(`Failed to reorganize photos 22: ${copyRes.msg}. Please try again.`);
+        alert(`Failed to reorganize photos: ${copyRes.msg}. Please try again.`);
         return;
       }
-      //console.log(`Created temp copy for index ${idx}: ${tempName}`);
       tempCopies.push({ idx, tempName, timestamp: imagesObj[idx].split('?t=')[1] || Date.now() });
-      //console.log(`Created temp copy for index ${idx}: ${tempName}`);
     }
-
-    //console.log('Temp copies for reorganization after:', tempCopies);
 
     // Copy from temp to sequential positions
     const newImagesObj = Array(10).fill('');
-
-    //console.log('Copying from temp to sequential positions');
     for (let i = 0; i < sortedIndices.length; i++) {
       const originalIdx = sortedIndices[i];
       const tempItem = tempCopies.find(t => t.idx === originalIdx);
       const toName = IMAGE_NAMES[i];
-      //console.log(`Copying from temp ${tempItem.tempName} to ${toName}`);
       const copyRes = await copyImage(shortid, tempItem.tempName, toName);
-      //console.log(`Copy result from temp ${tempItem.tempName} to ${toName}:`, copyRes);
-      if (!copyRes.success && copyRes.msg != 'The resource already exists') {
+      if (!copyRes.success) {
         console.error('Failed to copy from temp:', copyRes.msg);
-        alert(`Failed to reorganize photo 33: ${copyRes.msg}. Please try again.`);
+        alert(`Failed to reorganize photos: ${copyRes.msg}. Please try again.`);
         // Attempt to clean up temp files
         for (const temp of tempCopies) {
           await deleteImageByName(shortid, temp.tempName);
@@ -417,13 +355,9 @@ function Photos() {
       newImagesObj[i] = `${toName}?t=${tempItem.timestamp}`;
     }
 
-    //console.log('New images object after reorganization:', newImagesObj);
-
     // Delete temp files
     for (const temp of tempCopies) {
       const deleteRes = await deleteImageByName(shortid, temp.tempName);
-      //console.log(`Deleting temp file: ${temp.tempName}`);
-      //console.log(`Deleting temp file deleteRes:`, deleteRes);
       if (!deleteRes.success) {
         console.warn('Failed to delete temp file:', temp.tempName, deleteRes.msg);
       }
@@ -446,9 +380,6 @@ function Photos() {
       alert(`Failed to update reorganized photos: ${res.msg || 'Unknown error'}. Please try again.`);
     }
   };
-
-  //console.log("new images::", images)
-  //console.log("profiledata?.images::", profiledata?.images);
 
   const handleShufflePhotos = async () => {
     let imagesObj = profiledata?.images ? [...profiledata.images] : [];
@@ -488,7 +419,7 @@ function Photos() {
       const copyRes = await copyImage(shortid, photo.name, tempName);
       if (!copyRes.success) {
         console.error('Failed to copy to temp:', copyRes.msg);
-        alert(`Failed to shuffle photos 55: ${copyRes.msg}. Please try again.`);
+        alert(`Failed to shuffle photos: ${copyRes.msg}. Please try again.`);
         return;
       }
       tempCopies.push({ ...photo, tempName });
@@ -502,7 +433,7 @@ function Photos() {
       const copyRes = await copyImage(shortid, tempItem.tempName, toName);
       if (!copyRes.success) {
         console.error('Failed to copy from temp:', copyRes.msg);
-        alert(`Failed to shuffle photos 66: ${copyRes.msg}. Please try again.`);
+        alert(`Failed to shuffle photos: ${copyRes.msg}. Please try again.`);
         // Attempt to clean up temp files
         for (const temp of tempCopies) {
           await deleteImageByName(shortid, temp.tempName);
@@ -675,7 +606,7 @@ function Photos() {
 
             {/* Shuffle Photos Button */}
             {images.filter(img => img !== null).length > 1 && (
-              <div className="flex justify-center mb-8" hidden>
+              <div className="flex justify-center mb-8">
                 <Button
                   onClick={handleShufflePhotos}
                   variant="outline"
