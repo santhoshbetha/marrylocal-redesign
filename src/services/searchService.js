@@ -282,6 +282,13 @@ export const searchUser = async searchtext => {
     }
 
     if (dataout.error) {
+      if (dataout.error.code === 'PGRST116') {
+        return {
+          success: false,
+          msg: 'User with the given email, phone number, or user ID does not exist.',
+        };
+      }
+
       return {
         success: false,
         msg: dataout.error?.message,

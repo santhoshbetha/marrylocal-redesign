@@ -32,7 +32,6 @@ export function UserProfileDialog({ user, onClose }) {
   const { user: loggedInUser, profiledata, setProfiledata } = useAuth();
   let [shortlisttext, setShortListtext] = useState('ADD TO SHORTLIST');
   let [buttonvariant, setButtonvariant] = useState('contain');
-  const [showMore, setShowMore] = useState(false);
   const shortlistarray = JSON.parse(localStorage.getItem('shortlistarray'));
 
   const addToShortlist = useAddToShortlist();
