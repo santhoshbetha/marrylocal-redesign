@@ -5,7 +5,8 @@
 
 .font-custom {
   font-family: 'Sriracha', sans-serif;
-  font-size: 27px;
+  font-size: 30px;
+  color: #FFD800;
 }
 
 @media (max-width: 539.98px) {

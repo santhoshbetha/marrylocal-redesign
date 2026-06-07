@@ -21,7 +21,7 @@ export function NavBefore({ openLogin, setOpenLogin }) {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2 group">
           <img src="/logogold.png" alt="Logo" className="h-8 w-8" />
-          <span className="font-custom text-yellow-300">MarryLocal</span>
+          <span className="font-custom">MarryLocal</span>
         </Link>
 
         {/* Desktop Navigation */}
