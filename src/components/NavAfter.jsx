@@ -18,7 +18,7 @@ import { Heart, Menu, User, Settings, LogOut, Search, Users, MessageCircle, Home
 import { useState } from 'react';
 import { usePageGradient } from '@/hooks/usePageGradient';
 
-export function NavAfter() {
+export function NavAfter({ hideLogout = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { profiledata } = useAuth();
@@ -130,11 +130,15 @@ export function NavAfter() {
                 <User className="mr-2 h-4 w-4" />
                 <span>Delete Account</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => handleLogout()} className="cursor-pointer text-red-600 focus:text-red-600">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
+              {!hideLogout && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={() => handleLogout()} className="cursor-pointer text-red-600 focus:text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -254,22 +258,24 @@ export function NavAfter() {
                       <User className="mr-2 h-4 w-4" />
                       Delete Account
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-red-300 hover:bg-red-500/20 hover:text-red-200"
-                      disabled={isLoggingOut}
-                      onClick={() => {
-                        setIsOpen(false);
-                        handleLogout();
-                      }}
-                    >
-                      {isLoggingOut ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        <LogOut className="mr-2 h-4 w-4" />
-                      )}
-                      {isLoggingOut ? 'Logging out...' : 'Log out'}
-                    </Button>
+                    {!hideLogout && (
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-red-300 hover:bg-red-500/20 hover:text-red-200"
+                        disabled={isLoggingOut}
+                        onClick={() => {
+                          setIsOpen(false);
+                          handleLogout();
+                        }}
+                      >
+                        {isLoggingOut ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <LogOut className="mr-2 h-4 w-4" />
+                        )}
+                        {isLoggingOut ? 'Logging out...' : 'Log out'}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </nav>

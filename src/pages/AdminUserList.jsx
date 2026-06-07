@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { states } from '../lib/states';
 import { cities } from '../lib/cities';
 import { MapPin, Users, Mail, Phone, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { adminGetUsersByLocation, adminGetUsersByState, adminGetUsersFromAllStates } from '../services/userService';
 
 function AdminUserList() {
   const [selectedState, setSelectedState] = useState('');
@@ -103,9 +104,6 @@ function AdminUserList() {
 
     setLoading(true);
     try {
-      // Import the service function we'll create
-      const { adminGetUsersByLocation, adminGetUsersByState, adminGetUsersFromAllStates } = await import('../services/userService');
-
       let res;
       if (selectedState === 'All') {
         // Get users from all states

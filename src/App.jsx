@@ -9,6 +9,8 @@ import { SearchDataAndRecoveryContextProvider } from './context/SearchDataAndRec
 import { AuthVerify } from './commons/AuthVerify';
 import { Suspense, lazy } from 'react';
 
+const LOGIN_LOADING_TIMEOUT_MS = 15000;
+
 // Error Boundary for lazy loading failures
 class LazyLoadErrorBoundary extends React.Component {
   constructor(props) {
@@ -98,6 +100,8 @@ function App() {
   const [theme, _setTheme] = useState('light');
   const [shouldLoadTermsPopup, setShouldLoadTermsPopup] = useState(false);
   const [globalLoading, setGlobalLoading] = useState(false);
+  const [globalLoadingTimedOut, setGlobalLoadingTimedOut] = useState(false);
+  const isResolvingAuthenticatedApp = Boolean(user) && (authLoading || !profiledata);
 
   // Lazy load TermsPopup only when needed
   const TermsPopup = lazy(() => import('./pages/TermsPopup').then(module => ({ default: module.TermsPopup })));
@@ -130,12 +134,27 @@ function App() {
 
   // Show global loading during login until profile data is loaded
   useEffect(() => {
-    if (authLoading && user) {
+    if (isResolvingAuthenticatedApp) {
       setGlobalLoading(true);
-    } else if (!authLoading && profiledata) {
-      setGlobalLoading(false);
+      setGlobalLoadingTimedOut(false);
+      return;
     }
-  }, [authLoading, user, profiledata]);
+
+    setGlobalLoading(false);
+    setGlobalLoadingTimedOut(false);
+  }, [isResolvingAuthenticatedApp]);
+
+  useEffect(() => {
+    if (!isResolvingAuthenticatedApp) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setGlobalLoadingTimedOut(true);
+    }, LOGIN_LOADING_TIMEOUT_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isResolvingAuthenticatedApp]);
 
   // Version check for app updates
   useEffect(() => {
@@ -204,13 +223,17 @@ function App() {
         {globalLoading && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-4 p-6 bg-background/90 rounded-2xl shadow-2xl border border-border">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/30 border-t-primary"></div>
-              <p className="text-sm text-muted-foreground font-medium">Loading...</p>
+              {!globalLoadingTimedOut && (
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/30 border-t-primary"></div>
+              )}
+              <p className="text-sm text-muted-foreground font-medium">
+                {globalLoadingTimedOut ? 'Something wrong. Try later.' : 'Loading...'}
+              </p>
             </div>
           </div>
         )}
 
-        {user ? <NavAfter /> : <NavBefore openLogin={openLogin} setOpenLogin={setOpenLogin} />}
+        {user ? <NavAfter hideLogout={globalLoading} /> : <NavBefore openLogin={openLogin} setOpenLogin={setOpenLogin} />}
         <SearchDataAndRecoveryContextProvider>
           <Layout>
             <LazyLoadErrorBoundary>
