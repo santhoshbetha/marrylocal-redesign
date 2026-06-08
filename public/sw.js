@@ -1,9 +1,10 @@
 // Service Worker for MarryLocal
 // Simplified version to avoid potential issues
 
-const CACHE_NAME = 'marrylocal-v4';
-const STATIC_CACHE = 'marrylocal-static-v4';
-const API_CACHE = 'marrylocal-api-v4';
+const CACHE_VERSION = 'v5';
+const CACHE_NAME = `marrylocal-${CACHE_VERSION}`;
+const STATIC_CACHE = `marrylocal-static-${CACHE_VERSION}`;
+const API_CACHE = `marrylocal-api-${CACHE_VERSION}`;
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
@@ -47,6 +48,32 @@ self.addEventListener('fetch', event => {
 
   // Skip non-GET requests and non-HTTP requests
   if (request.method !== 'GET' || !url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // Never intercept cross-origin requests such as Supabase auth/profile calls.
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // Keep navigations network-first so mobile browsers do not get trapped on stale shells.
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(STATIC_CACHE).then(cache => {
+              cache.put('/index.html', responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cachedResponse = await caches.match('/index.html');
+          return cachedResponse || Response.error();
+        })
+    );
     return;
   }
 
